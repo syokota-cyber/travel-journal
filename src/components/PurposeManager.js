@@ -1,0 +1,345 @@
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
+import { sanitizeInput } from '../utils/security';
+
+const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
+  const [mainPurposes, setMainPurposes] = useState([]);
+  const [subPurposes, setSubPurposes] = useState([]);
+  const [selectedMainIds, setSelectedMainIds] = useState([]);
+  const [selectedSubIds, setSelectedSubIds] = useState([]);
+  const [customSubPurposes, setCustomSubPurposes] = useState([]);
+  const [newSpotName, setNewSpotName] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadSavedPurposes = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('trip_purposes')
+          .select('purpose_type, main_purpose_id, sub_purpose_id')
+          .eq('trip_id', tripId);
+
+        if (error) throw error;
+
+        const mainIds = [];
+        const subIds = [];
+
+        data?.forEach(item => {
+          if (item.purpose_type === 'main' && item.main_purpose_id) {
+            mainIds.push(item.main_purpose_id);
+          } else if (item.purpose_type === 'sub' && item.sub_purpose_id) {
+            subIds.push(item.sub_purpose_id);
+          }
+        });
+
+        setSelectedMainIds(mainIds);
+        setSelectedSubIds(subIds);
+      } catch (error) {
+        console.error('Error loading saved purposes:', error);
+      }
+    };
+
+    fetchPurposes();
+    if (tripId) {
+      loadSavedPurposes();
+    }
+  }, [tripId]);
+
+  useEffect(() => {
+    // 既存の選択を復元
+    if (selectedPurposes) {
+      setSelectedMainIds(selectedPurposes.main || []);
+      setSelectedSubIds(selectedPurposes.sub || []);
+    }
+  }, [selectedPurposes]);
+
+  const fetchPurposes = async () => {
+    try {
+      const [mainData, subData] = await Promise.all([
+        supabase.from('main_purposes').select('*').order('display_order'),
+        supabase.from('sub_purposes').select('*').order('display_order')
+      ]);
+
+      if (mainData.error) throw mainData.error;
+      if (subData.error) throw subData.error;
+
+      setMainPurposes(mainData.data || []);
+      setSubPurposes(subData.data || []);
+    } catch (error) {
+      console.error('目的データ取得エラー:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // カスタム目的の追加
+  const addCustomSubPurpose = () => {
+    if (!newSpotName.trim()) return;
+
+    const newPurpose = {
+      id: `custom_${Date.now()}`,
+      name: newSpotName,
+      isCustom: true
+    };
+
+    setCustomSubPurposes([...customSubPurposes, newPurpose]);
+    setNewSpotName('');
+  };
+
+  // 目的を保存
+  const savePurposes = async (mainIds, subIds) => {
+    if (!tripId) return;
+
+    try {
+      // 既存の目的を削除
+      await supabase
+        .from('trip_purposes')
+        .delete()
+        .eq('trip_id', tripId);
+
+      // 新しい目的を挿入
+      const inserts = [];
+      
+      mainIds.forEach(id => {
+        inserts.push({
+          trip_id: tripId,
+          purpose_type: 'main',
+          main_purpose_id: id,
+          sub_purpose_id: null
+        });
+      });
+
+      subIds.forEach(id => {
+        inserts.push({
+          trip_id: tripId,
+          purpose_type: 'sub',
+          main_purpose_id: null,
+          sub_purpose_id: id
+        });
+      });
+
+      if (inserts.length > 0) {
+        const { error } = await supabase
+          .from('trip_purposes')
+          .insert(inserts);
+
+        if (error) throw error;
+      }
+    } catch (error) {
+      console.error('目的保存エラー:', error);
+    }
+  };
+
+  const handleMainPurposeToggle = (purposeId) => {
+    const newSelection = selectedMainIds.includes(purposeId)
+      ? selectedMainIds.filter(id => id !== purposeId)
+      : [...selectedMainIds, purposeId];
+    
+    setSelectedMainIds(newSelection);
+    onPurposesUpdate({
+      main: newSelection,
+      sub: selectedSubIds
+    });
+    
+    // データベースに保存
+    savePurposes(newSelection, selectedSubIds);
+  };
+
+  const handleSubPurposeToggle = (purposeId) => {
+    const newSelection = selectedSubIds.includes(purposeId)
+      ? selectedSubIds.filter(id => id !== purposeId)
+      : [...selectedSubIds, purposeId];
+    
+    setSelectedSubIds(newSelection);
+    onPurposesUpdate({
+      main: selectedMainIds,
+      sub: newSelection,
+      customSub: customSubPurposes
+    });
+    
+    // データベースに保存
+    savePurposes(selectedMainIds, newSelection);
+  };
+
+  const handleAddCustomSubPurpose = () => {
+    if (customSubPurposes.length >= 3) {
+      alert('立ち寄りスポットは最大3つまで追加できます');
+      return;
+    }
+    
+    const trimmedName = newSpotName.trim();
+    if (!trimmedName) {
+      alert('立ち寄りスポット名を入力してください');
+      return;
+    }
+    
+    if (trimmedName.length > 20) {
+      alert('立ち寄りスポット名は20文字以内で入力してください');
+      return;
+    }
+    
+    // セキュリティ対策：入力値のサニタイズ
+    const sanitizedName = sanitizeInput(trimmedName);
+    
+    // 重複チェック
+    if (customSubPurposes.some(item => item.name === sanitizedName)) {
+      alert('同じ名前の立ち寄りスポットが既に追加されています');
+      return;
+    }
+    
+    const customPurpose = {
+      id: `custom_sub_${Date.now()}`,
+      name: sanitizedName,
+      isCustom: true,
+      type: 'sub'
+    };
+    
+    const newCustomPurposes = [...customSubPurposes, customPurpose];
+    setCustomSubPurposes(newCustomPurposes);
+    setNewSpotName('');
+    
+    onPurposesUpdate({
+      main: selectedMainIds,
+      sub: selectedSubIds,
+      customSub: newCustomPurposes
+    });
+  };
+
+  const handleRemoveCustomSubPurpose = (purposeId) => {
+    const newCustomPurposes = customSubPurposes.filter(p => p.id !== purposeId);
+    setCustomSubPurposes(newCustomPurposes);
+    
+    onPurposesUpdate({
+      main: selectedMainIds,
+      sub: selectedSubIds,
+      customSub: newCustomPurposes
+    });
+  };
+
+  if (loading) {
+    return <div>目的データを読み込み中...</div>;
+  }
+
+  return (
+    <div className="purpose-manager">
+      {/* メイン目的 */}
+      <div className="purpose-section">
+        <h4>🎯 メイン目的</h4>
+        <div className="purpose-grid">
+          {mainPurposes.map(purpose => (
+            <label key={purpose.id} className="purpose-item">
+              <input
+                type="checkbox"
+                checked={selectedMainIds.includes(purpose.id)}
+                onChange={() => handleMainPurposeToggle(purpose.id)}
+              />
+              <span>{purpose.name}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* サブ目的 */}
+      <div className="purpose-section">
+        <h4>📍 サブ目的（立ち寄りスポット）</h4>
+        <div className="purpose-grid">
+          {subPurposes.map(purpose => (
+            <label key={purpose.id} className="purpose-item">
+              <input
+                type="checkbox"
+                checked={selectedSubIds.includes(purpose.id)}
+                onChange={() => handleSubPurposeToggle(purpose.id)}
+              />
+              <span>{purpose.name}</span>
+            </label>
+          ))}
+        </div>
+        
+        {/* カスタム立ち寄りスポット追加 */}
+        <div className="custom-items">
+          <h4>カスタム立ち寄りスポット</h4>
+          <p className="custom-items-note">
+            ※ 最大3つまで登録可能（全角20文字以内）
+          </p>
+          <div className="add-custom-item">
+            <input
+              type="text"
+              placeholder="立ち寄りスポットを追加..."
+              value={newSpotName}
+              onChange={(e) => setNewSpotName(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleAddCustomSubPurpose()}
+              maxLength={20}
+              disabled={customSubPurposes.length >= 3}
+            />
+            <button 
+              className="btn-secondary"
+              onClick={handleAddCustomSubPurpose}
+              disabled={customSubPurposes.length >= 3}
+            >
+              追加 ({customSubPurposes.length}/3)
+            </button>
+          </div>
+          
+          {/* カスタム立ち寄りスポットのリスト */}
+          {customSubPurposes.length > 0 && (
+            <div className="items-checklist">
+              {customSubPurposes.map(purpose => (
+                <label key={purpose.id} className="item-checkbox custom-item">
+                  <input
+                    type="checkbox"
+                    checked={true}
+                    readOnly
+                  />
+                  <span>{purpose.name}</span>
+                  <button
+                    className="remove-btn"
+                    onClick={() => handleRemoveCustomSubPurpose(purpose.id)}
+                    title="削除"
+                  >
+                    ×
+                  </button>
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 選択されたメイン目的の表示 */}
+      {selectedMainIds.length > 0 && (
+        <div className="selected-purposes">
+          <h5>選択されたメイン目的:</h5>
+          <div className="selected-items">
+            {selectedMainIds.map(id => {
+              const purpose = mainPurposes.find(p => p.id === id);
+              return purpose ? (
+                <span key={id} className="selected-badge">
+                  {purpose.name}
+                </span>
+              ) : null;
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* 選択されたサブ目的の表示 */}
+      {selectedSubIds.length > 0 && (
+        <div className="selected-purposes">
+          <h5>選択されたサブ目的:</h5>
+          <div className="selected-items">
+            {selectedSubIds.map(id => {
+              const purpose = subPurposes.find(p => p.id === id);
+              return purpose ? (
+                <span key={id} className="selected-badge">
+                  {purpose.name}
+                </span>
+              ) : null;
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default PurposeManager;

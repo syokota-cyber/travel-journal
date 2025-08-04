@@ -1,0 +1,2017 @@
+/* © 2025 Campingcar Travel Tips.com. All rights reserved. */
+
+/* リセットとベース */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.App {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif;
+  color: #333;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* ヘッダー */
+.App-header {
+  background-color: #2c5530;
+  color: white;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.App-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* メインコンテンツ */
+.App-main {
+  max-width: 768px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* ボタン */
+.btn-primary {
+  background-color: #2c5530;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin: 1rem 0;
+  width: 100%;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-primary:disabled,
+.btn-primary.disabled {
+  background-color: #ccc !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+  pointer-events: none !important;
+}
+
+/* モーダル */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  color: #333;
+}
+
+/* ルール確認 */
+.rules-confirmation {
+  max-width: 600px;
+}
+
+.rules-intro {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #f0f8f0;
+  border-radius: 8px;
+  color: #2c5530;
+}
+
+.rules-category {
+  margin-bottom: 2rem;
+}
+
+.rules-category h4 {
+  margin-bottom: 1rem;
+  color: #2c5530;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 0.5rem;
+}
+
+.rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rule-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem;
+  background: white;
+}
+
+.rule-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  cursor: pointer;
+}
+
+.rule-checkbox input[type="checkbox"] {
+  margin-top: 0.25rem;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.rule-content {
+  flex: 1;
+}
+
+.rule-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.required-badge {
+  background-color: #e74c3c;
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-weight: normal;
+}
+
+.rule-description {
+  color: #666;
+  line-height: 1.5;
+}
+
+.rules-actions {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 2px solid #e0e0e0;
+}
+
+.confirmation-note {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 8px;
+  color: #856404;
+  font-size: 0.9rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.btn-back {
+  background: none;
+  border: none;
+  color: #2c5530;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* 旅行リスト */
+.trip-list h2 {
+  margin-bottom: 1rem;
+}
+
+.trips-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.trip-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.trip-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.trip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.trip-header h3 {
+  font-size: 1.2rem;
+  color: #2c5530;
+}
+
+.status-badge {
+  font-size: 0.9rem;
+  padding: 0.25rem 0.75rem;
+  background-color: #e8f5e9;
+  border-radius: 20px;
+}
+
+.trip-date {
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+/* 達成度表示 */
+.achievement-summary {
+  margin-top: 1rem;
+}
+
+.achievement-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #4caf50;
+  transition: width 0.3s;
+}
+
+/* 旅行詳細 */
+.trip-detail-header {
+  margin-bottom: 2rem;
+}
+
+.trip-detail-header h2 {
+  color: #2c5530;
+  margin-bottom: 0.5rem;
+}
+
+/* タブ */
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.tabs button {
+  background: none;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #666;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.tabs button.active {
+  color: #2c5530;
+  border-bottom-color: #2c5530;
+}
+
+.tabs button.disabled {
+  color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.tabs button.disabled:hover {
+  color: #ccc;
+}
+
+/* 目的セクション */
+.purpose-group {
+  margin-bottom: 2rem;
+}
+
+.purpose-group h3 {
+  margin-bottom: 1rem;
+  color: #2c5530;
+}
+
+.purpose-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: white;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.purpose-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.purpose-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.purpose-category {
+  font-size: 0.85rem;
+  color: #666;
+  background: #f5f5f5;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+}
+
+.satisfaction {
+  color: #ffc107;
+}
+
+/* 持ち物セクション */
+.item-group {
+  margin-bottom: 2rem;
+}
+
+.item-group h3 {
+  margin-bottom: 1rem;
+  color: #2c5530;
+}
+
+.item-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: white;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.item-name {
+  flex: 1;
+}
+
+.item-quantity {
+  color: #666;
+}
+
+.usage-badge {
+  font-size: 0.85rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+}
+
+.usage-well {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.usage-little {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.usage-unused {
+  background: #ffebee;
+  color: #c62828;
+}
+
+/* レビューセクション */
+.review-item {
+  margin-bottom: 2rem;
+}
+
+.review-item h3 {
+  margin-bottom: 0.5rem;
+  color: #2c5530;
+}
+
+.review-item p {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  line-height: 1.6;
+}
+
+/* チェックボックス */
+input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* フォーム */
+.trip-form {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.trip-form h2 {
+  color: #2c5530;
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #2c5530;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.btn-secondary {
+  flex: 1;
+  background-color: #f5f5f5;
+  color: #333;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: #e0e0e0;
+}
+
+/* 編集機能用スタイル */
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-text-primary {
+  background: none;
+  border: none;
+  color: #2c5530;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.btn-text {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.btn-delete {
+  background: none;
+  border: none;
+  color: #dc3545;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  margin-left: auto;
+}
+
+.priority-badge {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+}
+
+.priority-high {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.priority-medium {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.priority-low {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-text {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* インラインフォーム */
+.purpose-form {
+  background: #f5f5f5;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.purpose-form h3 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.form-group-inline {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.form-group-inline input {
+  flex: 1;
+}
+
+.form-group-inline select {
+  width: auto;
+  min-width: 120px;
+}
+
+.form-actions-inline {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+/* レスポンシブ */
+@media (max-width: 640px) {
+  .App-header h1 {
+    font-size: 1.25rem;
+  }
+  
+  .tabs button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* 目的選択コンポーネント */
+.purpose-selector {
+  margin: 20px 0;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.purpose-section {
+  margin-bottom: 30px;
+}
+
+.purpose-section h4 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.purpose-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.purpose-selector .purpose-item {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.purpose-selector .purpose-item:hover {
+  background-color: #f0f0f0;
+}
+
+.purpose-selector .purpose-item input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.purpose-selector .purpose-item span {
+  font-size: 14px;
+}
+
+/* カスタムサブ目的のスタイル */
+.custom-purposes {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.custom-purposes h5 {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: #666;
+}
+
+.custom-purpose-item {
+  display: inline-flex;
+  align-items: center;
+  background-color: #e8f5e9;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  margin: 0.25rem;
+  font-size: 14px;
+  gap: 0.5rem;
+}
+
+.custom-purpose-item .remove-btn {
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0;
+  margin-left: 0.25rem;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-purpose-item .remove-btn:hover {
+  color: #d32f2f;
+}
+
+.add-custom-purpose {
+  margin-top: 1rem;
+}
+
+.btn-add-custom {
+  background-color: #f5f5f5;
+  border: 2px dashed #ccc;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+  width: 100%;
+  transition: all 0.2s;
+}
+
+.btn-add-custom:hover {
+  background-color: #e8f5e9;
+  border-color: #4caf50;
+  color: #2e7d32;
+}
+
+/* フッター */
+.app-footer {
+  background-color: #f8f8f8;
+  border-top: 1px solid #e0e0e0;
+  padding: 1.5rem 0;
+  margin-top: 3rem;
+}
+
+.footer-content {
+  max-width: 768px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  text-align: center;
+}
+
+.footer-links {
+  margin-bottom: 1rem;
+}
+
+.footer-link {
+  background: none;
+  border: none;
+  color: #2c5530;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-link:hover {
+  color: #1a3a1c;
+  text-decoration: underline;
+}
+
+.footer-separator {
+  color: #999;
+  margin: 0 0.5rem;
+}
+
+.footer-copyright {
+  color: #666;
+  font-size: 12px;
+}
+
+/* ガイド・お問い合わせモーダル */
+.guide-modal,
+.contact-modal {
+  max-width: 600px;
+  width: 90%;
+}
+
+.guide-section,
+.contact-section {
+  margin-bottom: 2rem;
+}
+
+.guide-section h3,
+.contact-section h3 {
+  color: #2c5530;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.guide-section ul,
+.contact-tips ul {
+  list-style-type: disc;
+  margin-left: 2rem;
+  line-height: 1.8;
+}
+
+.contact-email {
+  background-color: #f5f5f5;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.contact-email a {
+  color: #2c5530;
+  word-break: break-all;
+}
+
+.contact-tips {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #e8f5e9;
+  border-radius: 8px;
+}
+
+.contact-tips h4 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: #2e7d32;
+}
+
+.contact-tips p {
+  margin-top: 1rem;
+  font-size: 14px;
+  color: #666;
+}
+
+/* 認証コンポーネント */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 2rem;
+}
+
+.auth-form {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.auth-form h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #2c5530;
+}
+
+.message {
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.message.success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #4caf50;
+}
+
+.message.error {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #f44336;
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #666;
+}
+
+.auth-switch button {
+  margin-left: 0.5rem;
+}
+
+/* 目的管理コンポーネント */
+.purpose-manager {
+  padding: 1rem 0;
+}
+
+.selected-purposes {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.selected-purposes h5 {
+  margin-bottom: 0.5rem;
+  color: #2c5530;
+}
+
+.selected-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.selected-badge {
+  background: #2c5530;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
+
+/* 持ち物管理コンポーネント */
+.items-manager {
+  padding: 1rem 0;
+}
+
+.items-group {
+  margin-bottom: 2rem;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.items-group h4 {
+  margin-bottom: 1rem;
+  color: #2c5530;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 0.5rem;
+}
+
+.items-checklist {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.item-checkbox {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.item-checkbox:hover {
+  background-color: #f5f5f5;
+}
+
+.item-checkbox input[type="checkbox"] {
+  margin-right: 0.75rem;
+}
+
+.custom-items {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.add-custom-item {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.add-custom-item input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* カスタムアイテムのスタイル */
+.item-checkbox.custom-item {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.item-checkbox.custom-item span {
+  flex: 1;
+}
+
+.btn-remove {
+  background: none;
+  border: none;
+  color: #dc3545;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 8px;
+  margin-left: 8px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.btn-remove:hover {
+  opacity: 1;
+}
+
+/* カスタム持ち物の補足説明 */
+.custom-items-note {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0.5rem 0;
+}
+
+/* 無効化されたボタンのスタイル */
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.add-custom-item input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+/* レビューセクションのスタイル */
+.review-section {
+  padding: 1.5rem;
+}
+
+.review-not-available {
+  text-align: center;
+  padding: 3rem;
+  background: #f5f5f5;
+  border-radius: 8px;
+  color: #666;
+}
+
+/* 達成度サマリー */
+.achievement-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.summary-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.summary-card h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.summary-card .percentage {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #2196f3;
+  margin-bottom: 0.25rem;
+}
+
+.summary-card .count {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+/* レビューチェックリスト */
+.review-purposes,
+.review-items {
+  margin-bottom: 2rem;
+}
+
+.review-purposes h4,
+.review-items h4 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.review-checkbox {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  background: #f9f9f9;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.review-checkbox:hover {
+  background: #f0f0f0;
+}
+
+.review-checkbox input[type="checkbox"] {
+  margin-right: 0.75rem;
+}
+
+.review-checkbox .custom-badge {
+  margin-left: auto;
+  font-size: 0.75rem;
+  background: #ff9800;
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+}
+
+/* チャートコンテナ */
+.charts-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.chart-wrapper {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.chart-wrapper h4 {
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #333;
+}
+
+.review-actions {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+/* ステータス変更セクション */
+.status-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-status-change {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.btn-status-change:hover {
+  background: #45a049;
+}
+
+.btn-status-change:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* 持ち物なしメッセージ */
+.no-items-message {
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  padding: 2rem;
+  background: #f9f9f9;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+
+/* フォーム内の注意書き */
+.form-note {
+  background: #e3f2fd;
+  border-left: 4px solid #2196f3;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 4px;
+}
+
+.form-note p {
+  margin: 0;
+  color: #1976d2;
+  font-size: 0.9rem;
+}
+
+/* フォームアクションボタンの改善 */
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.form-actions .btn-secondary {
+  background: #f5f5f5;
+  color: #666;
+  border: 1px solid #ddd;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+  white-space: nowrap;
+  min-width: 120px;
+}
+
+.form-actions .btn-secondary:hover {
+  background: #e0e0e0;
+  color: #333;
+  border-color: #ccc;
+}
+
+.form-actions .btn-primary {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background 0.2s;
+  white-space: nowrap;
+  min-width: 120px;
+}
+
+.form-actions .btn-primary:hover {
+  background: #45a049;
+}
+
+/* モバイル対応 */
+@media (max-width: 480px) {
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .form-actions .btn-secondary,
+  .form-actions .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* 利用規約モーダル */
+.terms-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.terms-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 2rem;
+  position: relative;
+}
+
+.terms-content h2 {
+  color: #2c5530;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.terms-text {
+  margin-bottom: 2rem;
+}
+
+.terms-text h3 {
+  color: #2c5530;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.terms-text p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  color: #555;
+}
+
+.terms-date {
+  text-align: right;
+  font-style: italic;
+  color: #888;
+  margin-top: 2rem;
+}
+
+.terms-close-btn {
+  display: block;
+  margin: 0 auto;
+  background: #2c5530;
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.terms-close-btn:hover {
+  background: #1e3a20;
+}
+
+/* チェックボックスグループ */
+.checkbox-group {
+  margin-bottom: 1.5rem;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+  margin-right: 0.5rem;
+  cursor: pointer;
+}
+
+.checkbox-group span {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.btn-text-link {
+  background: none;
+  border: none;
+  color: #2c5530;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font-size: inherit;
+}
+
+.btn-text-link:hover {
+  color: #1e3a20;
+}
+
+.btn-text-link:disabled {
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* 年間カレンダー形式の旅行一覧 */
+.trip-calendar {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 1200px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #d4af37;
+}
+
+.year-selector {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.year-selector h2 {
+  font-family: serif;
+  color: #8b6914;
+  font-weight: normal;
+  letter-spacing: 2px;
+}
+
+.year-nav-btn {
+  background: #f5f5f5;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: background 0.3s;
+}
+
+.year-nav-btn:hover:not(:disabled) {
+  background: #e0e0e0;
+}
+
+.year-nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.usage-info {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.usage-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.usage-label {
+  font-weight: 500;
+  color: #555;
+}
+
+.usage-value {
+  font-weight: bold;
+  color: #2c5530;
+  font-size: 1.1rem;
+}
+
+.usage-value.limit-reached {
+  color: #d32f2f;
+}
+
+/* カレンダーグリッド */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.month-cell {
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem;
+  min-height: 150px;
+  transition: all 0.3s;
+}
+
+.month-cell.current-month {
+  background: #e8f5e9;
+  border-color: #4caf50;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
+}
+
+.month-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.month-header h3 {
+  margin: 0;
+  color: #2c5530;
+  font-size: 1.1rem;
+}
+
+.month-count {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.month-count.limit-reached {
+  color: #d32f2f;
+  font-weight: bold;
+}
+
+.month-trips {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.no-trips {
+  text-align: center;
+  color: #999;
+  font-size: 0.9rem;
+  padding: 1rem 0;
+}
+
+.trip-item {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  overflow: hidden;
+}
+
+.trip-item:hover {
+  background: #f5f5f5;
+  border-color: #2c5530;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.trip-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.trip-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.trip-title {
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trip-date {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.trip-evaluation {
+  margin-top: 0.25rem;
+}
+
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  color: #ff9800;
+}
+
+.rating-score {
+  font-size: 0.75rem;
+  color: #666;
+  margin-left: 0.25rem;
+}
+
+/* 凡例 */
+.calendar-legend {
+  background: #f5f5f5;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 2rem;
+}
+
+.calendar-legend h4 {
+  margin: 0 0 0.5rem 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.legend-items {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* ボタンの無効化スタイル */
+.btn-primary.disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.btn-primary.disabled:hover {
+  background: #ccc;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .calendar-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .calendar-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .usage-info {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  
+  .year-selector {
+    justify-content: center;
+  }
+}
+
+/* TripDetail の編集・削除ボタン */
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-edit, .btn-delete {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.btn-edit {
+  background: #f0f8ff;
+  color: #1976d2;
+  border: 1px solid #1976d2;
+}
+
+.btn-edit:hover {
+  background: #1976d2;
+  color: white;
+}
+
+.btn-delete {
+  background: #fff3f3;
+  color: #d32f2f;
+  border: 1px solid #d32f2f;
+}
+
+.btn-delete:hover {
+  background: #d32f2f;
+  color: white;
+}
+
+.btn-danger {
+  background: #d32f2f;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s;
+}
+
+.btn-danger:hover {
+  background: #b71c1c;
+}
+
+/* 削除確認モーダル */
+.delete-confirm {
+  text-align: center;
+  padding: 2rem;
+}
+
+.delete-confirm h3 {
+  color: #d32f2f;
+  margin-bottom: 1rem;
+}
+
+.warning-text {
+  color: #ff5722;
+  font-weight: 500;
+  margin: 1rem 0;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+  .header-top {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  
+  .action-buttons {
+    justify-content: flex-end;
+  }
+}
+
+/* TripForm の日程セクション */
+.date-section {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  border: 1px solid #e0e0e0;
+}
+
+.date-section h3 {
+  margin: 0 0 1rem 0;
+  color: #2c5530;
+  font-size: 1.1rem;
+}
+
+.date-inputs {
+  display: flex;
+  align-items: end;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.date-inputs .form-group {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.date-separator {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.date-input {
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.date-input:focus {
+  outline: none;
+  border-color: #2c5530;
+  box-shadow: 0 0 0 3px rgba(44, 85, 48, 0.1);
+}
+
+.date-preview {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.preview-label {
+  font-weight: 500;
+  color: #555;
+}
+
+.preview-text {
+  color: #2c5530;
+  font-weight: 500;
+}
+
+/* 編集モード専用スタイル */
+.trip-form[data-edit-mode="true"] {
+  border: 2px solid #1976d2;
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.1);
+}
+
+.trip-form[data-edit-mode="true"] h2::before {
+  content: "✏️ ";
+  margin-right: 0.5rem;
+}
+
+/* モバイル対応 */
+@media (max-width: 768px) {
+  .date-inputs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .date-separator {
+    text-align: center;
+    margin: 0.5rem 0;
+  }
+  
+  .date-inputs .form-group {
+    margin-bottom: 0;
+  }
+  
+  .date-preview {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}
+
+/* バリデーションエラー */
+.validation-errors {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #fff5f5;
+  border: 1px solid #fed7d7;
+  border-radius: 8px;
+}
+
+.error-message {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.error-message:last-child {
+  margin-bottom: 0;
+}
+
+.overlap-error {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+}
+
+.limit-error {
+  background: #fef3c7;
+  color: #d97706;
+  border: 1px solid #fcd34d;
+}
+
+/* バリデーションエラー時のボタン無効化 */
+.btn-primary:disabled {
+  background: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-primary:disabled:hover {
+  background: #d1d5db;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 日付入力エラー時のスタイル */
+.date-input.error {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.date-input.error:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+}
+
+/* 月別追加ボタン - 手帳風デザイン */
+.add-trip-btn {
+  background: #fef9f3;
+  color: #8b6914;
+  border: 1px solid #d4af37;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+  width: 100%;
+  margin-top: 0.5rem;
+  font-family: serif;
+  letter-spacing: 0.5px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.add-trip-btn:hover {
+  background: #f5e6d3;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  transform: translateY(-1px);
+}
+
+.add-trip-btn.small {
+  font-size: 0.75rem;
+  padding: 0.3rem 0.6rem;
+}
+
+/* 日付クリック可能表示 */
+.trip-date.clickable {
+  cursor: pointer;
+  transition: all 0.3s;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.trip-date.clickable:hover {
+  background: #f0f8ff;
+  color: #1976d2;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* インライン日付編集フォーム */
+.date-edit-form {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.date-input-inline {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.date-input-inline:focus {
+  outline: none;
+  border-color: #2c5530;
+  box-shadow: 0 0 0 2px rgba(44, 85, 48, 0.1);
+}
+
+.btn-save-date, .btn-cancel-date {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-save-date {
+  background: #4caf50;
+  color: white;
+}
+
+.btn-save-date:hover {
+  background: #45a049;
+}
+
+.btn-cancel-date {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.btn-cancel-date:hover {
+  background: #e0e0e0;
+}
+
+@media (max-width: 768px) {
+  .date-edit-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .date-input-inline {
+    width: 100%;
+  }
+  
+  .btn-save-date, .btn-cancel-date {
+    width: 100%;
+  }
+}

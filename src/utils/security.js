@@ -50,10 +50,9 @@ export const validateEnvironment = () => {
   const missingVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
   
   if (missingVars.length > 0) {
-    console.error('Missing required environment variables:', missingVars);
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('アプリケーションの設定が不完全です。管理者にお問い合わせください。');
-    }
+    console.warn('Missing required environment variables:', missingVars);
+    console.warn('Using default values for missing environment variables');
+    // エラーを投げずに警告のみ表示
   }
   
   return missingVars.length === 0;

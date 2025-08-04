@@ -1,70 +1,68 @@
-# Getting Started with Create React App
+# 🚐 キャンピングカー旅日記アプリ
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+キャンピングカー愛好家のための旅行記録・計画アプリケーション
 
-## Available Scripts
+## 🌐 デプロイ済みURL
+https://travel-journal-ochre-two.vercel.app
 
-In the project directory, you can run:
+## 🔒 セキュリティ
 
-### `npm start`
+このアプリケーションは以下のセキュリティ対策を実施しています：
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- ✅ 環境変数による機密情報の管理
+- ✅ Supabase Row Level Security (RLS) によるデータ保護  
+- ✅ HTTPSによる通信の暗号化
+- ✅ セキュリティヘッダーの設定（CSP, X-Frame-Options等）
+- ✅ GitHubシークレットによる安全なCI/CD
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🚀 機能
 
-### `npm test`
+- 旅の計画と記録
+- 目的別チェックリスト
+- ルール・マナー確認
+- 旅のレビューと評価
+- 持ち物管理
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🛠️ 技術スタック
 
-### `npm run build`
+- **フロントエンド**: React 19
+- **バックエンド**: Supabase (PostgreSQL + Auth)
+- **ホスティング**: Vercel
+- **バージョン管理**: GitHub
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 📝 環境変数
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+以下の環境変数が必要です（`.env.example`参照）：
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```
+REACT_APP_SUPABASE_URL=your-supabase-url
+REACT_APP_SUPABASE_ANON_KEY=your-supabase-anon-key
+```
 
-### `npm run eject`
+## 🔧 ローカル開発
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+# インストール
+npm install
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+# 開発サーバー起動
+npm start
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+# ビルド
+npm run build
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+# テスト
+npm test
+```
 
-## Learn More
+## 📄 ライセンス
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+MIT License
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 👥 貢献
 
-### Code Splitting
+プルリクエストを歓迎します！
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+---
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+© 2025 Syokota Cyber. All rights reserved.

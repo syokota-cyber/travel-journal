@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
       email,
       password,
       options: {
-        emailRedirectTo: 'http://localhost:3000'
+        emailRedirectTo: window.location.origin
       }
     });
     return { data, error };

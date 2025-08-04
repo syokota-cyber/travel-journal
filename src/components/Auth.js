@@ -58,7 +58,8 @@ const Auth = () => {
         setMessage('確認メールを送信しました。メールをチェックしてください。');
       }
     } catch (error) {
-      setMessage(error.message);
+      console.error('Authentication error:', error);
+      setMessage(error.message || 'エラーが発生しました');
     } finally {
       setLoading(false);
     }

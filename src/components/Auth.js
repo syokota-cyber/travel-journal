@@ -3,10 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import TermsOfService from './TermsOfService';
-import { useTranslation } from 'react-i18next';
+// 国際化機能を一時中断
 
 const Auth = () => {
-  const { t, i18n } = useTranslation();
+  // 国際化機能を一時中断
+  const t = (key) => key; // 仮の翻訳関数
   const [isSignUp, setIsSignUp] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [email, setEmail] = useState('');
@@ -92,15 +93,7 @@ const Auth = () => {
               : (isSignUp ? 'アカウント作成' : 'ログイン')}
           </h2>
           
-          {/* 言語切り替えボタン */}
-          <button 
-            onClick={() => i18n.changeLanguage(i18n.language === 'ja' ? 'en' : 'ja')}
-            className="btn-text"
-            title={t('common.language_switch')}
-            style={{ fontSize: '0.9rem' }}
-          >
-            {i18n.language === 'ja' ? 'EN' : '日本語'}
-          </button>
+          {/* 言語切り替えボタンを一時中断 */}
         </div>
         
         <form onSubmit={handleSubmit}>

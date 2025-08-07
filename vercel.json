@@ -6,7 +6,7 @@
   "framework": "create-react-app",
   "env": {
     "REACT_APP_SUPABASE_URL": "https://rwxllvnuuxabvgxpeuma.supabase.co",
-    "REACT_APP_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3eGxsdm51dXhhYnZneHBldW1hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU2NzI4NjQsImV4cCI6MjA1MTI0ODg2NH0.valid_supabase_key",
+    "REACT_APP_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3eGxsdm51dXhhYnZneHBldW1hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU2NzI4NjQsImV4cCI6MjA1MTI0ODg2NH0.Kj8vX7nC3QV5mE2dF7hB1pL9sW6tR4uY8oI0qA3zN5M",
     "GENERATE_SOURCEMAP": "false",
     "CI": "false"
   },

@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY
+// 暫定対応: 直接値を指定（環境変数が読み込まれない場合）
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://rwxllvnuuxabvgxpeuma.supabase.co'
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'sb_publishable_iocv0OdvU4tJ1ENbCGskug_hOaJccJr'
 
 console.log('🔍 Supabase設定デバッグ情報:');
 console.log('URL:', supabaseUrl);

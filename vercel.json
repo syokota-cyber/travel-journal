@@ -3,10 +3,6 @@
   "outputDirectory": "build",
   "devCommand": "npm start",
   "framework": "create-react-app",
-  "env": {
-    "REACT_APP_SUPABASE_URL": "https://rwxllvnuuxabvgxpeuma.supabase.co",
-    "REACT_APP_SUPABASE_ANON_KEY": "sb_publishable_iocv0OdvU4tJ1ENbCGskug_hOaJccJr"
-  },
   "headers": [
     {
       "source": "/(.*)",

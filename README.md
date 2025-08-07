@@ -5,6 +5,8 @@
 ## 🌐 デプロイ済みURL
 https://travel-journal-ochre-two.vercel.app
 
+⚠️ **現在の状態 (2025年8月7日)**: Invalid API keyエラーにより認証機能が停止中
+
 ## 🔒 セキュリティ
 
 このアプリケーションは以下のセキュリティ対策を実施しています：
@@ -43,7 +45,7 @@ REACT_APP_SUPABASE_ANON_KEY=your-supabase-anon-key
 
 ```bash
 # インストール
-npm install
+npm install --legacy-peer-deps
 
 # 開発サーバー起動
 npm start
@@ -54,6 +56,20 @@ npm run build
 # テスト
 npm test
 ```
+
+## 🚨 **緊急課題ログ**
+
+### Invalid API Key問題 (2025年8月7日)
+- **症状**: Supabase認証で401エラー継続
+- **試行済み**: Legacy JWT Secret, Publishable Key
+- **影響**: ログイン・認証機能の完全停止
+- **詳細**: `DEPLOYMENT_LOG_20250807.md`参照
+
+### 明日の対応予定
+1. Supabaseプロジェクト状態の全面確認
+2. API Keysの完全再生成
+3. Vercel環境変数の再設定
+4. 必要に応じて新Supabaseプロジェクト作成
 
 ## 📄 ライセンス
 

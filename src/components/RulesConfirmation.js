@@ -31,6 +31,9 @@ const RulesConfirmation = ({ tripId, mainPurposeIds, onConfirmComplete }) => {
 
       if (error) throw error;
 
+      console.log('RulesConfirmation - mainPurposeIds:', mainPurposeIds);
+      console.log('RulesConfirmation - fetched rules:', data);
+
       // 重複を排除（rule_titleとrule_descriptionが同じものを除外）
       // ただし、最初に見つかったルールのIDを保持する
       const uniqueRules = [];
@@ -44,6 +47,7 @@ const RulesConfirmation = ({ tripId, mainPurposeIds, onConfirmComplete }) => {
         }
       });
 
+      console.log('RulesConfirmation - unique rules:', uniqueRules);
       setRules(uniqueRules);
 
       // 既存の確認状況を取得

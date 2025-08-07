@@ -39,11 +39,12 @@ function TripList({ trips, onSelectTrip, onCreateTrip }) {
           .eq('trip_id', trip.id);
 
         // レビューデータを取得
-        const { data: reviewData, error: reviewError } = await supabase
+        const { data: reviewDataArray, error: reviewError } = await supabase
           .from('trip_reviews')
           .select('achieved_main_purposes, achieved_sub_purposes')
-          .eq('trip_id', trip.id)
-          .single();
+          .eq('trip_id', trip.id);
+          
+        const reviewData = reviewDataArray && reviewDataArray.length > 0 ? reviewDataArray[0] : null;
 
         if (purposeData) {
           const plannedMain = purposeData.filter(p => p.purpose_type === 'main').length;
@@ -119,6 +120,11 @@ function TripList({ trips, onSelectTrip, onCreateTrip }) {
     return trips.filter(trip => {
       const tripDate = trip.start_date ? new Date(trip.start_date) : new Date(trip.created_at);
       return tripDate.getFullYear() === selectedYear && tripDate.getMonth() === monthIndex;
+    }).sort((a, b) => {
+      // 日付の早い順に並べる
+      const dateA = a.start_date ? new Date(a.start_date) : new Date(a.created_at);
+      const dateB = b.start_date ? new Date(b.start_date) : new Date(b.created_at);
+      return dateA - dateB;
     });
   };
 

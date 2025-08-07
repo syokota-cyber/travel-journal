@@ -16,7 +16,8 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
   }, [trip.status, activeTab]);
   const [selectedPurposes, setSelectedPurposes] = useState({
     main: [],
-    sub: []
+    sub: [],
+    customItems: []
   });
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [showRulesConfirmation, setShowRulesConfirmation] = useState(false);
@@ -33,22 +34,53 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
     if (trip.id) {
       fetchMainPurposeIds();
     }
-  }, [trip.id, selectedPurposes]);
+  }, [trip.id]);
 
   const fetchMainPurposeIds = async () => {
     try {
-      const { data, error } = await supabase
+      // メイン目的とサブ目的の両方を取得
+      const { data: purposeData, error } = await supabase
         .from('trip_purposes')
-        .select('main_purpose_id')
-        .eq('trip_id', trip.id)
-        .eq('purpose_type', 'main');
+        .select('main_purpose_id, sub_purpose_id, purpose_type, custom_purpose')
+        .eq('trip_id', trip.id);
 
       if (error) throw error;
 
-      const ids = data?.map(item => item.main_purpose_id).filter(id => id) || [];
-      setMainPurposeIds(ids);
+      console.log('TripDetail - fetchMainPurposeIds data:', purposeData);
+
+      const mainIds = [];
+      const subIds = [];
+      const customItems = [];
+      
+      purposeData?.forEach(item => {
+        if (item.purpose_type === 'main' && item.main_purpose_id) {
+          mainIds.push(item.main_purpose_id);
+        } else if (item.purpose_type === 'sub' && item.sub_purpose_id) {
+          subIds.push(item.sub_purpose_id);
+        } else if (item.purpose_type === 'custom' && item.custom_purpose) {
+          customItems.push({
+            id: `custom_${Date.now()}_${customItems.length}`,
+            name: item.custom_purpose,
+            isCustom: true
+          });
+        }
+      });
+      
+      console.log('TripDetail - mainIds:', mainIds);
+      console.log('TripDetail - subIds:', subIds);
+      console.log('TripDetail - customItems:', customItems);
+      
+      setMainPurposeIds(mainIds);
+      
+      // selectedPurposesも更新して、ItemsManagerに正しいデータを渡す
+      setSelectedPurposes(prev => ({
+        ...prev,
+        main: mainIds,
+        sub: subIds,
+        customSub: customItems
+      }));
     } catch (error) {
-      console.error('メイン目的ID取得エラー:', error);
+      console.error('目的ID取得エラー:', error);
     }
   };
 
@@ -72,12 +104,24 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
   const handleStatusChange = async (newStatus) => {
     // 計画中から進行中に変更する場合は、ルール確認を表示
     if (trip.status === 'planning' && newStatus === 'ongoing') {
-      if (mainPurposeIds.length === 0) {
-        alert('まず目的を選択してから旅を開始してください。');
-        setActiveTab('purposes');
-        return;
-      }
-      setShowRulesConfirmation(true);
+      // 最新の目的データを再取得してから確認
+      await fetchMainPurposeIds();
+      
+      console.log('handleStatusChange - mainPurposeIds:', mainPurposeIds);
+      console.log('handleStatusChange - selectedPurposes:', selectedPurposes);
+      
+      // 少し待ってから状態を再確認（非同期更新のため）
+      setTimeout(() => {
+        const hasMainPurposes = mainPurposeIds.length > 0 || selectedPurposes.main?.length > 0;
+        console.log('handleStatusChange - hasMainPurposes:', hasMainPurposes);
+        
+        if (!hasMainPurposes) {
+          alert('まず目的を選択してから旅を開始してください。');
+          setActiveTab('purposes');
+          return;
+        }
+        setShowRulesConfirmation(true);
+      }, 100);
       return;
     }
 
@@ -228,10 +272,28 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
     }
   };
 
+  // タブ変更時の自動保存処理
+  const handleTabChange = async (newTab) => {
+    setActiveTab(newTab);
+  };
+
   return (
     <div className="trip-detail">
-      <button className="btn-back" onClick={onBack}>
-        ← 戻る
+      <button 
+        className="btn-back" 
+        onClick={onBack}
+        style={{
+          background: '#4CAF50',
+          color: 'white',
+          border: 'none',
+          padding: '10px 20px',
+          borderRadius: '5px',
+          cursor: 'pointer',
+          marginBottom: '20px',
+          fontSize: '14px'
+        }}
+      >
+        ← カレンダー一覧に戻る
       </button>
       
       <div className="trip-detail-header">
@@ -308,26 +370,107 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
         </div>
       </div>
 
-      <div className="tabs">
+      <div className="handbook-tabs" style={{
+        display: 'flex',
+        borderBottom: '3px solid #ddd',
+        marginBottom: '20px',
+        backgroundColor: '#f8f9fa',
+        borderRadius: '10px 10px 0 0',
+        overflow: 'hidden',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+      }}>
         <button 
           className={activeTab === 'purposes' ? 'active' : ''}
-          onClick={() => setActiveTab('purposes')}
+          onClick={() => handleTabChange('purposes')}
+          style={{
+            flex: 1,
+            padding: '15px',
+            border: 'none',
+            background: activeTab === 'purposes' ? 'white' : 'transparent',
+            borderBottom: activeTab === 'purposes' ? '4px solid #4CAF50' : 'none',
+            fontWeight: activeTab === 'purposes' ? 'bold' : 'normal',
+            cursor: 'pointer',
+            transition: 'all 0.3s',
+            fontSize: '16px',
+            color: activeTab === 'purposes' ? '#2c3e50' : '#7f8c8d',
+            position: 'relative'
+          }}
         >
-          目的
+          📍 目的
+          {activeTab === 'purposes' && (
+            <div style={{
+              position: 'absolute',
+              bottom: '-3px',
+              left: '0',
+              right: '0',
+              height: '4px',
+              background: '#4CAF50',
+              borderRadius: '2px'
+            }} />
+          )}
         </button>
         <button 
           className={activeTab === 'items' ? 'active' : ''}
-          onClick={() => setActiveTab('items')}
+          onClick={() => handleTabChange('items')}
+          style={{
+            flex: 1,
+            padding: '15px',
+            border: 'none',
+            background: activeTab === 'items' ? 'white' : 'transparent',
+            borderBottom: activeTab === 'items' ? '4px solid #2196F3' : 'none',
+            fontWeight: activeTab === 'items' ? 'bold' : 'normal',
+            cursor: 'pointer',
+            transition: 'all 0.3s',
+            fontSize: '16px',
+            color: activeTab === 'items' ? '#2c3e50' : '#7f8c8d',
+            position: 'relative'
+          }}
         >
-          持ち物
+          🎒 持ち物
+          {activeTab === 'items' && (
+            <div style={{
+              position: 'absolute',
+              bottom: '-3px',
+              left: '0',
+              right: '0',
+              height: '4px',
+              background: '#2196F3',
+              borderRadius: '2px'
+            }} />
+          )}
         </button>
         <button 
           className={`${activeTab === 'review' ? 'active' : ''} ${trip.status !== 'completed' ? 'disabled' : ''}`}
-          onClick={() => trip.status === 'completed' ? setActiveTab('review') : null}
+          onClick={() => trip.status === 'completed' ? handleTabChange('review') : null}
           disabled={trip.status !== 'completed'}
           title={trip.status !== 'completed' ? 'レビューは旅行完了後に利用できます' : 'レビュー'}
+          style={{
+            flex: 1,
+            padding: '15px',
+            border: 'none',
+            background: activeTab === 'review' ? 'white' : trip.status !== 'completed' ? '#e0e0e0' : 'transparent',
+            borderBottom: activeTab === 'review' ? '4px solid #FF9800' : 'none',
+            fontWeight: activeTab === 'review' ? 'bold' : 'normal',
+            cursor: trip.status === 'completed' ? 'pointer' : 'not-allowed',
+            opacity: trip.status !== 'completed' ? 0.5 : 1,
+            transition: 'all 0.3s',
+            fontSize: '16px',
+            color: activeTab === 'review' ? '#2c3e50' : '#7f8c8d',
+            position: 'relative'
+          }}
         >
-          レビュー
+          📝 レビュー
+          {activeTab === 'review' && (
+            <div style={{
+              position: 'absolute',
+              bottom: '-3px',
+              left: '0',
+              right: '0',
+              height: '4px',
+              background: '#FF9800',
+              borderRadius: '2px'
+            }} />
+          )}
         </button>
       </div>
 
@@ -343,11 +486,18 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
         <ItemsManager
           selectedPurposes={selectedPurposes}
           tripId={trip.id}
+          onCustomItemsUpdate={(customItems) => {
+            setSelectedPurposes(prev => ({
+              ...prev,
+              customItems
+            }));
+          }}
         />
       )}
 
       {activeTab === 'review' && (
         <TripReview
+          key={`review-${trip.id}-${Date.now()}`}
           tripId={trip.id}
           tripStatus={trip.status}
           selectedPurposes={selectedPurposes}

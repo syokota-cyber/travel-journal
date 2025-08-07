@@ -1,0 +1,30 @@
+{
+  "app": {
+    "title": "🚐 Camping Car Travel Journal",
+    "loading": "Loading data...",
+    "logout": "Logout"
+  },
+  "auth": {
+    "login": "Login",
+    "signup": "Create Account",
+    "email": "Email Address",
+    "password": "Password",
+    "signin_button": "Sign In",
+    "signup_button": "Create Account",
+    "loading": "Processing...",
+    "error_generic": "An error occurred",
+    "switch_to_login": "Already have an account? Click here",
+    "switch_to_signup": "Don't have an account? Click here"
+  },
+  "navigation": {
+    "home": "Home",
+    "trips": "Trips",
+    "settings": "Settings"
+  },
+  "common": {
+    "language_switch": "Language",
+    "guide": "📖 User Guide",
+    "report_bug": "📧 Report Bug",
+    "copyright": "© 2025 Campingcar Travel Tips.com"
+  }
+}

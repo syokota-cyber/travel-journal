@@ -14,8 +14,32 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [confirmationMessage, setConfirmationMessage] = useState('');
 
   useEffect(() => {
+    // URLパラメータをチェック
+    const checkUrlParams = () => {
+      const params = new URLSearchParams(window.location.search);
+      const type = params.get('type');
+      const error = params.get('error');
+      const error_description = params.get('error_description');
+      
+      if (type === 'signup' && !error) {
+        setConfirmationMessage('メールアドレスが確認されました！アプリに戻ってログインしてください。');
+        // URLパラメータをクリア
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } else if (error) {
+        if (error === 'access_denied' && error_description?.includes('Email link is invalid')) {
+          setConfirmationMessage('確認リンクが無効または期限切れです。新しいリンクをリクエストしてください。');
+        } else {
+          setConfirmationMessage(`エラー: ${error_description || error}`);
+        }
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    };
+
+    checkUrlParams();
+
     // 現在のセッションを取得
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -68,7 +92,9 @@ export const AuthProvider = ({ children }) => {
     loading,
     signUp,
     signIn,
-    signOut
+    signOut,
+    confirmationMessage,
+    setConfirmationMessage
   };
 
   return (

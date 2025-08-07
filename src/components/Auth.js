@@ -1,10 +1,12 @@
 // © 2025 Campingcar Travel Tips.com. All rights reserved.
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import TermsOfService from './TermsOfService';
+import { useTranslation } from 'react-i18next';
 
 const Auth = () => {
+  const { t, i18n } = useTranslation();
   const [isSignUp, setIsSignUp] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [email, setEmail] = useState('');
@@ -14,7 +16,15 @@ const Auth = () => {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
 
-  const { signUp, signIn } = useAuth();
+  const { signUp, signIn, confirmationMessage, setConfirmationMessage } = useAuth();
+  
+  // 確認メッセージがある場合は表示
+  useEffect(() => {
+    if (confirmationMessage) {
+      setMessage(confirmationMessage);
+      setConfirmationMessage(''); // メッセージをクリア
+    }
+  }, [confirmationMessage, setConfirmationMessage]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -70,11 +80,28 @@ const Auth = () => {
       {showTerms && <TermsOfService onClose={() => setShowTerms(false)} />}
       
       <div className="auth-form">
-        <h2>
-          {isForgotPassword 
-            ? 'パスワードリセット' 
-            : (isSignUp ? 'アカウント作成' : 'ログイン')}
-        </h2>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          marginBottom: '1rem'
+        }}>
+          <h2 style={{ margin: 0 }}>
+            {isForgotPassword 
+              ? 'パスワードリセット' 
+              : (isSignUp ? 'アカウント作成' : 'ログイン')}
+          </h2>
+          
+          {/* 言語切り替えボタン */}
+          <button 
+            onClick={() => i18n.changeLanguage(i18n.language === 'ja' ? 'en' : 'ja')}
+            className="btn-text"
+            title={t('common.language_switch')}
+            style={{ fontSize: '0.9rem' }}
+          >
+            {i18n.language === 'ja' ? 'EN' : '日本語'}
+          </button>
+        </div>
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -141,7 +168,7 @@ const Auth = () => {
             disabled={loading}
           >
             {loading 
-              ? '処理中...' 
+              ? '処理中...'
               : (isForgotPassword 
                   ? 'リセットメールを送信' 
                   : (isSignUp ? 'アカウント作成' : 'ログイン'))}
@@ -150,7 +177,7 @@ const Auth = () => {
         
         {!isForgotPassword && (
           <p className="auth-switch">
-            {isSignUp ? 'すでにアカウントをお持ちですか？' : 'アカウントをお持ちでない方は'}
+            {isSignUp ? '既にアカウントをお持ちの方はこちら' : 'アカウントをお持ちでない方はこちら'}
             <button 
               type="button"
               onClick={() => setIsSignUp(!isSignUp)}
@@ -195,6 +222,34 @@ const Auth = () => {
             </>
           )}
         </p>
+        
+        {/* フッター情報 - フォーム内に移動 */}
+        <div style={{
+          marginTop: '2rem',
+          paddingTop: '1.5rem',
+          borderTop: '1px solid #e0e0e0',
+          textAlign: 'center',
+          fontSize: '0.85rem',
+          color: '#666'
+        }}>
+          <div style={{ marginBottom: '0.5rem' }}>
+            <a 
+              href="https://campingcar-travel-tips.com/app-guide" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{ 
+                color: '#0066cc',
+                textDecoration: 'underline',
+                cursor: 'pointer'
+              }}
+            >
+              アプリ使い方ガイド
+            </a>
+          </div>
+          <div style={{ fontSize: '0.8rem' }}>
+            © 2025 Campingcar Travel Tips.com
+          </div>
+        </div>
       </div>
     </div>
   );

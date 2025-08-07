@@ -10,7 +10,14 @@ if (!supabaseUrl || !supabaseAnonKey) {
   })
 }
 
-export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder-key'
-)
+
+// 環境変数が読み込まれない場合はエラーを投げる
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error(
+    'Supabase環境変数が設定されていません。' +
+    '\nURL: ' + (supabaseUrl || 'undefined') +
+    '\nKey: ' + (supabaseAnonKey ? 'set' : 'undefined')
+  );
+}
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)

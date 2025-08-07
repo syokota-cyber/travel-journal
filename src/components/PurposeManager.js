@@ -34,6 +34,26 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
 
         setSelectedMainIds(mainIds);
         setSelectedSubIds(subIds);
+        
+        // カスタム立ち寄りスポットを取得
+        const { data: customData, error: customError } = await supabase
+          .from('trip_purposes')
+          .select('custom_purpose')
+          .eq('trip_id', tripId)
+          .eq('purpose_type', 'custom')
+          .not('custom_purpose', 'is', null);
+          
+        if (!customError && customData) {
+          const customSpots = customData.map((item, index) => ({
+            id: `custom_sub_${Date.now()}_${index}`,
+            name: item.custom_purpose,
+            isCustom: true,
+            type: 'sub'
+          }));
+          
+          setCustomSubPurposes(customSpots);
+          console.log('PurposeManager - loaded custom spots:', customSpots);
+        }
       } catch (error) {
         console.error('Error loading saved purposes:', error);
       }
@@ -46,12 +66,12 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
   }, [tripId]);
 
   useEffect(() => {
-    // 既存の選択を復元
-    if (selectedPurposes) {
+    // 既存の選択を復元（初回のみ）
+    if (selectedPurposes && selectedPurposes.main) {
       setSelectedMainIds(selectedPurposes.main || []);
       setSelectedSubIds(selectedPurposes.sub || []);
     }
-  }, [selectedPurposes]);
+  }, [tripId]);
 
   const fetchPurposes = async () => {
     try {
@@ -115,6 +135,17 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
           purpose_type: 'sub',
           main_purpose_id: null,
           sub_purpose_id: id
+        });
+      });
+
+      // カスタム立ち寄りスポットも保存
+      customSubPurposes.forEach(customSpot => {
+        inserts.push({
+          trip_id: tripId,
+          purpose_type: 'custom',
+          main_purpose_id: null,
+          sub_purpose_id: null,
+          custom_purpose: customSpot.name
         });
       });
 
@@ -323,10 +354,11 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
       )}
 
       {/* 選択されたサブ目的の表示 */}
-      {selectedSubIds.length > 0 && (
+      {(selectedSubIds.length > 0 || customSubPurposes.length > 0) && (
         <div className="selected-purposes">
           <h5>選択されたサブ目的:</h5>
           <div className="selected-items">
+            {/* 通常のサブ目的 */}
             {selectedSubIds.map(id => {
               const purpose = subPurposes.find(p => p.id === id);
               return purpose ? (
@@ -335,9 +367,40 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
                 </span>
               ) : null;
             })}
+            {/* カスタム立ち寄りスポット */}
+            {customSubPurposes.map(customPurpose => (
+              <span key={customPurpose.id} className="selected-badge custom-badge">
+                {customPurpose.name}
+              </span>
+            ))}
           </div>
         </div>
       )}
+
+      {/* 計画保存ボタン */}
+      <div className="save-section" style={{ 
+        marginTop: '2rem', 
+        padding: '1rem', 
+        backgroundColor: '#f8f9fa', 
+        borderRadius: '8px',
+        textAlign: 'center'
+      }}>
+        <button 
+          className="btn-primary"
+          onClick={async () => {
+            try {
+              await savePurposes(selectedMainIds, selectedSubIds);
+              alert('目的・立ち寄りスポットが保存されました');
+            } catch (error) {
+              console.error('保存エラー:', error);
+              alert('保存に失敗しました');
+            }
+          }}
+          style={{ padding: '0.75rem 2rem' }}
+        >
+          💾 計画を保存
+        </button>
+      </div>
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 
-const ItemsManager = ({ selectedPurposes, tripId }) => {
+const ItemsManager = ({ selectedPurposes, tripId, onCustomItemsUpdate }) => {
   const [recommendedItems, setRecommendedItems] = useState([]);
   const [customItems, setCustomItems] = useState([]);
   const [newItemName, setNewItemName] = useState('');
@@ -9,7 +9,9 @@ const ItemsManager = ({ selectedPurposes, tripId }) => {
   const [checkedItems, setCheckedItems] = useState(new Set());
 
   useEffect(() => {
-    const fetchRecommendedItems = async () => {
+    const fetchData = async () => {
+      console.log('ItemsManager - selectedPurposes:', selectedPurposes);
+      
       if (!selectedPurposes?.main?.length) {
         setRecommendedItems([]);
         setLoading(false);
@@ -18,28 +20,77 @@ const ItemsManager = ({ selectedPurposes, tripId }) => {
 
       try {
         setLoading(true);
+        
+        // デフォルトアイテムを取得
         const { data, error } = await supabase
-          .from('purpose_checklist_items')
+          .from('default_items')
           .select('*')
-          .in('purpose_id', selectedPurposes.main)
+          .in('main_purpose_id', selectedPurposes.main)
           .order('display_order');
 
         if (error) throw error;
-        setRecommendedItems(data || []);
+        
+        console.log('ItemsManager - fetched items:', data);
+        
+        // 重複を除去（同じ名前のアイテムは1つだけにする）
+        const uniqueItems = [];
+        const itemNames = new Set();
+        
+        (data || []).forEach(item => {
+          if (!itemNames.has(item.name)) {
+            itemNames.add(item.name);
+            uniqueItems.push(item);
+          }
+        });
+        
+        console.log('ItemsManager - unique items:', uniqueItems);
+        setRecommendedItems(uniqueItems);
+        
+        // localStorageから保存済みアイテムを取得
+        if (tripId) {
+          try {
+            // カスタムアイテムの読み込み
+            const savedCustomItems = localStorage.getItem(`trip_${tripId}_custom_items`);
+            if (savedCustomItems) {
+              const customItemsFormatted = JSON.parse(savedCustomItems);
+              console.log('ItemsManager - loaded custom items:', customItemsFormatted);
+              setCustomItems(customItemsFormatted);
+              
+              // 親コンポーネントに通知
+              if (onCustomItemsUpdate) {
+                onCustomItemsUpdate(customItemsFormatted);
+              }
+            }
+            
+            // チェック状態の読み込み
+            const savedCheckedItems = localStorage.getItem(`trip_${tripId}_checked_items`);
+            if (savedCheckedItems) {
+              const checkedItemsArray = JSON.parse(savedCheckedItems);
+              console.log('ItemsManager - loaded checked items:', checkedItemsArray);
+              setCheckedItems(new Set(checkedItemsArray));
+            }
+          } catch (error) {
+            console.error('localStorage読み込みエラー:', error);
+          }
+        }
       } catch (error) {
-        console.error('Error fetching recommended items:', error);
+        console.error('Error fetching items:', error);
         setRecommendedItems([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchRecommendedItems();
-  }, [selectedPurposes]);
+    // selectedPurposes.mainが存在する場合のみ実行
+    if (selectedPurposes?.main) {
+      fetchData();
+    }
+  }, [selectedPurposes?.main, tripId]);
 
   const handleItemToggle = (itemId, itemName, checked) => {
     const newCheckedItems = new Set(checkedItems);
-    const key = `item_${itemId}`;
+    // itemIdが既に"custom_"を含んでいる場合はそのまま使用、そうでなければ"item_"を追加
+    const key = itemId.toString().startsWith('custom_') ? itemId : `item_${itemId}`;
     
     if (checked) {
       newCheckedItems.add(key);
@@ -48,8 +99,15 @@ const ItemsManager = ({ selectedPurposes, tripId }) => {
     }
     
     setCheckedItems(newCheckedItems);
-    console.log(`${itemName}: ${checked ? 'チェック' : 'チェック解除'}`);
-    // TODO: Supabaseのtrip_checklistsテーブルに保存
+    console.log(`${itemName}: ${checked ? 'チェック' : 'チェック解除'}, ID: ${itemId}, Key: ${key}`);
+    
+    // localStorageにチェック状態を即座に保存
+    try {
+      localStorage.setItem(`trip_${tripId}_checked_items`, JSON.stringify(Array.from(newCheckedItems)));
+      console.log('チェック状態をlocalStorageに保存しました:', Array.from(newCheckedItems));
+    } catch (error) {
+      console.error('チェック状態保存エラー:', error);
+    }
   };
   
   // カスタムアイテムの追加（文字数制限とサニタイズ）
@@ -94,18 +152,48 @@ const ItemsManager = ({ selectedPurposes, tripId }) => {
       isCustom: true
     };
     
-    setCustomItems([...customItems, newItem]);
+    const updatedItems = [...customItems, newItem];
+    setCustomItems(updatedItems);
     setNewItemName('');
+    
+    // localStorageに即座に保存
+    try {
+      localStorage.setItem(`trip_${tripId}_custom_items`, JSON.stringify(updatedItems));
+      console.log('カスタムアイテムをlocalStorageに保存しました');
+    } catch (error) {
+      console.error('カスタムアイテム保存エラー:', error);
+    }
+    
+    // 親コンポーネントに通知
+    if (onCustomItemsUpdate) {
+      onCustomItemsUpdate(updatedItems);
+    }
   };
   
   // カスタムアイテムの削除
   const handleRemoveCustomItem = (itemId) => {
-    setCustomItems(customItems.filter(item => item.id !== itemId));
+    const updatedItems = customItems.filter(item => item.id !== itemId);
+    setCustomItems(updatedItems);
     
     // チェック状態からも削除
     const newCheckedItems = new Set(checkedItems);
     newCheckedItems.delete(`custom_${itemId}`);
+    newCheckedItems.delete(itemId);
     setCheckedItems(newCheckedItems);
+    
+    // localStorageに即座に保存
+    try {
+      localStorage.setItem(`trip_${tripId}_custom_items`, JSON.stringify(updatedItems));
+      localStorage.setItem(`trip_${tripId}_checked_items`, JSON.stringify(Array.from(newCheckedItems)));
+      console.log('カスタムアイテム削除をlocalStorageに保存しました');
+    } catch (error) {
+      console.error('カスタムアイテム削除保存エラー:', error);
+    }
+    
+    // 親コンポーネントに通知
+    if (onCustomItemsUpdate) {
+      onCustomItemsUpdate(updatedItems);
+    }
   };
 
   if (loading) {
@@ -124,12 +212,11 @@ const ItemsManager = ({ selectedPurposes, tripId }) => {
     <div className="items-manager">
       <h3>🎒 おすすめの持ち物</h3>
       
-      {Object.entries(recommendedItems).map(([purposeId, purposeData]) => (
-        <div key={purposeId} className="items-group">
-          <h4>{purposeData.name}の持ち物</h4>
+      {recommendedItems.length > 0 && (
+        <div className="items-group">
           <div className="items-checklist">
-            {purposeData.items.map(item => (
-              <label key={`${purposeId}_${item.id}`} className="item-checkbox">
+            {recommendedItems.map(item => (
+              <label key={item.id} className="item-checkbox">
                 <input
                   type="checkbox"
                   checked={checkedItems.has(`item_${item.id}`)}
@@ -140,7 +227,7 @@ const ItemsManager = ({ selectedPurposes, tripId }) => {
             ))}
           </div>
         </div>
-      ))}
+      )}
 
       {/* カスタム持ち物追加 */}
       <div className="custom-items">
@@ -174,8 +261,8 @@ const ItemsManager = ({ selectedPurposes, tripId }) => {
               <label key={item.id} className="item-checkbox custom-item">
                 <input
                   type="checkbox"
-                  checked={checkedItems.has(`custom_${item.id}`)}
-                  onChange={(e) => handleItemToggle(item.id, item.name, e.target.checked)}
+                  checked={true}
+                  readOnly
                 />
                 <span>{item.name}</span>
                 <button 
@@ -193,6 +280,39 @@ const ItemsManager = ({ selectedPurposes, tripId }) => {
           </div>
         )}
       </div>
+
+      {/* 計画保存ボタン */}
+      <div className="save-section" style={{ 
+        marginTop: '2rem', 
+        padding: '1rem', 
+        backgroundColor: '#f8f9fa', 
+        borderRadius: '8px',
+        textAlign: 'center'
+      }}>
+        <button 
+          className="btn-primary"
+          onClick={async () => {
+            try {
+              console.log('持ち物保存開始:', { customItems, checkedItems, tripId });
+              
+              // localStorageに保存（既に個別に保存されているが、確認のために再保存）
+              localStorage.setItem(`trip_${tripId}_custom_items`, JSON.stringify(customItems));
+              localStorage.setItem(`trip_${tripId}_checked_items`, JSON.stringify(Array.from(checkedItems)));
+              
+              console.log('持ち物計画をlocalStorageに保存しました');
+              alert('持ち物計画が保存されました');
+              
+            } catch (error) {
+              console.error('保存エラーの詳細:', error);
+              alert('保存に失敗しました: ' + (error.message || '不明なエラー'));
+            }
+          }}
+          style={{ padding: '0.75rem 2rem' }}
+        >
+          💾 持ち物計画を保存
+        </button>
+      </div>
+
     </div>
   );
 };

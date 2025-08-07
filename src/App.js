@@ -9,6 +9,7 @@ import TripDetail from './components/TripDetail';
 import TripForm from './components/TripForm';
 import Auth from './components/Auth';
 import Footer from './components/Footer';
+import AccountSettings from './components/AccountSettings';
 import { enforceHTTPS, validateEnvironment, checkSecurityHeaders } from './utils/security';
 
 // メインアプリコンポーネント（認証後）
@@ -19,6 +20,7 @@ function AppContent() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingTrip, setEditingTrip] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showAccountSettings, setShowAccountSettings] = useState(false);
 
   // データ取得
   useEffect(() => {
@@ -120,6 +122,8 @@ function AppContent() {
         
         if (data && data[0]) {
           setTrips(prev => [data[0], ...prev]);
+          // 新規作成後は詳細画面に遷移
+          setSelectedTrip(data[0]);
         }
         setShowCreateForm(false);
       }
@@ -158,9 +162,18 @@ function AppContent() {
     <div className="App">
       <header className="App-header">
         <h1>🚐 キャンピングカー旅行手帳</h1>
-        <button onClick={signOut} className="btn-text">
-          ログアウト
-        </button>
+        <div className="header-controls">
+          <button 
+            onClick={() => setShowAccountSettings(true)} 
+            className="btn-text"
+            style={{ marginRight: '1rem' }}
+          >
+            ⚙️ 設定
+          </button>
+          <button onClick={signOut} className="btn-text">
+            ログアウト
+          </button>
+        </div>
       </header>
       
       <main className="App-main">
@@ -190,6 +203,11 @@ function AppContent() {
         )}
       </main>
       <Footer />
+      
+      {/* アカウント設定モーダル */}
+      {showAccountSettings && (
+        <AccountSettings onClose={() => setShowAccountSettings(false)} />
+      )}
     </div>
   );
 }
@@ -231,7 +249,7 @@ function AppWithAuth() {
     return (
       <div className="App">
         <div className="App-main">
-          <div>読み込み中...</div>
+          <div>データを読み込み中...</div>
         </div>
       </div>
     );

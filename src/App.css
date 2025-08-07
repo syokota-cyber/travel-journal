@@ -542,9 +542,10 @@ input[type="checkbox"] {
 .btn-text {
   background: none;
   border: none;
-  color: #666;
+  color: #ffffff;
   font-size: 0.9rem;
   cursor: pointer;
+  font-weight: 500;
   padding: 0.5rem;
 }
 
@@ -2014,4 +2015,42 @@ input[type="checkbox"] {
   .btn-save-date, .btn-cancel-date {
     width: 100%;
   }
+}
+
+/* アカウント設定 */
+.account-settings {
+  max-width: 500px;
+  padding: 2rem;
+}
+
+.settings-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.settings-section:last-child {
+  border-bottom: none;
+}
+
+.danger-zone h3 {
+  color: #dc3545;
+}
+
+.delete-confirm-section {
+  margin-top: 1rem;
+}
+
+.delete-confirm-input {
+  width: 100%;
+  padding: 0.5rem;
+  margin: 1rem 0;
+  border: 2px solid #dc3545;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.delete-confirm-input:focus {
+  outline: none;
+  border-color: #a02a2a;
 }

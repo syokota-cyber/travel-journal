@@ -7,6 +7,44 @@ import RulesConfirmation from './RulesConfirmation';
 
 function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
   const [activeTab, setActiveTab] = useState('purposes');
+  
+  // 選択されたメイン目的に基づくアイコン取得
+  const getPurposeIcon = () => {
+    if (!selectedPurposes || !selectedPurposes.main || selectedPurposes.main.length === 0) {
+      return '📘'; // デフォルト：ノート
+    }
+    
+    // メイン目的の最初の項目からアイコンを決定
+    const firstMainPurpose = selectedPurposes.main[0];
+    if (!firstMainPurpose) {
+      return '📘'; // メイン目的がない場合
+    }
+    
+    const purposeName = firstMainPurpose.name || firstMainPurpose;
+    
+    // 目的名に基づいてアイコンを返す
+    if (purposeName.includes('観光')) return '🏛️';
+    if (purposeName.includes('温泉') || purposeName.includes('リラックス')) return '♨️';
+    if (purposeName.includes('自然') || purposeName.includes('アウトドア')) return '🌿';
+    if (purposeName.includes('グルメ') || purposeName.includes('食事')) return '🍽️';
+    if (purposeName.includes('文化') || purposeName.includes('歴史')) return '🏛️';
+    if (purposeName.includes('ショッピング')) return '🛍️';
+    if (purposeName.includes('体験') || purposeName.includes('アクティビティ')) return '🎯';
+    if (purposeName.includes('イベント') || purposeName.includes('祭り')) return '🎪';
+    if (purposeName.includes('ドライブ') || purposeName.includes('移動')) return '🚗';
+    if (purposeName.includes('SUP') || purposeName.includes('カヤック')) return '🏄';
+    if (purposeName.includes('サイクリング')) return '🚴';
+    if (purposeName.includes('スキー') || purposeName.includes('スノーボード')) return '⛷️';
+    if (purposeName.includes('登山') || purposeName.includes('ハイキング')) return '🏔️';
+    if (purposeName.includes('撮影') || purposeName.includes('写真')) return '📸';
+    if (purposeName.includes('天体観測')) return '🌟';
+    if (purposeName.includes('海水浴') || purposeName.includes('海')) return '🏖️';
+    if (purposeName.includes('釣り')) return '🎣';
+    if (purposeName.includes('花見')) return '🌸';
+    if (purposeName.includes('紅葉')) return '🍁';
+    
+    return '📘'; // その他
+  };
 
   // ステータスが完了でない場合、レビュータブから他のタブに切り替える
   useEffect(() => {
@@ -14,11 +52,55 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
       setActiveTab('purposes');
     }
   }, [trip.status, activeTab]);
+  
   const [selectedPurposes, setSelectedPurposes] = useState({
     main: [],
     sub: [],
     customItems: []
   });
+  
+  // TripReviewの状態をTripDetailレベルで管理（永続化のため）
+  const [reviewState, setReviewState] = useState({
+    achievedPurposes: new Set(),
+    usedItems: new Set()
+  });
+  
+  // reviewStateのデバッグログ
+  useEffect(() => {
+    console.log('🔄 TripDetail - Review state changed:', {
+      achievedPurposes: Array.from(reviewState.achievedPurposes),
+      usedItems: Array.from(reviewState.usedItems)
+    });
+  }, [reviewState]);
+  
+  // TripReviewの状態をlocalStorageでも管理（確実な永続化）
+  const saveReviewStateToStorage = (achievedPurposes, usedItems) => {
+    const storageKey = `review_state_${trip.id}`;
+    const stateData = {
+      achievedPurposes: Array.from(achievedPurposes),
+      usedItems: Array.from(usedItems),
+      timestamp: Date.now()
+    };
+    localStorage.setItem(storageKey, JSON.stringify(stateData));
+    console.log('💾 Saved review state to localStorage:', stateData);
+  };
+  
+  const loadReviewStateFromStorage = () => {
+    const storageKey = `review_state_${trip.id}`;
+    const storedData = localStorage.getItem(storageKey);
+    if (storedData) {
+      try {
+        const stateData = JSON.parse(storedData);
+        const achievedPurposes = new Set(stateData.achievedPurposes || []);
+        const usedItems = new Set(stateData.usedItems || []);
+        console.log('📂 Loaded review state from localStorage:', stateData);
+        return { achievedPurposes, usedItems };
+      } catch (error) {
+        console.error('Failed to parse stored review state:', error);
+      }
+    }
+    return { achievedPurposes: new Set(), usedItems: new Set() };
+  };
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [showRulesConfirmation, setShowRulesConfirmation] = useState(false);
   const [mainPurposeIds, setMainPurposeIds] = useState([]);
@@ -33,8 +115,28 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
   useEffect(() => {
     if (trip.id) {
       fetchMainPurposeIds();
+      
+      // localStorageからレビュー状態を読み込み
+      const storedState = loadReviewStateFromStorage();
+      setReviewState(storedState);
+      console.log('🔄 TripDetail - Loaded initial review state:', storedState);
     }
-  }, [trip.id]);
+
+    // クリーンアップ関数: コンポーネントがアンマウントされる前にレビュー状態を保存
+    return () => {
+      console.log('🧹 TripDetail cleanup - Saving review state before unmount');
+      // クリーンアップ時は現在のreviewStateを参照
+      const currentReviewState = reviewState;
+      if (currentReviewState.achievedPurposes.size > 0 || currentReviewState.usedItems.size > 0) {
+        console.log('💾 Saving review state to database on cleanup:', {
+          achievedPurposes: Array.from(currentReviewState.achievedPurposes),
+          usedItems: Array.from(currentReviewState.usedItems)
+        });
+        // 非同期処理だが、クリーンアップなのでfire-and-forget
+        saveReviewStateToDatabase().catch(console.error);
+      }
+    };
+  }, [trip.id]); // reviewStateを依存配列から削除
 
   const fetchMainPurposeIds = async () => {
     try {
@@ -247,6 +349,115 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
     }
   };
 
+  // TripReviewの状態更新ハンドラー
+  const handleReviewStateUpdate = (newAchievedPurposes, newUsedItems) => {
+    console.log('🔄 TripDetail - handleReviewStateUpdate called:', {
+      newAchievedPurposes: Array.from(newAchievedPurposes),
+      newUsedItems: Array.from(newUsedItems),
+      currentReviewState: {
+        achievedPurposes: Array.from(reviewState.achievedPurposes),
+        usedItems: Array.from(reviewState.usedItems)
+      }
+    });
+    
+    setReviewState({
+      achievedPurposes: newAchievedPurposes,
+      usedItems: newUsedItems
+    });
+    
+    // localStorageにも保存（確実な永続化）
+    saveReviewStateToStorage(newAchievedPurposes, newUsedItems);
+  };
+
+  // レビュー状態をデータベースに保存する関数
+  const saveReviewStateToDatabase = async () => {
+    if (!trip.id) {
+      console.log('⚠️ No trip ID, cannot save to database');
+      return;
+    }
+
+    console.log('💾 saveReviewStateToDatabase called with reviewState:', {
+      achievedPurposes: Array.from(reviewState.achievedPurposes),
+      usedItems: Array.from(reviewState.usedItems),
+      reviewStateSize: reviewState.achievedPurposes.size
+    });
+
+    if (reviewState.achievedPurposes.size === 0 && reviewState.usedItems.size === 0) {
+      console.log('⚠️ No review data to save');
+      return;
+    }
+
+    try {
+      const achievedMainPurposes = [];
+      const achievedSubPurposes = [];
+      const usedItemsList = Array.from(reviewState.usedItems);
+
+      console.log('🔍 Processing reviewState.achievedPurposes:', Array.from(reviewState.achievedPurposes));
+
+      // 達成した目的を分類
+      reviewState.achievedPurposes.forEach(key => {
+        console.log('💾 Database save - Processing key:', key, typeof key);
+        if (key.startsWith('main_')) {
+          const idStr = key.replace('main_', '');
+          console.log('  → Main purpose ID:', idStr);
+          if (idStr && idStr !== 'null' && idStr !== 'undefined') {
+            if (!isNaN(idStr) && !idStr.includes('-') && !idStr.includes('_')) {
+              achievedMainPurposes.push(parseInt(idStr));
+              console.log('    Added as integer:', parseInt(idStr));
+            } else {
+              achievedMainPurposes.push(idStr);
+              console.log('    Added as string:', idStr);
+            }
+          }
+        } else if (key.startsWith('sub_')) {
+          const idStr = key.replace('sub_', '');
+          console.log('  → Sub purpose ID:', idStr, 'isCustom:', idStr.includes('custom'));
+          if (idStr && idStr !== 'null' && idStr !== 'undefined') {
+            // カスタムスポットの場合は名前ベースIDに変換
+            if (idStr.includes('custom') && !idStr.startsWith('custom_name_')) {
+              // 旧形式のカスタムIDの場合、名前ベースに変換する必要がある
+              // ここでは一旦そのまま保存し、復元時に処理
+              console.log('    Legacy custom ID detected, saving as-is:', idStr);
+            }
+            achievedSubPurposes.push(idStr);
+            console.log('    Added sub purpose:', idStr);
+          }
+        }
+      });
+
+      const reviewData = {
+        trip_id: trip.id,
+        achieved_main_purposes: achievedMainPurposes,
+        achieved_sub_purposes: achievedSubPurposes,
+        used_items: usedItemsList,
+        review_date: new Date().toISOString()
+      };
+
+      console.log('💾 Final review data to save:', reviewData);
+      console.log('📊 Achieved sub purposes count:', achievedSubPurposes.length);
+      console.log('📊 Custom purposes in sub:', achievedSubPurposes.filter(id => String(id).startsWith('custom_name_')));
+
+      // UPSERTを使用して確実に保存
+      const { data, error } = await supabase
+        .from('trip_reviews')
+        .upsert(reviewData, {
+          onConflict: 'trip_id'
+        })
+        .select();
+
+      if (error) {
+        console.error('❌ データベース保存エラー:', error);
+        throw error;
+      } else {
+        console.log('✅ Review state saved to database successfully');
+        console.log('✅ Saved data:', data);
+      }
+    } catch (error) {
+      console.error('❌ レビュー状態のデータベース保存エラー:', error);
+      throw error;
+    }
+  };
+
   // 削除機能
   const handleDelete = async () => {
     try {
@@ -279,22 +490,6 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
 
   return (
     <div className="trip-detail">
-      <button 
-        className="btn-back" 
-        onClick={onBack}
-        style={{
-          background: '#4CAF50',
-          color: 'white',
-          border: 'none',
-          padding: '10px 20px',
-          borderRadius: '5px',
-          cursor: 'pointer',
-          marginBottom: '20px',
-          fontSize: '14px'
-        }}
-      >
-        ← カレンダー一覧に戻る
-      </button>
       
       <div className="trip-detail-header">
         <div className="header-top">
@@ -380,6 +575,35 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
         boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
       }}>
         <button 
+          className={activeTab === 'calendar' ? 'active' : ''}
+          onClick={async () => {
+            // カレンダータブクリック時もレビュー状態を保存
+            console.log('📅 Calendar tab clicked - Saving review state before navigation');
+            try {
+              await saveReviewStateToDatabase();
+              console.log('✅ Review state saved successfully from calendar tab');
+            } catch (error) {
+              console.error('❌ Failed to save review state from calendar tab:', error);
+            }
+            onBack();
+          }}
+          style={{
+            flex: 1,
+            padding: '15px',
+            border: 'none',
+            background: activeTab === 'calendar' ? 'white' : 'transparent',
+            borderBottom: activeTab === 'calendar' ? '4px solid #FF9800' : 'none',
+            fontWeight: activeTab === 'calendar' ? 'bold' : 'normal',
+            cursor: 'pointer',
+            transition: 'all 0.3s',
+            fontSize: '16px',
+            color: activeTab === 'calendar' ? '#2c3e50' : '#7f8c8d',
+            position: 'relative'
+          }}
+        >
+          📅 カレンダー
+        </button>
+        <button 
           className={activeTab === 'purposes' ? 'active' : ''}
           onClick={() => handleTabChange('purposes')}
           style={{
@@ -396,7 +620,7 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
             position: 'relative'
           }}
         >
-          📍 目的
+          {getPurposeIcon()} 目的
           {activeTab === 'purposes' && (
             <div style={{
               position: 'absolute',
@@ -459,7 +683,7 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
             position: 'relative'
           }}
         >
-          📝 レビュー
+          ⭐ レビュー
           {activeTab === 'review' && (
             <div style={{
               position: 'absolute',
@@ -497,10 +721,13 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
 
       {activeTab === 'review' && (
         <TripReview
-          key={`review-${trip.id}-${Date.now()}`}
+          key={`review-${trip.id}`}
           tripId={trip.id}
           tripStatus={trip.status}
           selectedPurposes={selectedPurposes}
+          initialAchievedPurposes={reviewState.achievedPurposes}
+          initialUsedItems={reviewState.usedItems}
+          onStateUpdate={handleReviewStateUpdate}
         />
       )}
 

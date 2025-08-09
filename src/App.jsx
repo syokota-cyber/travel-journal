@@ -171,7 +171,7 @@ function AppContent() {
             ⚙️ 設定
           </button>
           <button onClick={signOut} className="btn-text">
-            ログアウト
+            🚪 ログアウト
           </button>
         </div>
       </header>

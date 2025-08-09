@@ -22,6 +22,17 @@ function TripList({ trips, onSelectTrip, onCreateTrip }) {
       fetchTripEvaluations();
     }
   }, [trips, selectedYear, user]);
+  
+  // 評価の再計算を定期的に実行（レビュー更新時の反映のため）
+  useEffect(() => {
+    if (trips && user) {
+      const interval = setInterval(() => {
+        fetchTripEvaluations();
+      }, 3000); // 3秒ごとに評価を再取得
+      
+      return () => clearInterval(interval);
+    }
+  }, [trips, user]);
 
   // 完了した旅行の総合評価を取得
   const fetchTripEvaluations = async () => {
@@ -48,16 +59,23 @@ function TripList({ trips, onSelectTrip, onCreateTrip }) {
 
         if (purposeData) {
           const plannedMain = purposeData.filter(p => p.purpose_type === 'main').length;
-          const plannedSub = purposeData.filter(p => p.purpose_type === 'sub').length;
+          const plannedSub = purposeData.filter(p => p.purpose_type === 'sub' || p.purpose_type === 'custom').length;
+          
+          console.log(`📊 Trip ${trip.id} planned: main=${plannedMain}, sub=${plannedSub} (including custom spots)`);
           
           if (reviewData && !reviewError) {
             // レビューデータがある場合
             const achievedMain = reviewData.achieved_main_purposes?.length || 0;
             const achievedSub = reviewData.achieved_sub_purposes?.length || 0;
+            
+            console.log(`📊 Trip ${trip.id} achieved: main=${achievedMain}, sub=${achievedSub}`);
+            console.log(`📊 Trip ${trip.id} sub purposes:`, reviewData.achieved_sub_purposes);
 
             // 達成率計算
             const mainRate = plannedMain > 0 ? Math.round((achievedMain / plannedMain) * 100) : 0;
             const subRate = plannedSub > 0 ? Math.round((achievedSub / plannedSub) * 100) : 0;
+            
+            console.log(`📊 Trip ${trip.id} rates: main=${mainRate}%, sub=${subRate}%`);
             
             // 総合評価計算（目的達成率のみで算出）
             const totalAchievementRate = (mainRate * 0.7 + subRate * 0.3) / 100; // メイン70%、サブ30%
@@ -137,24 +155,58 @@ function TripList({ trips, onSelectTrip, onCreateTrip }) {
     return icons[status] || '📝';
   };
 
-  // 星評価を表示
-  const renderStarRating = (score) => {
+  // パーセント評価を表示
+  const renderPercentageRating = (score) => {
+    console.log('🎯 renderPercentageRating called with score:', score);
     // 境界値チェック
     if (!score || score < 0 || score > 5 || isNaN(score)) {
+      console.log('❌ Invalid score, returning null');
       return null;
     }
     
-    const clampedScore = Math.max(0, Math.min(5, score)); // 0-5の範囲に制限
-    const fullStars = Math.floor(clampedScore);
-    const hasHalfStar = clampedScore % 1 >= 0.5;
-    const emptyStars = Math.max(0, 5 - fullStars - (hasHalfStar ? 1 : 0));
+    // 5段階評価（0-5）を100%表示（0-100%）に変換
+    const percentage = Math.round((score / 5) * 100);
+    console.log('📊 Converting score to percentage:', score, '→', percentage + '%');
     
     return (
-      <span className="star-rating">
-        {fullStars > 0 && '★'.repeat(fullStars)}
-        {hasHalfStar && '☆'}
-        {emptyStars > 0 && '☆'.repeat(emptyStars)}
-        <span className="rating-score">({clampedScore})</span>
+      <span 
+        className="percentage-rating" 
+        title={`達成度: ${percentage}% (5段階評価: ${score})`}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '8px'
+        }}>
+        <span style={{ 
+          fontSize: '0.7rem', 
+          color: '#666',
+          marginRight: '4px'
+        }}>
+          達成度
+        </span>
+        <span className="percentage-score" style={{
+          fontWeight: 'bold',
+          color: percentage >= 80 ? '#4CAF50' : percentage >= 60 ? '#FF9800' : '#f44336'
+        }}>
+          {percentage}%
+        </span>
+        <span className="percentage-bar" style={{
+          display: 'inline-block',
+          width: '50px',
+          height: '6px',
+          backgroundColor: '#e0e0e0',
+          borderRadius: '3px',
+          position: 'relative'
+        }}>
+          <span style={{
+            display: 'block',
+            width: `${percentage}%`,
+            height: '100%',
+            backgroundColor: percentage >= 80 ? '#4CAF50' : percentage >= 60 ? '#FF9800' : '#f44336',
+            borderRadius: '3px',
+            transition: 'width 0.3s ease'
+          }}></span>
+        </span>
       </span>
     );
   };
@@ -291,6 +343,7 @@ function TripList({ trips, onSelectTrip, onCreateTrip }) {
                   <>
                     {monthTrips.map(trip => {
                       const evaluation = tripEvaluations[trip.id];
+                      console.log('🔍 Trip:', trip.title, 'Evaluation:', evaluation);
                       return (
                         <div 
                           key={trip.id} 
@@ -313,7 +366,7 @@ function TripList({ trips, onSelectTrip, onCreateTrip }) {
                              evaluation.totalScore > 0 && 
                              !isNaN(evaluation.totalScore) && (
                               <div className="trip-evaluation">
-                                {renderStarRating(evaluation.totalScore)}
+                                {renderPercentageRating(evaluation.totalScore)}
                               </div>
                             )}
                           </div>

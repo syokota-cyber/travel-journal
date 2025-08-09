@@ -8,6 +8,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
+import { migrateCustomSpotIds } from '../utils/migrateCustomSpots';
 
 // Chart.jsの登録
 ChartJS.register(
@@ -17,30 +18,49 @@ ChartJS.register(
   Legend
 );
 
-const TripReview = ({ tripId, tripStatus, selectedPurposes = {} }) => {
+const TripReview = ({ 
+  tripId, 
+  tripStatus, 
+  selectedPurposes = {}, 
+  initialAchievedPurposes = new Set(),
+  initialUsedItems = new Set(),
+  onStateUpdate
+}) => {
   const [loading, setLoading] = useState(true);
   const [plannedPurposes, setPlannedPurposes] = useState({ main: [], sub: [] });
   const [plannedItems, setPlannedItems] = useState([]);
-  const [achievedPurposes, setAchievedPurposes] = useState(new Set());
-  const [usedItems, setUsedItems] = useState(new Set());
+  const [achievedPurposes, setAchievedPurposes] = useState(initialAchievedPurposes);
+  const [usedItems, setUsedItems] = useState(initialUsedItems);
   const [showCharts, setShowCharts] = useState(false);
 
   useEffect(() => {
     console.log('TripReview useEffect triggered with tripId:', tripId);
     if (tripId) {
-      fetchPlannedData();
-      fetchReviewData();
+      const loadData = async () => {
+        await fetchPlannedData();
+        // データベースからのデータを優先し、その後に初期状態をマージ
+        await fetchReviewData();
+      };
+      loadData();
     }
   }, [tripId]);
-  
-  // レビュー画面が表示される度にデータを再読み込み
+
+  // 初期状態が変更された時に状態を更新（データベースデータが無い場合のみ）
   useEffect(() => {
-    console.log('TripReview component mounted/updated');
-    if (tripId) {
-      console.log('Forcing review data fetch on component update');
-      fetchReviewData();
+    console.log('🔄 TripReview - Initial state received:', {
+      achievedPurposes: Array.from(initialAchievedPurposes),
+      usedItems: Array.from(initialUsedItems)
+    });
+    
+    // データベースから何も取得できなかった場合のみ、初期状態を設定
+    // （fetchReviewDataで設定されていない場合のみ）
+    if (achievedPurposes.size === 0 && usedItems.size === 0 && 
+        (initialAchievedPurposes.size > 0 || initialUsedItems.size > 0)) {
+      console.log('🔄 Setting initial state from parent (no DB data)');
+      setAchievedPurposes(initialAchievedPurposes);
+      setUsedItems(initialUsedItems);
     }
-  }, []);
+  }, [initialAchievedPurposes, initialUsedItems]);
 
   // achievedPurposesの変更を監視
   useEffect(() => {
@@ -118,37 +138,51 @@ const TripReview = ({ tripId, tripStatus, selectedPurposes = {} }) => {
       console.log('Processed main purposes:', mainPurposes);
       console.log('Processed sub purposes:', subPurposes);
 
-      // カスタムサブ目的を追加（2つのソースから取得）
+      // カスタムサブ目的を追加（2つのソースから取得、重複除去）
       const allSubPurposes = [...subPurposes];
+      const addedCustomNames = new Set(); // 重複チェック用
       
       // selectedPurposesのcustomSubから取得
       if (selectedPurposes.customSub) {
         selectedPurposes.customSub.forEach(customSub => {
-          allSubPurposes.push({
-            id: customSub.id,
-            name: customSub.name,
-            isCustom: true
-          });
+          if (!addedCustomNames.has(customSub.name)) {
+            // 元のIDを使用（既存のIDがあれば優先）
+            const customId = customSub.id || `custom_name_${customSub.name}`;
+            console.log(`📍 カスタムスポット from selectedPurposes: "${customSub.name}" with ID: ${customId} (original: ${customSub.id})`);
+            allSubPurposes.push({
+              id: customId,
+              name: customSub.name,
+              isCustom: true
+            });
+            addedCustomNames.add(customSub.name);
+          }
         });
       }
       
       // データベースからカスタム目的を直接取得
       const { data: customPurposeData, error: customPurposeError } = await supabase
         .from('trip_purposes')
-        .select('custom_purpose')
+        .select('id, custom_purpose')
         .eq('trip_id', tripId)
         .eq('purpose_type', 'custom')
         .not('custom_purpose', 'is', null);
         
       if (!customPurposeError && customPurposeData) {
-        customPurposeData.forEach((item, index) => {
-          // 既に追加されていない場合のみ追加
-          if (!allSubPurposes.some(p => p.name === item.custom_purpose)) {
+        console.log('📍 カスタム目的データ from DB:', customPurposeData);
+        customPurposeData.forEach((item) => {
+          // 既に追加されていない場合のみ追加（名前ベースで重複チェック）
+          if (!addedCustomNames.has(item.custom_purpose)) {
+            // 名前ベースのIDを使用（一貫性を保証）- エンコードなしで統一
+            const customId = `custom_name_${item.custom_purpose}`;
+            console.log(`📍 カスタムスポット追加 from DB: "${item.custom_purpose}" with ID: ${customId}`);
             allSubPurposes.push({
-              id: `custom_db_${Date.now()}_${index}`,
+              id: customId,
               name: item.custom_purpose,
               isCustom: true
             });
+            addedCustomNames.add(item.custom_purpose);
+          } else {
+            console.log(`📍 カスタムスポット重複スキップ: "${item.custom_purpose}"`);
           }
         });
       }
@@ -282,7 +316,20 @@ const TripReview = ({ tripId, tripStatus, selectedPurposes = {} }) => {
   const fetchReviewData = async () => {
     try {
       console.log('=== FETCHING REVIEW DATA ===');
-      console.log('Trip ID:', tripId);
+      console.log('Trip ID:', tripId, typeof tripId);
+      
+      // カスタムスポットIDの統一化マイグレーションを実行（初回のみ）
+      const migrationKey = `migrated_${tripId}`;
+      if (!sessionStorage.getItem(migrationKey)) {
+        console.log('🔄 Running custom spot ID migration for trip:', tripId);
+        const migrationResult = await migrateCustomSpotIds();
+        if (migrationResult.success) {
+          sessionStorage.setItem(migrationKey, 'true');
+          console.log('✅ Migration completed for trip:', tripId);
+        } else {
+          console.warn('⚠️ Migration failed but continuing:', migrationResult.error);
+        }
+      }
       
       // trip_reviewsテーブルからレビューデータを取得
       const { data, error } = await supabase
@@ -290,7 +337,8 @@ const TripReview = ({ tripId, tripStatus, selectedPurposes = {} }) => {
         .select('*')
         .eq('trip_id', tripId);
       
-      console.log('Review fetch result:', { data, error });
+      console.log('📥 Review fetch result:', { data, error });
+      console.log('📥 Raw data array length:', data?.length || 0);
 
       if (error) {
         throw error;
@@ -298,46 +346,86 @@ const TripReview = ({ tripId, tripStatus, selectedPurposes = {} }) => {
       
       // データがある場合は最初のレコードを使用
       const reviewData = data && data.length > 0 ? data[0] : null;
-      console.log('Found review data:', reviewData);
+      console.log('📊 Found review data:', reviewData);
 
       if (reviewData) {
+        console.log('📊 Review data details:', {
+          achieved_main_purposes: reviewData.achieved_main_purposes,
+          achieved_sub_purposes: reviewData.achieved_sub_purposes,
+          used_items: reviewData.used_items,
+          mainCount: reviewData.achieved_main_purposes?.length || 0,
+          subCount: reviewData.achieved_sub_purposes?.length || 0,
+          customSubCount: reviewData.achieved_sub_purposes?.filter(id => String(id).startsWith('custom_name_')).length || 0
+        });
+
         // 保存されたレビューデータを復元
         const achievedSet = new Set();
         const usedSet = new Set();
 
         console.log('🔄 Restoring achieved_main_purposes:', reviewData.achieved_main_purposes);
-        if (reviewData.achieved_main_purposes) {
+        if (reviewData.achieved_main_purposes && Array.isArray(reviewData.achieved_main_purposes)) {
           reviewData.achieved_main_purposes.forEach(id => {
-            const key = `main_${id}`;
+            // IDを文字列として統一して処理
+            const idStr = String(id);
+            const key = `main_${idStr}`;
             console.log('➕ Adding main achievement key:', key, 'Original ID:', id, 'Type:', typeof id);
             achievedSet.add(key);
           });
         }
         
-        console.log('Restoring achieved_sub_purposes:', reviewData.achieved_sub_purposes);
-        if (reviewData.achieved_sub_purposes) {
-          reviewData.achieved_sub_purposes.forEach(id => {
-            const key = `sub_${id}`;
-            console.log('Adding sub achievement key:', key);
-            achievedSet.add(key);
+        console.log('🔄 Restoring achieved_sub_purposes:', reviewData.achieved_sub_purposes);
+        if (reviewData.achieved_sub_purposes && Array.isArray(reviewData.achieved_sub_purposes)) {
+          console.log('🔄 Sub purposes array length:', reviewData.achieved_sub_purposes.length);
+          reviewData.achieved_sub_purposes.forEach((id, index) => {
+            // IDを文字列として統一して処理
+            const idStr = String(id);
+            const key = `sub_${idStr}`;
+            console.log(`➕ [${index}] Adding sub achievement key: "${key}" (Original ID: "${id}", Type: ${typeof id})`);
+            
+            // カスタムIDの場合の特別なログ
+            if (idStr.startsWith('custom_name_')) {
+              console.log('📍 復元: カスタムスポットID detected (名前ベース):', key);
+              console.log('    → Custom name:', idStr.replace('custom_name_', ''));
+              achievedSet.add(key);
+            } else if (idStr.includes('custom')) {
+              console.log('📍 復元: カスタムスポットID detected (Legacy形式):', key);
+              console.log('    → Legacy custom ID:', idStr);
+              // Legacy形式のIDも名前ベース形式に変換して追加
+              // 例: custom_sub_1754614426178 や custom_1754614470534_0 など
+              achievedSet.add(key); // 元のIDも保持
+              
+              // 名前を抽出してマッピング（データベースから名前を取得する必要がある）
+              // ここでは一旦元のIDのまま保存し、表示時に対応する
+            } else {
+              // 通常のIDの場合
+              console.log('    → Regular sub purpose ID');
+              achievedSet.add(key);
+            }
           });
         }
         
-        console.log('Restoring used_items:', reviewData.used_items);
-        if (reviewData.used_items) {
+        console.log('🔄 Restoring used_items:', reviewData.used_items);
+        if (reviewData.used_items && Array.isArray(reviewData.used_items)) {
           reviewData.used_items.forEach(id => {
-            console.log('Adding used item:', id);
-            usedSet.add(id);
+            // IDを文字列として統一して処理
+            const idStr = String(id);
+            console.log('➕ Adding used item:', idStr);
+            usedSet.add(idStr);
           });
         }
 
         console.log('Final achievedSet:', Array.from(achievedSet));
         console.log('Final usedSet:', Array.from(usedSet));
 
-        console.log('Setting state with achievedSet...');
+        console.log('Setting state with achievedSet from DB...');
         setAchievedPurposes(achievedSet);
-        console.log('Setting state with usedSet...');
+        console.log('Setting state with usedSet from DB...');
         setUsedItems(usedSet);
+        
+        // 親コンポーネントに状態更新を通知
+        if (onStateUpdate) {
+          onStateUpdate(achievedSet, usedSet);
+        }
         
         // 状態設定後の確認
         setTimeout(() => {
@@ -346,6 +434,20 @@ const TripReview = ({ tripId, tripStatus, selectedPurposes = {} }) => {
         }, 100);
       } else {
         console.log('No review data found for this trip');
+        // データがない場合は親から渡された初期状態を使用
+        console.log('🔄 No DB data - using initial state:', {
+          achievedPurposes: Array.from(initialAchievedPurposes),
+          usedItems: Array.from(initialUsedItems)
+        });
+        
+        // 初期状態で設定
+        setAchievedPurposes(initialAchievedPurposes);
+        setUsedItems(initialUsedItems);
+        
+        // 親にも通知（localStorageの状態で同期）
+        if (onStateUpdate) {
+          onStateUpdate(initialAchievedPurposes, initialUsedItems);
+        }
       }
     } catch (error) {
       console.error('レビューデータ取得エラー:', error);
@@ -370,7 +472,7 @@ const TripReview = ({ tripId, tripStatus, selectedPurposes = {} }) => {
 
       // 達成した目的を分類
       achievedPurposes.forEach(key => {
-        console.log('Processing key:', key);
+        console.log('💾 保存処理 - Processing key:', key);
         if (key.startsWith('main_')) {
           const idStr = key.replace('main_', '');
           console.log('🔍 Processing main purpose ID:', idStr, 'Type:', typeof idStr);
@@ -404,10 +506,15 @@ const TripReview = ({ tripId, tripStatus, selectedPurposes = {} }) => {
           }
           
           // 数値ID、UUID、カスタムIDに対応
-          if (!isNaN(idStr) && !idStr.includes('-')) {
+          if (!isNaN(idStr) && !idStr.includes('-') && !idStr.includes('_')) {
             achievedSubPurposes.push(parseInt(idStr));
+          } else if (idStr.startsWith('custom_name_')) {
+            // カスタムサブ目的の場合は名前ベースのIDとして保存
+            console.log('💾 カスタムスポットIDを保存（名前ベース）:', idStr);
+            achievedSubPurposes.push(idStr);
           } else if (idStr.startsWith('custom_')) {
-            // カスタムサブ目的の場合は文字列IDとして保存
+            // 旧形式のカスタムIDも一応サポート
+            console.log('💾 カスタムスポットIDを保存（旧形式）:', idStr);
             achievedSubPurposes.push(idStr);
           } else if (idStr.includes('-')) {
             // UUIDの場合はそのまま文字列として保存
@@ -457,57 +564,84 @@ const TripReview = ({ tripId, tripStatus, selectedPurposes = {} }) => {
     }
     
     const key = `${type}_${purposeId}`;
-    console.log('Toggling achievement for key:', key);
+    console.log('🔄 Toggling achievement for key:', key);
     
     const newAchieved = new Set(achievedPurposes);
     
     if (newAchieved.has(key)) {
       newAchieved.delete(key);
-      console.log('Removed achievement:', key);
+      console.log('➖ Removed achievement:', key);
     } else {
       newAchieved.add(key);
-      console.log('Added achievement:', key);
+      console.log('➕ Added achievement:', key);
     }
     
+    console.log('📊 New achieved set size:', newAchieved.size);
+    console.log('📊 New achieved purposes:', Array.from(newAchieved));
+    
     setAchievedPurposes(newAchieved);
+    
+    // 親コンポーネントに状態更新を通知
+    if (onStateUpdate) {
+      console.log('📡 Notifying parent of state update');
+      onStateUpdate(newAchieved, usedItems);
+    }
+    
+    // 即座にデータベースに保存（デバウンスなし）
+    console.log('💾 Auto-saving after toggle...');
+    setTimeout(() => {
+      saveReviewData().catch(error => {
+        console.error('❌ Auto-save failed:', error);
+      });
+    }, 500);
   };
 
   // 持ち物の使用状態を切り替え
   const toggleItemUsage = (itemId, itemName) => {
+    const itemIdStr = String(itemId);
     const newUsed = new Set(usedItems);
     
     // 同じ名前の全てのアイテムの使用状態を同期
     const sameNameItems = plannedItems.filter(item => item.name === itemName);
     
-    if (newUsed.has(itemId)) {
+    if (newUsed.has(itemIdStr)) {
       // 同じ名前の全てのアイテムを未使用にする
       sameNameItems.forEach(item => {
-        newUsed.delete(item.id);
+        newUsed.delete(String(item.id));
       });
     } else {
       // 同じ名前の全てのアイテムを使用済みにする
       sameNameItems.forEach(item => {
-        newUsed.add(item.id);
+        newUsed.add(String(item.id));
       });
     }
     
     setUsedItems(newUsed);
+    
+    // 親コンポーネントに状態更新を通知
+    if (onStateUpdate) {
+      onStateUpdate(achievedPurposes, newUsed);
+    }
   };
 
   // 達成率の計算
   const calculateAchievementRates = () => {
-    const mainAchieved = plannedPurposes.main.filter(p => 
-      achievedPurposes.has(`main_${p.id}`)
-    ).length;
-    const subAchieved = plannedPurposes.sub.filter(p => 
-      achievedPurposes.has(`sub_${p.id}`)
-    ).length;
+    const mainAchieved = plannedPurposes.main.filter(p => {
+      // IDを文字列として統一して比較
+      const key = `main_${String(p.id)}`;
+      return achievedPurposes.has(key);
+    }).length;
+    const subAchieved = plannedPurposes.sub.filter(p => {
+      // IDを文字列として統一して比較
+      const key = `sub_${String(p.id)}`;
+      return achievedPurposes.has(key);
+    }).length;
     
     // 持ち物の使用数は重複を除いた名前でカウント
     const uniqueItemNames = [...new Set(plannedItems.map(item => item.name))];
     const itemsUsed = uniqueItemNames.filter(name => {
-      // その名前の持ち物のいずれかが使用されているかチェック
-      return plannedItems.some(item => item.name === name && usedItems.has(item.id));
+      // その名前の持ち物のいずれかが使用されているかチェック（IDを文字列として比較）
+      return plannedItems.some(item => item.name === name && usedItems.has(String(item.id)));
     }).length;
 
     return {
@@ -673,10 +807,12 @@ const TripReview = ({ tripId, tripStatus, selectedPurposes = {} }) => {
           <h4>メイン目的の達成度</h4>
           <div className="checklist">
             {plannedPurposes.main.map(purpose => {
-              const key = `main_${purpose.id}`;
+              // IDを文字列として統一
+              const purposeIdStr = String(purpose.id);
+              const key = `main_${purposeIdStr}`;
               const isChecked = achievedPurposes.has(key);
               console.log(`🎯 Rendering main purpose: ${purpose.name}`);
-              console.log(`   Purpose ID: ${purpose.id} (type: ${typeof purpose.id})`);
+              console.log(`   Purpose ID: ${purposeIdStr} (original: ${purpose.id}, type: ${typeof purpose.id})`);
               console.log(`   Key: ${key}`);  
               console.log(`   isChecked: ${isChecked}`);
               console.log(`   achievedPurposes contains: ${Array.from(achievedPurposes).join(', ')}`);
@@ -686,7 +822,7 @@ const TripReview = ({ tripId, tripStatus, selectedPurposes = {} }) => {
                   <input
                     type="checkbox"
                     checked={isChecked}
-                    onChange={() => togglePurposeAchievement(purpose.id, 'main')}
+                    onChange={() => togglePurposeAchievement(purposeIdStr, 'main')}
                   />
                   <span>{purpose.name}</span>
                 </label>
@@ -702,16 +838,46 @@ const TripReview = ({ tripId, tripStatus, selectedPurposes = {} }) => {
           <h4>サブ目的の達成度</h4>
           <div className="checklist">
             {plannedPurposes.sub.map(purpose => {
-              const key = `sub_${purpose.id}`;
-              const isChecked = achievedPurposes.has(key);
-              console.log(`Rendering sub purpose: ${purpose.name} (${key}) - checked: ${isChecked} - isCustom: ${purpose.isCustom}`);
+              // IDを文字列として統一
+              const purposeIdStr = String(purpose.id);
+              const key = `sub_${purposeIdStr}`;
+              
+              // カスタムスポットの場合は複数のID形式をチェック
+              let isChecked = achievedPurposes.has(key);
+              
+              if (purpose.isCustom && !isChecked) {
+                // 名前ベースの照合を実装
+                const targetName = purpose.name;
+                console.log(`🔍 Checking custom spot "${targetName}" against achieved purposes`);
+                
+                // 達成リストから名前ベースでマッチするものを探す
+                for (const achieved of achievedPurposes) {
+                  console.log(`  - Checking achieved: ${achieved}`);
+                  
+                  // custom_name_形式との照合
+                  if (achieved === `sub_custom_name_${targetName}`) {
+                    console.log(`✅ Found exact name match: ${achieved}`);
+                    isChecked = true;
+                    break;
+                  }
+                  
+                  // Legacy形式の場合、データベースから名前を取得して照合する必要があるが、
+                  // ここでは一旦スキップ（別途マイグレーション処理で対応）
+                }
+                
+                if (!isChecked) {
+                  console.log(`❌ No match found for custom spot "${targetName}"`);
+                }
+              }
+              
+              console.log(`🎯 Rendering sub purpose: "${purpose.name}" (${key}) - checked: ${isChecked}${purpose.isCustom ? ' [CUSTOM]' : ''}`);
               
               return (
                 <label key={key} className="review-checkbox">
                   <input
                     type="checkbox"
                     checked={isChecked}
-                    onChange={() => togglePurposeAchievement(purpose.id, 'sub')}
+                    onChange={() => togglePurposeAchievement(purposeIdStr, 'sub')}
                   />
                   <span>{purpose.name}</span>
                   {purpose.isCustom && <span className="custom-badge">カスタム</span>}
@@ -735,12 +901,13 @@ const TripReview = ({ tripId, tripStatus, selectedPurposes = {} }) => {
               })
               .map(item => {
                 console.log('🔍 TripReview - Rendering item:', item);
+                const itemIdStr = String(item.id);
                 return (
-                  <label key={`item_${item.id}`} className="review-checkbox">
+                  <label key={`item_${itemIdStr}`} className="review-checkbox">
                     <input
                       type="checkbox"
-                      checked={usedItems.has(item.id)}
-                      onChange={() => toggleItemUsage(item.id, item.name)}
+                      checked={usedItems.has(itemIdStr)}
+                      onChange={() => toggleItemUsage(itemIdStr, item.name)}
                     />
                     <span>{item.name}</span>
                     {item.type === 'custom' && <span className="custom-badge">カスタム</span>}

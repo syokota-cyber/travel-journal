@@ -62,6 +62,7 @@ export const AuthProvider = ({ children }) => {
 
   // サインアップ
   const signUp = async (email, password) => {
+    console.log('🔐 サインアップ試行:', { email });
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -69,15 +70,38 @@ export const AuthProvider = ({ children }) => {
         emailRedirectTo: window.location.origin
       }
     });
+    
+    if (error) {
+      console.error('🔴 サインアップエラー:', {
+        message: error.message,
+        status: error.status,
+        details: error
+      });
+    } else {
+      console.log('✅ サインアップ成功:', data);
+    }
+    
     return { data, error };
   };
 
   // サインイン
   const signIn = async (email, password) => {
+    console.log('🔐 サインイン試行:', { email });
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+    
+    if (error) {
+      console.error('🔴 サインインエラー:', {
+        message: error.message,
+        status: error.status,
+        details: error
+      });
+    } else {
+      console.log('✅ サインイン成功:', data);
+    }
+    
     return { data, error };
   };
 

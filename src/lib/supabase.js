@@ -1,12 +1,15 @@
 import { createClient } from '@supabase/supabase-js'
 
-// 新しいPublishable keyで認証テスト
+// 最新の正しいanon keyに更新
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://rwxllvnuuxabvgxpeuma.supabase.co'
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'sb_publishable_iocv0OdvU4tJ1ENbCGskug_hOaJccJr'
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3eGxsdm51dXhhYnZneHBldW1hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM4NTg2MzksImV4cCI6MjA2OTQzNDYzOX0.G39Y6jMLK8whv4ayZxOOUb54Z2ohiprMjYE-Au8Edv0'
 
-console.log('🔍 Supabase設定デバッグ情報:');
-console.log('URL:', supabaseUrl);
-console.log('Key:', supabaseAnonKey?.substring(0, 30) + '...' || 'undefined');
+// 開発環境でのみデバッグ情報を出力
+if (process.env.NODE_ENV === 'development') {
+  console.log('🔍 Supabase設定デバッグ情報:');
+  console.log('URL:', supabaseUrl);
+  console.log('Key:', supabaseAnonKey?.substring(0, 30) + '...' || 'undefined');
+}
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error('Missing Supabase environment variables:', {

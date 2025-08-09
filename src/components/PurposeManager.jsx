@@ -45,7 +45,7 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
           
         if (!customError && customData) {
           const customSpots = customData.map((item, index) => ({
-            id: `custom_sub_${Date.now()}_${index}`,
+            id: `custom_name_${item.custom_purpose}`,
             name: item.custom_purpose,
             isCustom: true,
             type: 'sub'
@@ -97,7 +97,7 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
     if (!newSpotName.trim()) return;
 
     const newPurpose = {
-      id: `custom_${Date.now()}`,
+      id: `custom_name_${newSpotName}`, // 名前ベースのIDを使用（エンコードなし）
       name: newSpotName,
       isCustom: true
     };
@@ -150,11 +150,18 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
       });
 
       if (inserts.length > 0) {
-        const { error } = await supabase
+        const { data: insertedData, error } = await supabase
           .from('trip_purposes')
-          .insert(inserts);
+          .insert(inserts)
+          .select();
 
         if (error) throw error;
+        
+        // 保存成功のログ
+        if (insertedData) {
+          console.log('📍 PurposeManager - 保存成功:', insertedData);
+          // 名前ベースのIDを使用しているため、特別な更新は不要
+        }
       }
     } catch (error) {
       console.error('目的保存エラー:', error);
@@ -219,7 +226,7 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
     }
     
     const customPurpose = {
-      id: `custom_sub_${Date.now()}`,
+      id: `custom_name_${sanitizedName}`,
       name: sanitizedName,
       isCustom: true,
       type: 'sub'

@@ -548,7 +548,7 @@ const TripReview = ({
 
       if (error) throw error;
 
-      alert('レビューを保存しました！');
+      console.log('✅ レビューを保存しました');
     } catch (error) {
       console.error('レビュー保存エラー:', error);
       alert('レビューの保存に失敗しました: ' + error.message);
@@ -839,7 +839,15 @@ const TripReview = ({
           <div className="checklist">
             {plannedPurposes.sub.map(purpose => {
               // IDを文字列として統一
-              const purposeIdStr = String(purpose.id);
+              let purposeIdStr = String(purpose.id);
+              
+              // カスタムスポットの場合、IDを正規化
+              if (purpose.isCustom && purposeIdStr.startsWith('custom_name_')) {
+                // custom_name_XXX -> XXX (名前のみ取得)
+                const customName = purposeIdStr.replace('custom_name_', '');
+                purposeIdStr = `custom_name_${customName}`;
+              }
+              
               const key = `sub_${purposeIdStr}`;
               
               // カスタムスポットの場合は複数のID形式をチェック
@@ -854,9 +862,15 @@ const TripReview = ({
                 for (const achieved of achievedPurposes) {
                   console.log(`  - Checking achieved: ${achieved}`);
                   
-                  // custom_name_形式との照合
-                  if (achieved === `sub_custom_name_${targetName}`) {
-                    console.log(`✅ Found exact name match: ${achieved}`);
+                  // 複数のID形式に対応
+                  const possibleMatches = [
+                    `sub_custom_name_${targetName}`,  // 現在の保存形式
+                    `custom_name_${targetName}`,      // 期待される形式
+                    achieved.endsWith(targetName) && achieved.includes('custom'), // 名前で終わるパターン
+                  ];
+                  
+                  if (possibleMatches.some(match => match === achieved || (typeof match === 'boolean' && match))) {
+                    console.log(`✅ Found match: ${achieved} for "${targetName}"`);
                     isChecked = true;
                     break;
                   }

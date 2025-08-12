@@ -150,7 +150,7 @@ function TripList({ trips, onSelectTrip, onCreateTrip }) {
     const icons = {
       planning: '📝',
       ongoing: '🚗',
-      completed: '✅'
+      completed: '📒'
     };
     return icons[status] || '📝';
   };
@@ -393,14 +393,6 @@ function TripList({ trips, onSelectTrip, onCreateTrip }) {
         })}
       </div>
 
-      <div className="calendar-legend">
-        <h4>凡例:</h4>
-        <div className="legend-items">
-          <span className="legend-item">📝 計画中</span>
-          <span className="legend-item">🚗 進行中</span>
-          <span className="legend-item">✅ 完了</span>
-        </div>
-      </div>
     </div>
   );
 }

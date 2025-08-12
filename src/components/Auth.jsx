@@ -27,7 +27,9 @@ const Auth = () => {
 
   // テストアカウントの入力
   const useTestAccountData = () => {
-    setEmail('test@camping-car.com');
+    // 実在するメールアドレスを使用するか、環境変数から取得
+    const testEmail = process.env.REACT_APP_TEST_EMAIL || 'shin1yokota@gmail.com';
+    setEmail(testEmail);
     setPassword('test123456');
     setUseTestAccount(true);
   };
@@ -165,7 +167,7 @@ const Auth = () => {
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
+      <div className="auth-form">
         <h2>🚐 キャンピングカー旅行手帳</h2>
         <p className="auth-subtitle">あなたの旅の記録を大切に保存</p>
         
@@ -194,28 +196,30 @@ const Auth = () => {
               </button>
             </div>
 
-            {/* テストアカウント簡単ボタン */}
-            <div style={{ margin: '1rem 0', padding: '1rem', backgroundColor: '#f0f8ff', borderRadius: '8px', border: '1px solid #e1f5fe' }}>
-              <h4 style={{ margin: '0 0 0.5rem 0', color: '#1976d2' }}>🧪 テスト用</h4>
-              <button
-                type="button"
-                onClick={useTestAccountData}
-                style={{
-                  backgroundColor: '#2196f3',
-                  color: 'white',
-                  border: 'none',
-                  padding: '8px 16px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '0.9rem'
-                }}
-              >
-                テストアカウント情報を入力
-              </button>
-              <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.8rem', color: '#666' }}>
-                test@camping-car.com / test123456
-              </p>
-            </div>
+            {/* テストアカウント簡単ボタン（開発環境のみ表示） */}
+            {process.env.NODE_ENV === 'development' && (
+              <div style={{ margin: '1rem 0', padding: '1rem', backgroundColor: '#f0f8ff', borderRadius: '8px', border: '1px solid #e1f5fe' }}>
+                <h4 style={{ margin: '0 0 0.5rem 0', color: '#1976d2' }}>🧪 テスト用</h4>
+                <button
+                  type="button"
+                  onClick={useTestAccountData}
+                  style={{
+                    backgroundColor: '#2196f3',
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '0.9rem'
+                  }}
+                >
+                  テストアカウント情報を入力
+                </button>
+                <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.8rem', color: '#666' }}>
+                  test@camping-car.com / test123456
+                </p>
+              </div>
+            )}
           </>
         ) : (
           <div className="forgot-password-header">
@@ -224,7 +228,7 @@ const Auth = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="auth-form">
+        <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="email">メールアドレス</label>
             <input
@@ -258,8 +262,8 @@ const Auth = () => {
           )}
 
           {isSignUp && !useTestAccount && (
-            <div className="form-group">
-              <label className="checkbox-label">
+            <div className="checkbox-group">
+              <label>
                 <input
                   type="checkbox"
                   checked={agreeToTerms}
@@ -269,7 +273,7 @@ const Auth = () => {
                 <span>
                   <button
                     type="button"
-                    className="link-button"
+                    className="btn-text-link"
                     onClick={() => setShowTerms(true)}
                   >
                     利用規約
@@ -280,7 +284,7 @@ const Auth = () => {
             </div>
           )}
 
-          <button type="submit" disabled={loading} className="auth-submit-btn">
+          <button type="submit" disabled={loading} className="btn-primary">
             {loading ? (
               <span className="loading-spinner">処理中...</span>
             ) : isForgotPassword ? (
@@ -294,7 +298,7 @@ const Auth = () => {
         </form>
 
         {message && (
-          <div className={`auth-message ${message.includes('エラー') || message.includes('正しくありません') ? 'error' : 'success'}`}>
+          <div className={`message ${message.includes('エラー') || message.includes('正しくありません') ? 'error' : 'success'}`}>
             {message}
           </div>
         )}
@@ -303,7 +307,7 @@ const Auth = () => {
           <div className="auth-links">
             <button
               type="button"
-              className="link-button"
+              className="btn-text-link"
               onClick={() => {
                 setIsForgotPassword(true);
                 setMessage('');
@@ -318,7 +322,7 @@ const Auth = () => {
           <div className="auth-links">
             <button
               type="button"
-              className="link-button"
+              className="btn-text-link"
               onClick={() => {
                 setIsForgotPassword(false);
                 setMessage('');
@@ -334,8 +338,10 @@ const Auth = () => {
         <TermsOfService onClose={() => setShowTerms(false)} />
       )}
 
-      {/* 開発者ツール：メール確認エラー対応 */}
-      <DevAuth onUseTestAccount={useTestAccountData} />
+      {/* 開発者ツール：メール確認エラー対応（開発環境のみ） */}
+      {process.env.NODE_ENV === 'development' && (
+        <DevAuth onUseTestAccount={useTestAccountData} />
+      )}
     </div>
   );
 };

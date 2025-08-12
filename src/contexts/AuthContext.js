@@ -63,11 +63,17 @@ export const AuthProvider = ({ children }) => {
   // サインアップ
   const signUp = async (email, password) => {
     console.log('🔐 サインアップ試行:', { email });
+    
+    // 開発環境と本番環境のURL判定
+    const redirectUrl = window.location.hostname === 'localhost' 
+      ? 'http://localhost:3000'
+      : 'https://travel-journal-ochre-two.vercel.app';
+    
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: window.location.origin
+        emailRedirectTo: redirectUrl
       }
     });
     

@@ -307,7 +307,7 @@ function TripForm({ onSave, onCancel, editTrip, existingTrips = [] }) {
           >
             <option value="planning">📝 計画中</option>
             <option value="ongoing">🚗 進行中</option>
-            <option value="completed">✅ 完了</option>
+            <option value="completed">📒 完了</option>
           </select>
         </div>
         

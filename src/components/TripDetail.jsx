@@ -197,7 +197,7 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
     const badges = {
       planning: '📝 計画中',
       ongoing: '🚗 進行中', 
-      completed: '✅ 完了'
+      completed: '📒 完了'
     };
     return badges[status] || status;
   };
@@ -601,7 +601,7 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
             position: 'relative'
           }}
         >
-          📅 カレンダー
+          🗒️ 年間
         </button>
         <button 
           className={activeTab === 'purposes' ? 'active' : ''}
@@ -620,7 +620,7 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
             position: 'relative'
           }}
         >
-          {getPurposeIcon()} 目的
+          📍目的
           {activeTab === 'purposes' && (
             <div style={{
               position: 'absolute',

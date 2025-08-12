@@ -9,7 +9,8 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 async function createTestUser() {
   console.log('🔍 テストユーザー作成開始...');
   
-  const email = 'test@camping-car.com';
+  // 実在するメールアドレスまたは環境変数を使用
+  const email = process.env.TEST_EMAIL || 'shin1yokota@gmail.com';
   const password = 'test123456';
   
   try {

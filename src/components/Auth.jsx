@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import TermsOfService from './TermsOfService';
 import DevAuth from './DevAuth';
+import Footer from './Footer';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -342,6 +343,8 @@ const Auth = () => {
       {process.env.NODE_ENV === 'development' && (
         <DevAuth onUseTestAccount={useTestAccountData} />
       )}
+      
+      <Footer />
     </div>
   );
 };

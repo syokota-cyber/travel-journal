@@ -333,6 +333,8 @@ const Auth = () => {
             </button>
           </div>
         )}
+        
+        <Footer />
       </div>
 
       {showTerms && (
@@ -343,8 +345,6 @@ const Auth = () => {
       {process.env.NODE_ENV === 'development' && (
         <DevAuth onUseTestAccount={useTestAccountData} />
       )}
-      
-      <Footer />
     </div>
   );
 };

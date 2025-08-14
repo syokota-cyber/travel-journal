@@ -6,11 +6,26 @@ const RulesConfirmation = ({ tripId, mainPurposeIds, onConfirmComplete }) => {
   const [rules, setRules] = useState([]);
   const [confirmations, setConfirmations] = useState({});
   const [allConfirmed, setAllConfirmed] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const [timeoutError, setTimeoutError] = useState(false);
 
   useEffect(() => {
+    console.log('RulesConfirmation mounted:', { tripId, mainPurposeIds });
     if (tripId && mainPurposeIds && mainPurposeIds.length > 0) {
       fetchRules();
+      // 10秒のタイムアウトを設定
+      const timeout = setTimeout(() => {
+        console.log('Timeout triggered, loading state:', loading);
+        setTimeoutError(true);
+        setLoading(false);
+      }, 10000);
+      return () => clearTimeout(timeout);
+    } else {
+      // tripIdまたはmainPurposeIdsがない場合は即座にローディング解除
+      console.log('No tripId or mainPurposeIds, skipping fetch');
+      setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tripId, mainPurposeIds]);
 
   useEffect(() => {
@@ -19,20 +34,32 @@ const RulesConfirmation = ({ tripId, mainPurposeIds, onConfirmComplete }) => {
 
   // 該当するルール・マナーを取得
   const fetchRules = async () => {
+    console.log('fetchRules called with mainPurposeIds:', mainPurposeIds);
     try {
       setLoading(true);
       
+      console.log('Fetching travel_rules from Supabase...');
       const { data, error } = await supabase
         .from('travel_rules')
         .select('*')
         .in('main_purpose_id', mainPurposeIds)
         .order('rule_category', { ascending: true })
         .order('display_order', { ascending: true });
+      
+      console.log('Supabase response:', { data, error });
 
-      if (error) throw error;
+      if (error) {
+        console.error('travel_rules取得エラー:', error);
+        setHasError(true);
+        setLoading(false);
+        return;
+      }
 
-      console.log('RulesConfirmation - mainPurposeIds:', mainPurposeIds);
-      console.log('RulesConfirmation - fetched rules:', data);
+      // デバッグ用ログ（本番では削除）
+      if (window.location.hostname === 'localhost') {
+        console.log('RulesConfirmation - mainPurposeIds:', mainPurposeIds);
+        console.log('RulesConfirmation - fetched rules:', data);
+      }
 
       // 重複を排除（rule_titleとrule_descriptionが同じものを除外）
       // ただし、最初に見つかったルールのIDを保持する
@@ -47,7 +74,9 @@ const RulesConfirmation = ({ tripId, mainPurposeIds, onConfirmComplete }) => {
         }
       });
 
-      console.log('RulesConfirmation - unique rules:', uniqueRules);
+      if (window.location.hostname === 'localhost') {
+        console.log('RulesConfirmation - unique rules:', uniqueRules);
+      }
       setRules(uniqueRules);
 
       // 既存の確認状況を取得
@@ -56,7 +85,11 @@ const RulesConfirmation = ({ tripId, mainPurposeIds, onConfirmComplete }) => {
         .select('rule_id, is_confirmed')
         .eq('trip_id', tripId);
 
-      if (confirmError) throw confirmError;
+      if (confirmError) {
+        console.error('trip_rule_confirmations取得エラー:', confirmError);
+        // エラーがあってもルール表示は続行
+        setConfirmations({});
+      }
 
       // 既存確認状況をセット
       const confirmationMap = {};
@@ -68,6 +101,8 @@ const RulesConfirmation = ({ tripId, mainPurposeIds, onConfirmComplete }) => {
 
     } catch (error) {
       console.error('ルール取得エラー:', error);
+      setHasError(true);
+      setRules([]);
     } finally {
       setLoading(false);
     }
@@ -141,8 +176,58 @@ const RulesConfirmation = ({ tripId, mainPurposeIds, onConfirmComplete }) => {
 
   const rulesByCategory = groupRulesByCategory();
 
-  if (loading) {
+  if (loading && !timeoutError) {
     return <div className="loading">ルール・マナーを確認中...</div>;
+  }
+
+  // タイムアウトエラーの場合
+  if (timeoutError) {
+    return (
+      <div className="rules-confirmation">
+        <h3>⚠️ 接続タイムアウト</h3>
+        <p className="rules-intro">
+          ルール・マナーの取得に時間がかかっています。
+          ネットワーク接続を確認してください。
+        </p>
+        <div className="rules-actions">
+          <button
+            className="btn-secondary"
+            onClick={() => window.location.reload()}
+          >
+            🔄 再読み込み
+          </button>
+          <button
+            className="btn-primary"
+            onClick={onConfirmComplete}
+          >
+            ✅ スキップして旅を開始する
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // エラーまたはルールが0件の場合
+  if (hasError || rules.length === 0) {
+    return (
+      <div className="rules-confirmation">
+        <h3>🎯 旅を開始する前に</h3>
+        <p className="rules-intro">
+          {hasError ? 
+            'ルール・マナーの取得に問題が発生しました。' : 
+            'この目的地のルール・マナーはまだ登録されていません。'}
+          安全運転と周囲への配慮を心がけて旅をお楽しみください。
+        </p>
+        <div className="rules-actions">
+          <button
+            className="btn-primary"
+            onClick={onConfirmComplete}
+          >
+            ✅ 旅を開始する
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (

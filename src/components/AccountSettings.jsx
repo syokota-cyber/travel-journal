@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import TermsOfService from './TermsOfService';
 
 const AccountSettings = ({ onClose }) => {
   const { user, signOut } = useAuth();
@@ -9,6 +10,8 @@ const AccountSettings = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [exportFormat, setExportFormat] = useState('json');
+  const [showTerms, setShowTerms] = useState(false);
+  const [showBugReport, setShowBugReport] = useState(false);
 
   const handleDeleteAccount = async () => {
     if (deleteConfirmText !== 'DELETE') {
@@ -293,6 +296,31 @@ const AccountSettings = ({ onClose }) => {
             💡 <strong>推奨:</strong> 月1回程度の定期的なエクスポートでデータを保護しましょう
           </p>
         </div>
+
+        <div className="settings-section">
+          <h3>利用規約</h3>
+          <p>Travel Journalの利用規約をご確認いただけます。</p>
+          <button 
+            className="btn-secondary"
+            onClick={() => setShowTerms(true)}
+          >
+            利用規約を表示
+          </button>
+        </div>
+
+        <div className="settings-section">
+          <h3>サポート・フィードバック</h3>
+          <p>不具合の報告や機能改善のご提案がございましたら、お気軽にお知らせください。</p>
+          <button 
+            className="btn-secondary"
+            onClick={() => setShowBugReport(true)}
+          >
+            🐛 不具合を報告・改善提案
+          </button>
+          <p className="support-note">
+            💡 報告いただいた内容は今後の改善に活用させていただきます
+          </p>
+        </div>
         
         <div className="settings-section danger-zone">
           <h3>危険ゾーン</h3>
@@ -343,6 +371,47 @@ const AccountSettings = ({ onClose }) => {
           )}
         </div>
       </div>
+      
+      {showTerms && (
+        <TermsOfService onClose={() => setShowTerms(false)} />
+      )}
+
+      {showBugReport && (
+        <div className="modal-overlay" onClick={() => setShowBugReport(false)}>
+          <div className="modal-content guide-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowBugReport(false)}>×</button>
+            <h2>🐛 不具合の報告・改善提案</h2>
+            
+            <div className="guide-section">
+              <p>
+                不具合の報告や機能改善のご提案がございましたら、以下のボタンからGoogleフォームにアクセスしてください。<br/>
+                いただいた内容は今後の改善に活用させていただきます。
+              </p>
+              
+              <div style={{textAlign: 'center', margin: '20px 0'}}>
+                <button 
+                  className="btn-primary"
+                  onClick={() => window.open('https://docs.google.com/forms/d/e/1FAIpQLSf3ixzjq-Z7GMHP1XJLtI2uY6nG1jxjlie0WQODjVfzh2KmUw/viewform', '_blank', 'noopener,noreferrer')}
+                  style={{padding: '12px 24px', fontSize: '16px'}}
+                >
+                  📝 不具合報告フォームを開く
+                </button>
+              </div>
+            </div>
+
+            <div className="guide-section">
+              <h3>📋 報告時にお伝えいただきたい情報</h3>
+              <ul>
+                <li><strong>発生した問題の詳細</strong>: どのような操作でエラーが発生したか</li>
+                <li><strong>発生日時</strong>: いつ問題が起きたか</li>
+                <li><strong>使用環境</strong>: 端末（PC/スマホ）・ブラウザの種類</li>
+                <li><strong>エラーメッセージ</strong>: 表示された場合はその内容</li>
+              </ul>
+              <p>これらの情報をお知らせいただけると、問題解決がスムーズになります。</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 function Footer() {
   const [showGuideModal, setShowGuideModal] = useState(false);
-  const [showContactModal, setShowContactModal] = useState(false);
+  const [showBugReportModal, setShowBugReportModal] = useState(false);
 
   return (
     <>
@@ -18,7 +18,7 @@ function Footer() {
             <span className="footer-separator">|</span>
             <button 
               className="footer-link"
-              onClick={() => setShowContactModal(true)}
+              onClick={() => setShowBugReportModal(true)}
             >
               📧 不具合の報告
             </button>
@@ -39,7 +39,7 @@ function Footer() {
             <div className="guide-section">
               <h3>基本機能</h3>
               <ul>
-                <li><strong>旅行計画作成</strong>: 月2件まで、年間12件まで作成可能</li>
+                <li><strong>旅行計画作成</strong>: 月2件まで、年間24件まで作成可能</li>
                 <li><strong>目的設定</strong>: メイン目的とサブ目的を選択</li>
                 <li><strong>カスタムサブ目的</strong>: 最大3つまで独自の目的を追加可能</li>
                 <li><strong>持ち物リスト</strong>: カスタム持ち物も最大3つまで追加可能</li>
@@ -51,8 +51,6 @@ function Footer() {
               <ul>
                 <li>月間作成数: 2件まで</li>
                 <li>年間作成数: 24件まで</li>
-                <li>カスタムサブ目的: 3つまで</li>
-                <li>カスタム持ち物: 3つまで</li>
               </ul>
             </div>
 
@@ -63,44 +61,51 @@ function Footer() {
                 <li>旅行後のレビュー機能</li>
                 <li>達成率の自動計算</li>
                 <li>パーセント評価による振り返り</li>
+                <li>データエクスポート機能（JSON・CSV形式）</li>
               </ul>
             </div>
           </div>
         </div>
       )}
 
-      {/* 不具合の報告モーダル */}
-      {showContactModal && (
-        <div className="modal-overlay" onClick={() => setShowContactModal(false)}>
-          <div className="modal-content contact-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setShowContactModal(false)}>×</button>
-            <h2>📧 不具合の報告</h2>
+      {/* 不具合報告モーダル */}
+      {showBugReportModal && (
+        <div className="modal-overlay" onClick={() => setShowBugReportModal(false)}>
+          <div className="modal-content guide-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowBugReportModal(false)}>×</button>
+            <h2>🐛 不具合の報告・改善提案</h2>
             
-            <div className="contact-section">
-              <h3>不具合・バグ報告</h3>
-              <p>アプリの不具合、バグ、エラーなどを発見された場合は、以下のメールアドレスまでご報告ください。</p>
+            <div className="guide-section">
+              <p>
+                不具合の報告や機能改善のご提案がございましたら、以下のボタンからGoogleフォームにアクセスしてください。<br/>
+                いただいた内容は今後の改善に活用させていただきます。
+              </p>
               
-              <div className="contact-email">
-                <strong>問い合わせ先:</strong>
-                <a href="mailto:campingcartraveltips@gmail.com">
-                  campingcartraveltips@gmail.com
-                </a>
+              <div style={{textAlign: 'center', margin: '20px 0'}}>
+                <button 
+                  className="btn-primary"
+                  onClick={() => window.open('https://docs.google.com/forms/d/e/1FAIpQLSf3ixzjq-Z7GMHP1XJLtI2uY6nG1jxjlie0WQODjVfzh2KmUw/viewform', '_blank', 'noopener,noreferrer')}
+                  style={{padding: '12px 24px', fontSize: '16px'}}
+                >
+                  📝 不具合報告フォームを開く
+                </button>
               </div>
-              
-              <div className="contact-tips">
-                <h4>報告時のお願い</h4>
-                <ul>
-                  <li>発生した問題の詳細</li>
-                  <li>発生日時</li>
-                  <li>使用している端末・ブラウザ情報</li>
-                  <li>エラーメッセージ（表示された場合）</li>
-                </ul>
-                <p>これらの情報をお知らせいただけると、問題解決がスムーズになります。</p>
-              </div>
+            </div>
+
+            <div className="guide-section">
+              <h3>📋 報告時にお伝えいただきたい情報</h3>
+              <ul>
+                <li><strong>発生した問題の詳細</strong>: どのような操作でエラーが発生したか</li>
+                <li><strong>発生日時</strong>: いつ問題が起きたか</li>
+                <li><strong>使用環境</strong>: 端末（PC/スマホ）・ブラウザの種類</li>
+                <li><strong>エラーメッセージ</strong>: 表示された場合はその内容</li>
+              </ul>
+              <p>これらの情報をお知らせいただけると、問題解決がスムーズになります。</p>
             </div>
           </div>
         </div>
       )}
+
     </>
   );
 }

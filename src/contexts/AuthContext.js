@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }) => {
 
   // サインアップ
   const signUp = async (email, password) => {
-    console.log('🔐 サインアップ試行:', { email });
+    // サインアップ試行（機密情報のためログ削除）
     
     // 開発環境と本番環境のURL判定
     const redirectUrl = window.location.hostname === 'localhost' 
@@ -92,7 +92,7 @@ export const AuthProvider = ({ children }) => {
 
   // サインイン
   const signIn = async (email, password) => {
-    console.log('🔐 サインイン試行:', { email });
+    // サインイン試行（機密情報のためログ削除）
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,

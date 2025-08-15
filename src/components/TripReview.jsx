@@ -664,6 +664,11 @@ const TripReview = ({
   };
 
   const rates = calculateAchievementRates();
+  
+  // 総合達成度の計算（カレンダー表示と統一）
+  // メイン目的70%、サブ目的30%の加重平均で算出
+  // 持ち物は参考値として別途表示
+  const overallAchievementRate = Math.round(rates.mainRate * 0.7 + rates.subRate * 0.3);
 
   // レンダリング時の状態をログ出力
   console.log('=== RENDERING TRIP REVIEW ===');
@@ -678,8 +683,8 @@ const TripReview = ({
     labels: ['達成', '未達成'],
     datasets: [{
       data: [
-        Math.round((rates.mainRate + rates.subRate + rates.itemsRate) / 3),
-        100 - Math.round((rates.mainRate + rates.subRate + rates.itemsRate) / 3)
+        overallAchievementRate,
+        100 - overallAchievementRate
       ],
       backgroundColor: [
         'rgba(75, 192, 192, 0.8)',
@@ -781,7 +786,10 @@ const TripReview = ({
         <div className="summary-card">
           <h4>総合達成度</h4>
           <div className="percentage">
-            {Math.round((rates.mainRate + rates.subRate + rates.itemsRate) / 3)}%
+            {overallAchievementRate}%
+          </div>
+          <div className="achievement-formula" style={{fontSize: '0.75rem', color: '#666', marginTop: '4px'}}>
+            メイン70% + サブ30%
           </div>
         </div>
         <div className="summary-card">
@@ -798,6 +806,9 @@ const TripReview = ({
           <h4>持ち物活用</h4>
           <div className="percentage">{rates.itemsRate}%</div>
           <div className="count">{rates.itemsUsed}/{rates.itemsTotal}</div>
+          <div className="reference-note" style={{fontSize: '0.7rem', color: '#999', marginTop: '2px'}}>
+            （参考値）
+          </div>
         </div>
       </div>
 
@@ -904,7 +915,12 @@ const TripReview = ({
 
       {/* 持ち物の活用度 */}
       <div className="review-items">
-        <h4>持ち物の活用度 <span style={{fontSize: '0.8em', color: '#666'}}>（活用したものにチェック）</span></h4>
+        <h4>
+          持ち物の活用度 
+          <span style={{fontSize: '0.8em', color: '#666', marginLeft: '8px'}}>
+            （参考記録・総合達成度には含まれません）
+          </span>
+        </h4>
         {plannedItems.length > 0 ? (
           <div className="checklist">
             {plannedItems

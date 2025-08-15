@@ -77,22 +77,23 @@ function TripList({ trips, onSelectTrip, onCreateTrip }) {
             
             console.log(`📊 Trip ${trip.id} rates: main=${mainRate}%, sub=${subRate}%`);
             
-            // 総合評価計算（目的達成率のみで算出）
-            const totalAchievementRate = (mainRate * 0.7 + subRate * 0.3) / 100; // メイン70%、サブ30%
-            const rawTotalScore = totalAchievementRate * 5; // 0-5スケールに変換
-            const totalScore = Math.max(0, Math.min(5, Math.round(rawTotalScore * 10) / 10)); // 0-5の範囲に制限、小数点1桁
+            // 総合達成度計算（TripReview.jsxと同じ計算式）
+            // メイン70%、サブ30%の加重平均
+            const overallPercentage = Math.round(mainRate * 0.7 + subRate * 0.3);
+            
+            console.log(`📊 Trip ${trip.id} overall: ${overallPercentage}%`);
 
             evaluations[trip.id] = {
               mainRate: Math.max(0, Math.min(100, mainRate)),
               subRate: Math.max(0, Math.min(100, subRate)),
-              totalScore
+              overallPercentage  // パーセンテージを直接保存
             };
           } else {
             // レビューデータがない場合は評価なし
             evaluations[trip.id] = {
               mainRate: 0,
               subRate: 0,
-              totalScore: 0
+              overallPercentage: 0
             };
           }
         }
@@ -155,23 +156,19 @@ function TripList({ trips, onSelectTrip, onCreateTrip }) {
     return icons[status] || '📝';
   };
 
-  // パーセント評価を表示
-  const renderPercentageRating = (score) => {
-    console.log('🎯 renderPercentageRating called with score:', score);
+  // パーセント評価を表示（パーセンテージを直接受け取る）
+  const renderPercentageRating = (percentage) => {
+    console.log('🎯 renderPercentageRating called with percentage:', percentage);
     // 境界値チェック
-    if (!score || score < 0 || score > 5 || isNaN(score)) {
-      console.log('❌ Invalid score, returning null');
+    if (percentage === undefined || percentage === null || percentage < 0 || percentage > 100 || isNaN(percentage)) {
+      console.log('❌ Invalid percentage, returning null');
       return null;
     }
-    
-    // 5段階評価（0-5）を100%表示（0-100%）に変換
-    const percentage = Math.round((score / 5) * 100);
-    console.log('📊 Converting score to percentage:', score, '→', percentage + '%');
     
     return (
       <span 
         className="percentage-rating" 
-        title={`達成度: ${percentage}% (5段階評価: ${score})`}
+        title={`達成度: ${percentage}%`}
         style={{
           display: 'inline-flex',
           alignItems: 'center',
@@ -363,10 +360,10 @@ function TripList({ trips, onSelectTrip, onCreateTrip }) {
                               </span>
                             )}
                             {trip.status === 'completed' && evaluation && 
-                             evaluation.totalScore > 0 && 
-                             !isNaN(evaluation.totalScore) && (
+                             evaluation.overallPercentage > 0 && 
+                             !isNaN(evaluation.overallPercentage) && (
                               <div className="trip-evaluation">
-                                {renderPercentageRating(evaluation.totalScore)}
+                                {renderPercentageRating(evaluation.overallPercentage)}
                               </div>
                             )}
                           </div>

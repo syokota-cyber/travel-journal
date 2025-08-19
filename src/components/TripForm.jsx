@@ -5,11 +5,29 @@ import React, { useState, useEffect } from 'react';
 function TripForm({ onSave, onCancel, editTrip, existingTrips = [] }) {
   const [formData, setFormData] = useState({
     title: '',
+    destination: '',
     startDate: '',
     endDate: '',
     status: 'planning'
   });
   const [validationErrors, setValidationErrors] = useState({});
+  
+  // 旅先方面の選択肢
+  const destinations = [
+    '北海道（道北）',
+    '北海道（道東）',
+    '北海道（道南）',
+    '北海道（道央）',
+    '東北方面',
+    '北陸方面',
+    '関東方面',
+    '甲信越地方',
+    '中部・東海方面',
+    '近畿方面',
+    '中国方面',
+    '四国方面',
+    '九州方面'
+  ];
 
   const isEditMode = Boolean(editTrip && editTrip.id);
 
@@ -20,6 +38,7 @@ function TripForm({ onSave, onCancel, editTrip, existingTrips = [] }) {
         // 新規作成時のデフォルト日付
         setFormData({
           title: '',
+          destination: '',
           startDate: editTrip.defaultStartDate,
           endDate: editTrip.defaultEndDate,
           status: 'planning'
@@ -28,6 +47,7 @@ function TripForm({ onSave, onCancel, editTrip, existingTrips = [] }) {
         // 既存データの編集
         setFormData({
           title: editTrip.title || '',
+          destination: editTrip.destination || '',
           startDate: editTrip.start_date || '',
           endDate: editTrip.end_date || '',
           status: editTrip.status || 'planning'
@@ -199,6 +219,7 @@ function TripForm({ onSave, onCancel, editTrip, existingTrips = [] }) {
       const updatedTrip = {
         ...editTrip,
         title: formData.title,
+        destination: formData.destination,
         start_date: formData.startDate,
         end_date: formData.endDate,
         status: formData.status
@@ -209,6 +230,7 @@ function TripForm({ onSave, onCancel, editTrip, existingTrips = [] }) {
       // 新規作成モード：新しい旅行オブジェクトを作成
       const newTrip = {
         ...formData,
+        destination: formData.destination,
         mainPurposes: [],
         subPurposes: [],
         items: [],
@@ -235,6 +257,24 @@ function TripForm({ onSave, onCancel, editTrip, existingTrips = [] }) {
             placeholder="例: 2025年秋 紅葉狩りツアー"
             required
           />
+        </div>
+        
+        <div className="form-group">
+          <label htmlFor="destination">旅先方面</label>
+          <select
+            id="destination"
+            name="destination"
+            value={formData.destination}
+            onChange={handleChange}
+            required
+          >
+            <option value="">選択してください</option>
+            {destinations.map((dest) => (
+              <option key={dest} value={dest}>
+                {dest}
+              </option>
+            ))}
+          </select>
         </div>
         
         <div className="date-section">

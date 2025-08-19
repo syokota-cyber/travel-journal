@@ -494,6 +494,12 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
       <div className="trip-detail-header">
         <div className="header-top">
           <h2>{trip.title}</h2>
+          {trip.destination && (
+            <div className="trip-destination-info">
+              <span className="destination-label">📍 旅先方面:</span>
+              <span className="destination-value">{trip.destination}</span>
+            </div>
+          )}
           <div className="action-buttons">
             {trip.status === 'completed' && (
               <button 

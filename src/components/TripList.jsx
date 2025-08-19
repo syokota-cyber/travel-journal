@@ -351,6 +351,9 @@ function TripList({ trips, onSelectTrip, onCreateTrip }) {
                           <span className="trip-icon">{getStatusIcon(trip.status)}</span>
                           <div className="trip-content">
                             <span className="trip-title">{trip.title}</span>
+                            {trip.destination && (
+                              <span className="trip-destination">📍 {trip.destination}</span>
+                            )}
                             {trip.start_date && (
                               <span className="trip-date">
                                 {new Date(trip.start_date).getDate()}日

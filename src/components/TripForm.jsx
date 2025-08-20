@@ -145,12 +145,19 @@ function TripForm({ onSave, onCancel, editTrip, existingTrips = [] }) {
       [name]: value
     };
     
-    // 開始日を変更した場合、終了日がまだ設定されていない、または開始日より前の場合は自動設定
+    // 開始日を変更した場合、終了日を自動設定（新規作成時のみ）
     if (name === 'startDate' && value) {
       const startDate = new Date(value);
       const currentEndDate = formData.endDate ? new Date(formData.endDate) : null;
       
-      if (!currentEndDate || currentEndDate <= startDate) {
+      // 新規作成時、または終了日が未設定/開始日以前の場合は翌日に自動設定
+      if (!isEditMode && (!currentEndDate || !formData.endDate)) {
+        // 初回入力時は翌日に自動設定
+        const endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + 1);
+        newFormData.endDate = endDate.toISOString().split('T')[0];
+      } else if (currentEndDate && currentEndDate < startDate) {
+        // 終了日が開始日より前になる場合は調整
         const endDate = new Date(startDate);
         endDate.setDate(endDate.getDate() + 1);
         newFormData.endDate = endDate.toISOString().split('T')[0];

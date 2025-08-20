@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import TermsOfService from './TermsOfService';
+import UpdateHistory from './UpdateHistory';
 
 const AccountSettings = ({ onClose }) => {
   const { user, signOut } = useAuth();
@@ -12,6 +13,7 @@ const AccountSettings = ({ onClose }) => {
   const [exportFormat, setExportFormat] = useState('json');
   const [showTerms, setShowTerms] = useState(false);
   const [showBugReport, setShowBugReport] = useState(false);
+  const [showUpdateHistory, setShowUpdateHistory] = useState(false);
 
   const handleDeleteAccount = async () => {
     if (deleteConfirmText !== 'DELETE') {
@@ -309,6 +311,17 @@ const AccountSettings = ({ onClose }) => {
         </div>
 
         <div className="settings-section">
+          <h3>アプリ情報</h3>
+          <p>アプリの更新履歴や新機能をご確認いただけます。</p>
+          <button 
+            className="btn-secondary"
+            onClick={() => setShowUpdateHistory(true)}
+          >
+            📋 更新履歴を表示
+          </button>
+        </div>
+
+        <div className="settings-section">
           <h3>サポート・フィードバック</h3>
           <p>不具合の報告や機能改善のご提案がございましたら、お気軽にお知らせください。</p>
           <button 
@@ -374,6 +387,10 @@ const AccountSettings = ({ onClose }) => {
       
       {showTerms && (
         <TermsOfService onClose={() => setShowTerms(false)} />
+      )}
+
+      {showUpdateHistory && (
+        <UpdateHistory onClose={() => setShowUpdateHistory(false)} />
       )}
 
       {showBugReport && (

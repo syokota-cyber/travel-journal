@@ -1,6 +1,8 @@
 // © 2025 Campingcar Travel Tips.com. All rights reserved.
 
 import React, { useState, useEffect } from 'react';
+import { validateTripTitle, validateDestination, validateDate } from '../utils/validation';
+import { handleFormError } from '../utils/errorHandler';
 
 function TripForm({ onSave, onCancel, editTrip, existingTrips = [] }) {
   const [formData, setFormData] = useState({
@@ -206,20 +208,38 @@ function TripForm({ onSave, onCancel, editTrip, existingTrips = [] }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // 最終バリデーションチェック
-    const errors = validateFormData();
-    setValidationErrors(errors);
+    // 入力値検証とサニタイゼーション
+    const titleValidation = validateTripTitle(formData.title);
+    const destinationValidation = validateDestination(formData.destination);
+    const startDateValidation = validateDate(formData.startDate);
+    const endDateValidation = validateDate(formData.endDate);
     
-    if (Object.keys(errors).length > 0) {
+    const validationErrors = {};
+    if (!titleValidation.isValid) validationErrors.title = titleValidation.error;
+    if (!destinationValidation.isValid) validationErrors.destination = destinationValidation.error;
+    if (!startDateValidation.isValid) validationErrors.startDate = startDateValidation.error;
+    if (!endDateValidation.isValid) validationErrors.endDate = endDateValidation.error;
+    
+    // 既存のバリデーションチェック
+    const dateErrors = validateFormData();
+    Object.assign(validationErrors, dateErrors);
+    
+    setValidationErrors(validationErrors);
+    
+    if (Object.keys(validationErrors).length > 0) {
+      const errorResult = handleFormError(validationErrors);
+      if (errorResult) {
+        console.error('フォーム検証エラー:', errorResult);
+      }
       return; // バリデーションエラーがある場合は送信しない
     }
     
     if (isEditMode) {
-      // 編集モード：既存の旅行を更新
+      // 編集モード：既存の旅行を更新（サニタイズ済みの値を使用）
       const updatedTrip = {
         ...editTrip,
-        title: formData.title,
-        destination: formData.destination,
+        title: titleValidation.value,
+        destination: destinationValidation.value,
         start_date: formData.startDate,
         end_date: formData.endDate,
         status: formData.status
@@ -227,10 +247,11 @@ function TripForm({ onSave, onCancel, editTrip, existingTrips = [] }) {
       
       onSave(updatedTrip, true); // 第2引数で編集モードを示す
     } else {
-      // 新規作成モード：新しい旅行オブジェクトを作成
+      // 新規作成モード：新しい旅行オブジェクトを作成（サニタイズ済みの値を使用）
       const newTrip = {
         ...formData,
-        destination: formData.destination,
+        title: titleValidation.value,
+        destination: destinationValidation.value,
         mainPurposes: [],
         subPurposes: [],
         items: [],

@@ -3,6 +3,8 @@ import { useAuth } from '../contexts/AuthContext';
 import TermsOfService from './TermsOfService';
 import DevAuth from './DevAuth';
 import Footer from './Footer';
+import { validateEmail, validatePassword } from '../utils/validation';
+import { handleAuthError } from '../utils/errorHandler';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -40,11 +42,19 @@ const Auth = () => {
     setLoading(true);
     setMessage('');
 
+    // メールアドレスの検証
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.isValid) {
+      setMessage(emailValidation.error);
+      setLoading(false);
+      return;
+    }
+
     if (isForgotPassword) {
       // パスワードリセット処理
       try {
         const { supabase } = await import('../lib/supabase');
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        const { error } = await supabase.auth.resetPasswordForEmail(emailValidation.value, {
           redirectTo: `${window.location.origin}/reset-password`,
         });
         
@@ -52,11 +62,22 @@ const Auth = () => {
         
         setMessage('パスワードリセット用のメールを送信しました。メールをご確認ください。');
       } catch (error) {
-        setMessage('エラー: ' + error.message);
+        const result = handleAuthError(error);
+        setMessage(result.message);
       } finally {
         setLoading(false);
       }
       return;
+    }
+
+    // パスワードの検証（新規登録時のみ）
+    if (isSignUp) {
+      const passwordValidation = validatePassword(password);
+      if (!passwordValidation.isValid) {
+        setMessage(`パスワードが弱いです: ${passwordValidation.error}`);
+        setLoading(false);
+        return;
+      }
     }
 
     // 新規登録時の利用規約同意チェック
@@ -67,16 +88,9 @@ const Auth = () => {
     }
 
     try {
-      console.log('🔐 認証試行:', { 
-        email, 
-        isSignUp, 
-        useTestAccount,
-        passwordLength: password.length 
-      });
-
       const { data, error } = isSignUp 
-        ? await signUp(email, password)
-        : await signIn(email, password);
+        ? await signUp(emailValidation.value, password)
+        : await signIn(emailValidation.value, password);
 
       console.log('🔐 認証結果:', { data, error });
 

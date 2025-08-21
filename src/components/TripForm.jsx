@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { validateTripTitle, validateDestination, validateDate } from '../utils/validation';
 import { handleFormError } from '../utils/errorHandler';
+import { DESTINATIONS } from '../constants/destinations';
 
 function TripForm({ onSave, onCancel, editTrip, existingTrips = [] }) {
   const [formData, setFormData] = useState({
@@ -14,22 +15,8 @@ function TripForm({ onSave, onCancel, editTrip, existingTrips = [] }) {
   });
   const [validationErrors, setValidationErrors] = useState({});
   
-  // 旅先方面の選択肢
-  const destinations = [
-    '北海道（道北）',
-    '北海道（道東）',
-    '北海道（道南）',
-    '北海道（道央）',
-    '東北方面',
-    '北陸方面',
-    '関東方面',
-    '甲信越地方',
-    '中部・東海方面',
-    '近畿方面',
-    '中国方面',
-    '四国方面',
-    '九州方面'
-  ];
+  // 旅先方面の選択肢（外部定数から取得）
+  const destinations = DESTINATIONS;
 
   const isEditMode = Boolean(editTrip && editTrip.id);
 

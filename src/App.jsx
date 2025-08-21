@@ -86,6 +86,7 @@ function AppContent() {
           .from('trips')
           .update({
             title: tripData.title,
+            destination: tripData.destination,
             start_date: tripData.start_date,
             end_date: tripData.end_date,
             status: tripData.status
@@ -111,6 +112,7 @@ function AppContent() {
           .from('trips')
           .insert([{
             title: tripData.title,
+            destination: tripData.destination,
             start_date: tripData.startDate,
             end_date: tripData.endDate,
             status: tripData.status,

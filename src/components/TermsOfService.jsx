@@ -101,7 +101,17 @@ const TermsOfService = ({ onClose }) => {
             本規約は、ユーザーへの事前通知により変更することがあります。変更後の利用をもって、新規約への同意とみなします。
           </p>
 
-          <p className="terms-date">施行日: 2025年8月9日<br/>運営：Travel Journal 開発チーム</p>
+          <h3>第12条（Cookie利用）</h3>
+          <p>
+            サービス機能提供のため必要最小限のCookieを利用します。ブラウザ設定で無効化可能ですが、一部機能が制限されます。
+          </p>
+
+          <h3>第13条（同意）</h3>
+          <p>
+            サービス利用により本規約・Cookie利用・個人情報取扱いに同意したものとみなします。
+          </p>
+
+          <p className="terms-date">施行日: 2025年8月22日<br/>運営：Travel Journal 開発チーム</p>
         </div>
         <button className="terms-close-btn" onClick={onClose}>閉じる</button>
       </div>

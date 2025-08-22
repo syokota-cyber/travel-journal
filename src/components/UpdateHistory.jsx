@@ -1,67 +1,9 @@
 import React from 'react';
+import { CURRENT_VERSION, VERSION_HISTORY } from '../config/version';
 
 const UpdateHistory = ({ onClose }) => {
-  const updates = [
-    {
-      version: "2.4.0",
-      date: "2025年8月22日",
-      features: [
-        "📜 利用規約更新: Cookie利用条項追加（第12条）",
-        "📜 利用規約更新: 同意条項追加（第13条）",
-        "⚖️ 法的コンプライアンス強化"
-      ]
-    },
-    {
-      version: "2.3.0",
-      date: "2025年8月20日",
-      features: [
-        "🔒 セキュリティ強化: 入力値検証・サニタイゼーション実装",
-        "🔒 CSP（Content Security Policy）によるXSS攻撃防御",
-        "🔒 エラーハンドリングの統一化",
-        "📅 旅行日程: 開始日入力時に終了日を翌日に自動設定",
-        "📋 更新履歴の表示機能追加"
-      ]
-    },
-    {
-      version: "2.2.0",
-      date: "2025年8月19日",
-      features: [
-        "🗺️ 旅先方面機能: 13の方面から選択可能",
-        "📍 カレンダー表示: 旅先方面を表示",
-        "🔄 本番環境データ同期システム追加",
-        "🐛 マスターデータの重複問題を解決"
-      ]
-    },
-    {
-      version: "2.1.0",
-      date: "2025年8月15日",
-      features: [
-        "📊 達成度計算の統一: メイン70% + サブ30%",
-        "🎯 達成度表示の精度改善",
-        "📋 持ち物活用度を参考値として明確化"
-      ]
-    },
-    {
-      version: "2.0.0",
-      date: "2025年8月13日",
-      features: [
-        "🔐 Row Level Security (RLS) 全面対応",
-        "📧 カスタムSMTP設定（Resend）",
-        "🛡️ セキュリティポリシーの強化",
-        "📊 Security Advisor対応完了"
-      ]
-    },
-    {
-      version: "1.9.0",
-      date: "2025年8月11日",
-      features: [
-        "🔄 データベース復旧システム改善",
-        "📝 Migration履歴管理の強化",
-        "🎨 UIデザインの微調整",
-        "🐛 各種バグ修正"
-      ]
-    }
-  ];
+  // version.js から一元管理されたバージョン履歴を取得
+  const updates = VERSION_HISTORY;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -89,7 +31,7 @@ const UpdateHistory = ({ onClose }) => {
         
         <div className="modal-footer">
           <p className="app-info">
-            キャンピングカー旅行手帳 v{updates[0].version}<br />
+            キャンピングカー旅行手帳 v{CURRENT_VERSION}<br />
             © 2025 Campingcar Travel Tips.com
           </p>
         </div>

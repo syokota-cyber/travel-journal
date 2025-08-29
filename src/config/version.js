@@ -8,11 +8,22 @@
 // 次回更新予定: Phase 2 (Git タグ運用) - 2025年8月29日
 // ============================================
 
-export const CURRENT_VERSION = "2.4.0";
-export const RELEASE_DATE = "2025-08-22";
+export const CURRENT_VERSION = "2.5.0";
+export const RELEASE_DATE = "2025-08-29";
 
 // バージョン履歴（最新順）
 export const VERSION_HISTORY = [
+  {
+    version: "2.5.0",
+    date: "2025年8月29日",
+    features: [
+      "📊 管理ダッシュボード実装（管理者専用）",
+      "📈 統計表示: ユーザー数・旅行記録数",
+      "🎯 人気の目的地 TOP5 分析",
+      "📋 最近の旅行記録一覧表示",
+      "🔒 厳重なアクセス制御とセキュリティ強化"
+    ]
+  },
   {
     version: "2.4.0",
     date: "2025年8月22日",

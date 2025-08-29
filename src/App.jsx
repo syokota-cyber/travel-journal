@@ -10,6 +10,8 @@ import TripForm from './components/TripForm';
 import Auth from './components/Auth';
 import Footer from './components/Footer';
 import AccountSettings from './components/AccountSettings';
+import AdminDashboard from './components/AdminDashboard';
+import AdminRoute from './components/AdminRoute';
 import { enforceHTTPS, validateEnvironment, checkSecurityHeaders } from './utils/security';
 
 // メインアプリコンポーネント（認証後）
@@ -21,6 +23,7 @@ function AppContent() {
   const [editingTrip, setEditingTrip] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showAccountSettings, setShowAccountSettings] = useState(false);
+  const [showAdminDashboard, setShowAdminDashboard] = useState(false);
 
   // データ取得
   useEffect(() => {
@@ -165,6 +168,16 @@ function AppContent() {
       <header className="App-header">
         <h1>🚐 キャンピングカー旅行手帳</h1>
         <div className="header-controls">
+          {/* 管理者のみ表示 */}
+          {user?.email === 'shin1yokota@gmail.com' && (
+            <button 
+              onClick={() => setShowAdminDashboard(true)} 
+              className="btn-text"
+              style={{ marginRight: '1rem' }}
+            >
+              📊 管理画面
+            </button>
+          )}
           <button 
             onClick={() => setShowAccountSettings(true)} 
             className="btn-text"
@@ -181,6 +194,19 @@ function AppContent() {
       <main className="App-main">
         {loading ? (
           <div>データを読み込み中...</div>
+        ) : showAdminDashboard ? (
+          <>
+            <button 
+              onClick={() => setShowAdminDashboard(false)}
+              className="btn-secondary"
+              style={{ marginBottom: '20px' }}
+            >
+              ← 旅行記録に戻る
+            </button>
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          </>
         ) : showCreateForm ? (
           <TripForm
             onSave={handleSaveTrip}

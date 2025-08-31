@@ -2,5 +2,8 @@ node_modules/
 build/
 .env.local
 .env
+.env.production
+.env.vercel
+.env.supabase
 .vercel/
 *.log

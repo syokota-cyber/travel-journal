@@ -5,6 +5,7 @@ import DevAuth from './DevAuth';
 import Footer from './Footer';
 import { validateEmail, validatePassword } from '../utils/validation';
 import { handleAuthError } from '../utils/errorHandler';
+import { supabase, getRedirectURL } from '../lib/supabase';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -20,6 +21,7 @@ const Auth = () => {
   const [useTestAccount, setUseTestAccount] = useState(false);
 
   const { signUp, signIn, confirmationMessage, setConfirmationMessage } = useAuth();
+  const [emailConfirmationSent, setEmailConfirmationSent] = useState(false);
 
   useEffect(() => {
     if (confirmationMessage) {
@@ -114,20 +116,19 @@ const Auth = () => {
       }
 
       if (isSignUp) {
-        if (useTestAccount) {
+        // メール確認が必要な場合
+        if (data?.user?.identities?.length === 0) {
+          setEmailConfirmationSent(true);
+          setMessage('確認メールを送信しました！メール内のリンクをクリックして、アカウントを有効化してください。');
+        } else if (useTestAccount) {
           setMessage('テストアカウントが作成されました！ログインタブに切り替えてログインしてください。');
-          // 自動的にログインタブに切り替え
           setTimeout(() => {
             setIsSignUp(false);
             setMessage('作成したアカウントでログインしてください。');
           }, 2000);
         } else {
-          setMessage('アカウントが作成されました！ログインタブに切り替えてログインしてください。');
-          // 自動的にログインタブに切り替え
-          setTimeout(() => {
-            setIsSignUp(false);
-            setMessage('作成したアカウントでログインしてください。');
-          }, 2000);
+          setMessage('アカウントが作成されました！確認メールをご確認ください。');
+          setEmailConfirmationSent(true);
         }
       } else {
         setMessage('ログインに成功しました！');
@@ -180,6 +181,58 @@ const Auth = () => {
     }
   };
 
+  // Googleログイン処理
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    setMessage('');
+    
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: getRedirectURL(),
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+        },
+      });
+      
+      if (error) throw error;
+      
+      setMessage('Googleアカウントでログイン中...');
+    } catch (error) {
+      console.error('Google OAuth error:', error);
+      setMessage(`Googleログインエラー: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // メール確認の再送信
+  const resendConfirmationEmail = async () => {
+    if (!email) {
+      setMessage('メールアドレスを入力してください。');
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
+      });
+      
+      if (error) throw error;
+      
+      setMessage('確認メールを再送信しました。メールをご確認ください。');
+    } catch (error) {
+      setMessage(`エラー: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="auth-container">
       <div className="auth-form">
@@ -208,6 +261,65 @@ const Auth = () => {
                 }}
               >
                 新規登録
+              </button>
+            </div>
+
+            {/* Googleログインボタン */}
+            <div className="oauth-section">
+              <div className="divider" style={{
+                textAlign: 'center',
+                position: 'relative',
+                margin: '20px 0',
+                color: '#666'
+              }}>
+                <span style={{
+                  backgroundColor: '#fff',
+                  padding: '0 10px',
+                  position: 'relative',
+                  zIndex: 1
+                }}>または</span>
+                <div style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: 0,
+                  right: 0,
+                  height: '1px',
+                  backgroundColor: '#e0e0e0',
+                  zIndex: 0
+                }}></div>
+              </div>
+              <button
+                type="button"
+                onClick={handleGoogleLogin}
+                disabled={loading}
+                className="btn-google"
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  backgroundColor: '#fff',
+                  border: '1px solid #dadce0',
+                  borderRadius: '4px',
+                  color: '#3c4043',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'background-color 0.2s',
+                  marginTop: '16px'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f7f8f8'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#fff'}
+              >
+                <svg width="18" height="18" viewBox="0 0 18 18" style={{ marginRight: '8px' }}>
+                  <path fill="#4285F4" d="M17.6 9.2l-.1-1.8H9v3.4h4.8C13.6 12 13 13 12 13.6v2.2h3a8.8 8.8 0 0 0 2.6-6.6z"/>
+                  <path fill="#34A853" d="M9 18c2.4 0 4.5-.8 6-2.2l-3-2.2a5.4 5.4 0 0 1-8-2.9H1V13a9 9 0 0 0 8 5z"/>
+                  <path fill="#FBBC05" d="M4 10.7a5.4 5.4 0 0 1 0-3.4V5H1a9 9 0 0 0 0 8l3-2.3z"/>
+                  <path fill="#EA4335" d="M9 3.6c1.3 0 2.5.4 3.4 1.3L15 2.3A9 9 0 0 0 1 5l3 2.4a5.4 5.4 0 0 1 5-3.7z"/>
+                  <path fill="none" d="M0 0h18v18H0z"/>
+                </svg>
+                Googleでログイン
               </button>
             </div>
 
@@ -315,6 +427,19 @@ const Auth = () => {
         {message && (
           <div className={`message ${message.includes('エラー') || message.includes('正しくありません') ? 'error' : 'success'}`}>
             {message}
+            {emailConfirmationSent && !message.includes('エラー') && (
+              <div style={{ marginTop: '10px' }}>
+                <button
+                  type="button"
+                  onClick={resendConfirmationEmail}
+                  disabled={loading}
+                  className="btn-text-link"
+                  style={{ fontSize: '14px' }}
+                >
+                  確認メールを再送信
+                </button>
+              </div>
+            )}
           </div>
         )}
 

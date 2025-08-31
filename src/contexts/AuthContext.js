@@ -17,16 +17,26 @@ export const AuthProvider = ({ children }) => {
   const [confirmationMessage, setConfirmationMessage] = useState('');
 
   useEffect(() => {
-    // URLパラメータをチェック
-    const checkUrlParams = () => {
+    // URLパラメータをチェック（メール確認とOAuth認証のコールバック処理）
+    const checkUrlParams = async () => {
       const params = new URLSearchParams(window.location.search);
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
       const type = params.get('type');
       const error = params.get('error');
       const error_description = params.get('error_description');
       
+      // OAuth認証のコールバック処理
+      if (hashParams.has('access_token')) {
+        console.log('OAuth認証コールバック検出');
+        // Supabaseが自動的にセッションを処理
+      }
+      
       if (type === 'signup' && !error) {
         setConfirmationMessage('メールアドレスが確認されました！アプリに戻ってログインしてください。');
         // URLパラメータをクリア
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } else if (type === 'recovery' && !error) {
+        setConfirmationMessage('パスワードリセットが確認されました。新しいパスワードを設定してください。');
         window.history.replaceState({}, document.title, window.location.pathname);
       } else if (error) {
         if (error === 'access_denied' && error_description?.includes('Email link is invalid')) {

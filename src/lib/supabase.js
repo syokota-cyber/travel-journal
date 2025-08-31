@@ -17,7 +17,16 @@ export const supabase = createClient(
     auth: {
       persistSession: true,
       storageKey: 'travel-journal-auth',
-      storage: window.localStorage
+      storage: window.localStorage,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      flowType: 'pkce'
     }
   }
 )
+
+// リダイレクトURLの設定
+export const getRedirectURL = () => {
+  // 現在のURLをそのまま使用（ポート3001や他のポートにも対応）
+  return window.location.origin
+}

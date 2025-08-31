@@ -8,11 +8,22 @@
 // 次回更新予定: Phase 2 (Git タグ運用) - 2025年8月29日
 // ============================================
 
-export const CURRENT_VERSION = "2.5.0";
-export const RELEASE_DATE = "2025-08-29";
+export const CURRENT_VERSION = "2.6.0";
+export const RELEASE_DATE = "2025-08-31";
 
 // バージョン履歴（最新順）
 export const VERSION_HISTORY = [
+  {
+    version: "2.6.0",
+    date: "2025年8月31日",
+    features: [
+      "🔑 Google OAuth認証機能追加",
+      "✉️ メール確認機能の実装（新規登録時）",
+      "📧 確認メールの日本語テンプレート設定",
+      "🔄 動的リダイレクトURL対応",
+      "🔒 認証フローのセキュリティ強化"
+    ]
+  },
   {
     version: "2.5.0",
     date: "2025年8月29日",

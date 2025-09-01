@@ -1,15 +1,17 @@
 import React from 'react';
-import { CURRENT_VERSION, VERSION_HISTORY } from '../config/version';
+import { CURRENT_VERSION, DISPLAY_VERSION_HISTORY, isDevelopment } from '../config/version';
 
 const UpdateHistory = ({ onClose }) => {
-  // version.js から一元管理されたバージョン履歴を取得
-  const updates = VERSION_HISTORY;
+  // 環境に応じて適切な履歴を表示
+  // 開発環境: 詳細な技術情報を含む履歴
+  // 本番環境: エンドユーザー向けの分かりやすい履歴
+  const updates = DISPLAY_VERSION_HISTORY;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content update-history" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>📋 更新履歴</h2>
+          <h2>📋 更新履歴 {isDevelopment && <span style={{fontSize: '14px', color: '#666'}}>(開発者版)</span>}</h2>
           <button className="close-button" onClick={onClose}>×</button>
         </div>
         

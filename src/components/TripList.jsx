@@ -1,20 +1,21 @@
 // © 2025 Campingcar Travel Tips.com. All rights reserved.
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
 function TripList({ trips, onSelectTrip, onCreateTrip }) {
+  const { t, i18n } = useTranslation();
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [tripUsage, setTripUsage] = useState({ monthlyCount: {}, yearlyTotal: 0 });
   const [canCreateTrip, setCanCreateTrip] = useState(false);
   const [tripEvaluations, setTripEvaluations] = useState({});
   const { user } = useAuth();
 
-  const months = [
-    '1月', '2月', '3月', '4月', '5月', '6月',
-    '7月', '8月', '9月', '10月', '11月', '12月'
-  ];
+  const months = i18n.language === 'ja'
+    ? ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+    : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   useEffect(() => {
     if (trips && user) {
@@ -166,20 +167,20 @@ function TripList({ trips, onSelectTrip, onCreateTrip }) {
     }
     
     return (
-      <span 
-        className="percentage-rating" 
-        title={`達成度: ${percentage}%`}
+      <span
+        className="percentage-rating"
+        title={t('tripList.achievementRate', { percentage })}
         style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: '8px'
         }}>
-        <span style={{ 
-          fontSize: '0.7rem', 
+        <span style={{
+          fontSize: '0.7rem',
           color: '#666',
           marginRight: '4px'
         }}>
-          達成度
+          {t('tripList.achievement')}
         </span>
         <span className="percentage-score" style={{
           fontWeight: 'bold',
@@ -221,7 +222,7 @@ function TripList({ trips, onSelectTrip, onCreateTrip }) {
         return;
       }
       if (tripUsage.yearlyTotal >= 24) {
-        alert('年間利用制限（24件）に達しています。');
+        alert(t('yearly.limit'));
         return;
       }
       
@@ -294,13 +295,13 @@ function TripList({ trips, onSelectTrip, onCreateTrip }) {
           </button>
         </div>
         
-        <button 
-          className={`btn-primary ${tripUsage.yearlyTotal >= 24 ? 'disabled' : ''}`} 
+        <button
+          className={`btn-primary ${tripUsage.yearlyTotal >= 24 ? 'disabled' : ''}`}
           onClick={handleCreateTrip}
           disabled={tripUsage.yearlyTotal >= 24}
-          title={tripUsage.yearlyTotal >= 24 ? '年間利用制限に達しています' : '新しい旅行を計画'}
+          title={tripUsage.yearlyTotal >= 24 ? t('tripList.yearlyLimitReached') : t('tripList.createNewTrip')}
         >
-          + 新しい旅行を計画
+          + {t('tripList.createNewTrip')}
         </button>
       </div>
 
@@ -322,17 +323,17 @@ function TripList({ trips, onSelectTrip, onCreateTrip }) {
               <div className="month-trips">
                 {monthTrips.length === 0 ? (
                   <>
-                    <div className="no-trips">予定なし</div>
+                    <div className="no-trips">{t('tripList.noPlans')}</div>
                     {monthCount < 2 && tripUsage.yearlyTotal < 24 && selectedYear >= new Date().getFullYear() && (
-                      <button 
+                      <button
                         className="add-trip-btn"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleCreateTrip(index);
                         }}
-                        title={`${month}に旅行を追加`}
+                        title={t('tripList.addPlanToMonth', { month })}
                       >
-                        プラン追加
+                        {t('tripList.addPlan')}
                       </button>
                     )}
                   </>
@@ -374,15 +375,15 @@ function TripList({ trips, onSelectTrip, onCreateTrip }) {
                       );
                     })}
                     {monthCount === 1 && tripUsage.yearlyTotal < 24 && selectedYear >= new Date().getFullYear() && (
-                      <button 
+                      <button
                         className="add-trip-btn small"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleCreateTrip(index);
                         }}
-                        title={`${month}に2つ目の旅行を追加`}
+                        title={t('tripList.addSecondPlanToMonth', { month })}
                       >
-                        2つ目のプラン追加
+                        {t('tripList.addSecondPlan')}
                       </button>
                     )}
                   </>

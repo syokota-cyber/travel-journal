@@ -1,119 +1,61 @@
 // © 2025 Campingcar Travel Tips.com. All rights reserved.
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const TermsOfService = ({ onClose }) => {
+  const { t } = useTranslation('terms');
+  const noticeItemsRaw = t('notice.items', { returnObjects: true });
+  const noticeItems = Array.isArray(noticeItemsRaw) ? noticeItemsRaw : [];
+
+  const sectionsRaw = t('sections', { returnObjects: true });
+  const sectionEntries =
+    sectionsRaw && typeof sectionsRaw === 'object' && !Array.isArray(sectionsRaw)
+      ? Object.entries(sectionsRaw)
+      : [];
+
   return (
     <div className="terms-modal">
       <div className="terms-content">
-        <h2>Travel Journal 利用規約</h2>
+        <h2>{t('modal_title')}</h2>
         <div className="terms-text">
           <div className="service-notice">
-            <h3>⚠️ 重要なお知らせ</h3>
-            <p><strong>このサービスは実験的・学習目的のサービスです</strong></p>
+            <h3>{t('notice.title')}</h3>
+            <p>
+              <strong>{t('notice.intro')}</strong>
+            </p>
             <ul>
-              <li>✅ 推奨: 個人の旅行記録・思い出の整理</li>
-              <li>❌ 避ける: 唯一のバックアップとしての利用</li>
-              <li>💾 推奨: 月1回程度のデータエクスポート実行</li>
+              {noticeItems.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
             </ul>
           </div>
+          {sectionEntries.map(([sectionKey, section]) => {
+            const lines = Array.isArray(section.items) ? section.items : [];
 
-          <h3>第1条（サービスの性質・目的）</h3>
-          <p>
-            1. 本サービス「Travel Journal」は、学習・研究目的で開発された非営利の実験的サービスです。<br/>
-            2. 個人の旅行記録・計画作成を支援することを目的とし、商用利用を想定していません。<br/>
-            3. 利用は無料で提供され、収益化の予定はありません。
+            return (
+              <div key={sectionKey} className="terms-section">
+                <h3>{section.title}</h3>
+                <p>
+                  {lines.map((line, index) => (
+                    <React.Fragment key={`${sectionKey}-${index}`}>
+                      {line}
+                      {index < lines.length - 1 && <br />}
+                    </React.Fragment>
+                  ))}
+                </p>
+              </div>
+            );
+          })}
+
+          <p className="terms-date">
+            {t('effective_date')}<br />
+            {t('operator')}
           </p>
-
-          <h3>第2条（収集する個人情報）</h3>
-          <p>
-            1. 本サービスが収集する個人情報は以下に限定されます：<br/>
-            • メールアドレス（アカウント認証用）<br/>
-            • ユーザーが入力した旅行記録・計画データ<br/>
-            2. 氏名、住所、電話番号等の詳細個人情報は収集いたしません。
-          </p>
-
-          <h3>第3条（データの取り扱い・制限事項）</h3>
-          <p>
-            1. 当方はユーザーデータの永続性・可用性を保証いたしません。<br/>
-            2. 第三者サービス（Supabase等）の障害・制限により、予告なくデータが消失・アクセス不可となる可能性があります。<br/>
-            3. <strong>重要なデータについては、ユーザー自身で定期的に設定画面のエクスポート機能を使用してバックアップを取得してください。</strong>
-          </p>
-
-          <h3>第4条（エクスポート機能の提供）</h3>
-          <p>
-            1. ユーザーの利便性向上のため、設定画面からデータエクスポート機能を提供いたします。<br/>
-            2. エクスポートされるデータ形式：JSON形式・CSV形式<br/>
-            3. エクスポート可能なデータ：<br/>
-            • 作成した旅行計画<br/>
-            • チェックリスト<br/>
-            • レビュー・評価<br/>
-            （※メールアドレス等の認証情報は除く）
-          </p>
-
-          <h3>第5条（推奨される利用方法）</h3>
-          <p>
-            1. 学習・趣味・個人記録用途での利用<br/>
-            2. 定期的なデータエクスポートの実行<br/>
-            3. 重要な旅行記録については他の手段との併用
-          </p>
-
-          <h3>第6条（利用を控えていただきたい用途）</h3>
-          <p>
-            1. 商用・営利目的での利用<br/>
-            2. 業務・仕事での重要データの管理<br/>
-            3. 個人情報・機密情報の保存<br/>
-            4. 他者の権利を侵害する内容の記録
-          </p>
-
-          <h3>第7条（サービスレベル）</h3>
-          <p>
-            本サービスは以下の条件で提供されます：<br/>
-            • 稼働率保証：なし（ベストエフォート）<br/>
-            • データバックアップ：当方では実施せず<br/>
-            • 障害時対応：平日日中、可能な範囲で対応<br/>
-            • サポート：基本機能の使い方のみ
-          </p>
-
-          <h3>第8条（免責事項）</h3>
-          <p>
-            1. 以下の事由により生じた損害について、当方は責任を負いません：<br/>
-            • データの消失、破損、アクセス不可<br/>
-            • サービスの停止、中断、終了<br/>
-            • 第三者サービスの障害・制限・規約変更<br/>
-            • ネットワーク障害・端末の不具合<br/>
-            • その他当方の責に帰さない事由
-          </p>
-
-          <h3>第9条（損害賠償の制限）</h3>
-          <p>
-            本サービスは無償で提供されるため、いかなる場合も損害賠償責任を負いません。
-          </p>
-
-          <h3>第10条（サービスの変更・終了）</h3>
-          <p>
-            1. 当方は、ユーザーに事前通知することなく、本サービスの内容変更・一時停止・終了を行うことがあります。<br/>
-            2. サービス終了時は、可能な限り事前告知を行い、データエクスポート期間を設けるよう努めます。
-          </p>
-
-          <h3>第11条（規約の変更）</h3>
-          <p>
-            本規約は、ユーザーへの事前通知により変更することがあります。変更後の利用をもって、新規約への同意とみなします。
-          </p>
-
-          <h3>第12条（Cookie利用）</h3>
-          <p>
-            サービス機能提供のため必要最小限のCookieを利用します。ブラウザ設定で無効化可能ですが、一部機能が制限されます。
-          </p>
-
-          <h3>第13条（同意）</h3>
-          <p>
-            サービス利用により本規約・Cookie利用・個人情報取扱いに同意したものとみなします。
-          </p>
-
-          <p className="terms-date">施行日: 2025年8月22日<br/>運営：Travel Journal 開発チーム</p>
         </div>
-        <button className="terms-close-btn" onClick={onClose}>閉じる</button>
+        <button className="terms-close-btn" onClick={onClose}>
+          {t('close_button')}
+        </button>
       </div>
     </div>
   );

@@ -27,6 +27,42 @@
   font-weight: 600;
 }
 
+.header-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.language-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: inherit;
+}
+
+.language-switcher__label {
+  opacity: 0.85;
+}
+
+.language-switcher__select {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: inherit;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+}
+
+.language-switcher__select:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.7);
+}
+
+.language-switcher__select option {
+  color: #000;
+}
+
 /* メインコンテンツ */
 .App-main {
   max-width: 768px;

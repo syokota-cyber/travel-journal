@@ -1,6 +1,7 @@
 // © 2025 Campingcar Travel Tips.com. All rights reserved.
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import './App.css';
 import { supabase } from './lib/supabase';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -12,11 +13,13 @@ import Footer from './components/Footer';
 import AccountSettings from './components/AccountSettings';
 import AdminDashboard from './components/AdminDashboard';
 import AdminRoute from './components/AdminRoute';
+import LanguageSwitcher from './components/LanguageSwitcher';
 import { enforceHTTPS, validateEnvironment, checkSecurityHeaders } from './utils/security';
 
 // メインアプリコンポーネント（認証後）
 function AppContent() {
   const { user, signOut } = useAuth();
+  const { t } = useTranslation();
   const [trips, setTrips] = useState([]);
   const [selectedTrip, setSelectedTrip] = useState(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -166,34 +169,33 @@ function AppContent() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>🚐 キャンピングカー旅行手帳</h1>
+        <h1>{t('app.title')}</h1>
         <div className="header-controls">
+          <LanguageSwitcher className="header-language-switcher" />
           {/* 管理者のみ表示 */}
           {user?.email === 'shin1yokota@gmail.com' && (
             <button 
               onClick={() => setShowAdminDashboard(true)} 
               className="btn-text"
-              style={{ marginRight: '1rem' }}
             >
-              📊 管理画面
+              {t('navigation.admin_dashboard')}
             </button>
           )}
           <button 
             onClick={() => setShowAccountSettings(true)} 
             className="btn-text"
-            style={{ marginRight: '1rem' }}
           >
-            ⚙️ 設定
+            {t('navigation.settings')}
           </button>
           <button onClick={signOut} className="btn-text">
-            🚪 ログアウト
+            {t('app.logout')}
           </button>
         </div>
       </header>
-      
+
       <main className="App-main">
         {loading ? (
-          <div>データを読み込み中...</div>
+          <div>{t('app.loading')}</div>
         ) : showAdminDashboard ? (
           <>
             <button 

@@ -1,11 +1,13 @@
 // © 2025 Campingcar Travel Tips.com. All rights reserved.
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { validateTripTitle, validateDestination, validateDate } from '../utils/validation';
 import { handleFormError } from '../utils/errorHandler';
-import { DESTINATIONS } from '../constants/destinations';
+import { getDestinations } from '../constants/destinations';
 
 function TripForm({ onSave, onCancel, editTrip, existingTrips = [] }) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     title: '',
     destination: '',
@@ -14,9 +16,9 @@ function TripForm({ onSave, onCancel, editTrip, existingTrips = [] }) {
     status: 'planning'
   });
   const [validationErrors, setValidationErrors] = useState({});
-  
-  // 旅先方面の選択肢（外部定数から取得）
-  const destinations = DESTINATIONS;
+
+  // 旅先方面の選択肢（i18n対応）
+  const destinations = getDestinations(t);
 
   const isEditMode = Boolean(editTrip && editTrip.id);
 
@@ -111,15 +113,15 @@ function TripForm({ onSave, onCancel, editTrip, existingTrips = [] }) {
         
         return (newStart <= existingEnd && newEnd >= existingStart);
       });
-      
-      errors.dateOverlap = `「${overlappingTrip?.title}」と日程が重複しています`;
+
+      errors.dateOverlap = t('tripForm.errors.dateOverlap', { title: overlappingTrip?.title });
     }
-    
+
     // 月間件数チェック
     if (checkMonthlyLimit(formData.startDate)) {
       const targetDate = new Date(formData.startDate);
-      const monthStr = `${targetDate.getFullYear()}年${targetDate.getMonth() + 1}月`;
-      errors.monthlyLimit = `${monthStr}は既に2件の旅行が登録されています（月間上限）`;
+      const monthStr = `${targetDate.getFullYear()}${t('common.year')}${targetDate.getMonth() + 1}${t('common.month')}`;
+      errors.monthlyLimit = t('tripForm.errors.monthlyLimit', { month: monthStr });
     }
     
     return errors;
@@ -185,15 +187,15 @@ function TripForm({ onSave, onCancel, editTrip, existingTrips = [] }) {
         
         return overlaps;
       });
-      
-      errors.dateOverlap = `「${overlappingTrip?.title}」と日程が重複しています`;
+
+      errors.dateOverlap = t('tripForm.errors.dateOverlap', { title: overlappingTrip?.title });
     }
-    
+
     // 月間件数チェック
     if (checkMonthlyLimit(data.startDate)) {
       const targetDate = new Date(data.startDate);
-      const monthStr = `${targetDate.getFullYear()}年${targetDate.getMonth() + 1}月`;
-      errors.monthlyLimit = `${monthStr}は既に2件の旅行が登録されています（月間上限）`;
+      const monthStr = `${targetDate.getFullYear()}${t('common.year')}${targetDate.getMonth() + 1}${t('common.month')}`;
+      errors.monthlyLimit = t('tripForm.errors.monthlyLimit', { month: monthStr });
     }
     
     return errors;
@@ -258,24 +260,24 @@ function TripForm({ onSave, onCancel, editTrip, existingTrips = [] }) {
 
   return (
     <div className="trip-form" data-edit-mode={isEditMode}>
-      <h2>{isEditMode ? '旅行計画を編集' : '新しい旅行を計画'}</h2>
-      
+      <h2>{isEditMode ? t('tripForm.editTitle') : t('tripForm.newTitle')}</h2>
+
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="title">旅行タイトル</label>
+          <label htmlFor="title">{t('tripForm.tripTitle')}</label>
           <input
             type="text"
             id="title"
             name="title"
             value={formData.title}
             onChange={handleChange}
-            placeholder="例: 2025年秋 紅葉狩りツアー"
+            placeholder={t('tripForm.tripTitlePlaceholder')}
             required
           />
         </div>
-        
+
         <div className="form-group">
-          <label htmlFor="destination">旅先方面</label>
+          <label htmlFor="destination">{t('tripForm.destination')}</label>
           <select
             id="destination"
             name="destination"
@@ -283,20 +285,20 @@ function TripForm({ onSave, onCancel, editTrip, existingTrips = [] }) {
             onChange={handleChange}
             required
           >
-            <option value="">選択してください</option>
+            <option value="">{t('common.selectPlaceholder')}</option>
             {destinations.map((dest) => (
-              <option key={dest} value={dest}>
-                {dest}
+              <option key={dest.key} value={dest.name}>
+                {dest.name}
               </option>
             ))}
           </select>
         </div>
-        
+
         <div className="date-section">
-          <h3>📅 旅行日程</h3>
+          <h3>📅 {t('tripForm.schedule')}</h3>
           <div className="date-inputs">
             <div className="form-group">
-              <label htmlFor="startDate">開始日</label>
+              <label htmlFor="startDate">{t('tripForm.startDate')}</label>
               <input
                 type="date"
                 id="startDate"
@@ -309,9 +311,9 @@ function TripForm({ onSave, onCancel, editTrip, existingTrips = [] }) {
             </div>
             
             <div className="date-separator">〜</div>
-            
+
             <div className="form-group">
-              <label htmlFor="endDate">終了日</label>
+              <label htmlFor="endDate">{t('tripForm.endDate')}</label>
               <input
                 type="date"
                 id="endDate"
@@ -324,13 +326,13 @@ function TripForm({ onSave, onCancel, editTrip, existingTrips = [] }) {
               />
             </div>
           </div>
-          
+
           {formData.startDate && formData.endDate && (
             <div className="date-preview">
-              <span className="preview-label">期間：</span>
+              <span className="preview-label">{t('tripForm.period')}：</span>
               <span className="preview-text">
                 {new Date(formData.startDate).toLocaleDateString('ja-JP')} 〜 {new Date(formData.endDate).toLocaleDateString('ja-JP')}
-                ({Math.ceil((new Date(formData.endDate) - new Date(formData.startDate)) / (1000 * 60 * 60 * 24) + 1)}日間)
+                ({t('tripForm.days', { count: Math.ceil((new Date(formData.endDate) - new Date(formData.startDate)) / (1000 * 60 * 60 * 24) + 1) })})
               </span>
             </div>
           )}
@@ -353,33 +355,33 @@ function TripForm({ onSave, onCancel, editTrip, existingTrips = [] }) {
         </div>
         
         <div className="form-group">
-          <label htmlFor="status">ステータス</label>
+          <label htmlFor="status">{t('tripForm.status')}</label>
           <select
             id="status"
             name="status"
             value={formData.status}
             onChange={handleChange}
           >
-            <option value="planning">📝 計画中</option>
-            <option value="ongoing">🚗 進行中</option>
-            <option value="completed">📒 完了</option>
+            <option value="planning">📝 {t('common.status.planning')}</option>
+            <option value="ongoing">🚗 {t('common.status.ongoing')}</option>
+            <option value="completed">📒 {t('common.status.completed')}</option>
           </select>
         </div>
-        
+
         <div className="form-note">
-          <p>💡 旅行作成後、詳細画面で目的や持ち物を設定できます</p>
+          <p>💡 {t('tripForm.note')}</p>
         </div>
-        
+
         <div className="form-actions">
           <button type="button" onClick={onCancel} className="btn-secondary">
-            ← 戻る
+            ← {t('common.back')}
           </button>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="btn-primary"
             disabled={Object.keys(validationErrors).length > 0}
           >
-            {isEditMode ? '✏️ 更新する' : '🚐 旅行を作成'}
+            {isEditMode ? `✏️ ${t('common.update')}` : `🚐 ${t('tripForm.createTrip')}`}
           </button>
         </div>
       </form>

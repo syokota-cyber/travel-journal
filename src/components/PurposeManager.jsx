@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 import { sanitizeInput } from '../utils/security';
 
 const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
+  const { t } = useTranslation();
   const [mainPurposes, setMainPurposes] = useState([]);
   const [subPurposes, setSubPurposes] = useState([]);
   const [selectedMainIds, setSelectedMainIds] = useState([]);
@@ -262,7 +264,7 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
     <div className="purpose-manager">
       {/* メイン目的 */}
       <div className="purpose-section">
-        <h4>🎯 メイン目的</h4>
+        <h4>🎯 {t('purposes.mainPurposes')}</h4>
         <div className="purpose-grid">
           {mainPurposes.map(purpose => (
             <label key={purpose.id} className="purpose-item">
@@ -279,7 +281,7 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
 
       {/* サブ目的 */}
       <div className="purpose-section">
-        <h4>📍 サブ目的（立ち寄りスポット）</h4>
+        <h4>📍 {t('purposes.subPurposes')}</h4>
         <div className="purpose-grid">
           {subPurposes.map(purpose => (
             <label key={purpose.id} className="purpose-item">
@@ -295,26 +297,26 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
         
         {/* カスタム立ち寄りスポット追加 */}
         <div className="custom-items">
-          <h4>カスタム立ち寄りスポット</h4>
+          <h4>{t('purposes.customStops')}</h4>
           <p className="custom-items-note">
-            ※ 最大3つまで登録可能（全角20文字以内）
+            {t('purposes.customStopsNote')}
           </p>
           <div className="add-custom-item">
             <input
               type="text"
-              placeholder="立ち寄りスポットを追加..."
+              placeholder={t('purposes.customStops') + '...'}
               value={newSpotName}
               onChange={(e) => setNewSpotName(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleAddCustomSubPurpose()}
               maxLength={20}
               disabled={customSubPurposes.length >= 3}
             />
-            <button 
+            <button
               className="btn-secondary"
               onClick={handleAddCustomSubPurpose}
               disabled={customSubPurposes.length >= 3}
             >
-              追加 ({customSubPurposes.length}/3)
+              {t('purposes.addButton')} ({customSubPurposes.length}/3)
             </button>
           </div>
           
@@ -346,7 +348,7 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
       {/* 選択されたメイン目的の表示 */}
       {selectedMainIds.length > 0 && (
         <div className="selected-purposes">
-          <h5>選択されたメイン目的:</h5>
+          <h5>{t('purposes.selectedMainPurposes')}</h5>
           <div className="selected-items">
             {selectedMainIds.map(id => {
               const purpose = mainPurposes.find(p => p.id === id);
@@ -363,7 +365,7 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
       {/* 選択されたサブ目的の表示 */}
       {(selectedSubIds.length > 0 || customSubPurposes.length > 0) && (
         <div className="selected-purposes">
-          <h5>選択されたサブ目的:</h5>
+          <h5>{t('purposes.selectedSubPurposes')}</h5>
           <div className="selected-items">
             {/* 通常のサブ目的 */}
             {selectedSubIds.map(id => {
@@ -392,7 +394,7 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
         borderRadius: '8px',
         textAlign: 'center'
       }}>
-        <button 
+        <button
           className="btn-primary"
           onClick={async () => {
             try {
@@ -405,7 +407,7 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
           }}
           style={{ padding: '0.75rem 2rem' }}
         >
-          💾 計画を保存
+          {t('purposes.savePlan')}
         </button>
       </div>
     </div>

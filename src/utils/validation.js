@@ -88,23 +88,32 @@ export const validateTripTitle = (title) => {
 };
 
 /**
- * 旅先方面の検証
+ * 旅先方面の検証（i18n対応）
  */
 export const validateDestination = (destination) => {
-  const validDestinations = [
+  // i18n対応：日本語と英語の両方の地域名を許可
+  const validDestinationsJa = [
     '北海道（道北）', '北海道（道東）', '北海道（道南）', '北海道（道央）',
     '東北方面', '北陸方面', '関東方面', '甲信越地方',
     '中部・東海方面', '近畿方面', '中国方面', '四国方面', '九州方面'
   ];
-  
+
+  const validDestinationsEn = [
+    'Hokkaido (Dohoku)', 'Hokkaido (Doto)', 'Hokkaido (Donan)', 'Hokkaido (Doo)',
+    'Tohoku Region', 'Hokuriku Region', 'Kanto Region', 'Koshinetsu Region',
+    'Chubu/Tokai Region', 'Kinki Region', 'Chugoku Region', 'Shikoku Region', 'Kyushu Region'
+  ];
+
+  const validDestinations = [...validDestinationsJa, ...validDestinationsEn];
+
   if (!destination) {
     return { isValid: true, value: '', error: null }; // 任意項目
   }
-  
+
   if (!validDestinations.includes(destination)) {
-    return { isValid: false, value: '', error: '無効な旅先方面です' };
+    return { isValid: false, value: '', error: '無効な旅先方面です / Invalid destination' };
   }
-  
+
   return { isValid: true, value: destination, error: null };
 };
 

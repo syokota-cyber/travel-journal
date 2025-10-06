@@ -1,7 +1,9 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { CURRENT_VERSION, DISPLAY_VERSION_HISTORY, isDevelopment } from '../config/version';
 
 const UpdateHistory = ({ onClose }) => {
+  const { t } = useTranslation();
   // 環境に応じて適切な履歴を表示
   // 開発環境: 詳細な技術情報を含む履歴
   // 本番環境: エンドユーザー向けの分かりやすい履歴
@@ -11,7 +13,7 @@ const UpdateHistory = ({ onClose }) => {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content update-history" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>📋 更新履歴 {isDevelopment && <span style={{fontSize: '14px', color: '#666'}}>(開発者版)</span>}</h2>
+          <h2>📋 {t('updateHistory.title')} {isDevelopment && <span style={{fontSize: '14px', color: '#666'}}>({t('updateHistory.devVersion')})</span>}</h2>
           <button className="close-button" onClick={onClose}>×</button>
         </div>
         
@@ -33,8 +35,8 @@ const UpdateHistory = ({ onClose }) => {
         
         <div className="modal-footer">
           <p className="app-info">
-            キャンピングカー旅行手帳 v{CURRENT_VERSION}<br />
-            © 2025 Campingcar Travel Tips.com
+            {t('app.title')} v{CURRENT_VERSION}<br />
+            {t('common.copyright')}
           </p>
         </div>
         

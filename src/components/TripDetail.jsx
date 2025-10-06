@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 import PurposeManager from './PurposeManager';
 import ItemsManager from './ItemsManager';
@@ -6,6 +7,7 @@ import TripReview from './TripReview';
 import RulesConfirmation from './RulesConfirmation';
 
 function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('purposes');
   
   // 選択されたメイン目的に基づくアイコン取得
@@ -187,7 +189,7 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
   };
 
   const formatDate = (startDate, endDate) => {
-    if (!startDate) return '日程未定';
+    if (!startDate) return t('tripDetail.dateUnknown');
     const start = new Date(startDate).toLocaleDateString('ja-JP');
     const end = endDate ? new Date(endDate).toLocaleDateString('ja-JP') : '';
     return end ? `${start} - ${end}` : start;
@@ -195,9 +197,9 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
 
   const getStatusBadge = (status) => {
     const badges = {
-      planning: '📝 計画中',
-      ongoing: '🚗 進行中', 
-      completed: '📒 完了'
+      planning: `📝 ${t('common.status.planning')}`,
+      ongoing: `🚗 ${t('common.status.ongoing')}`,
+      completed: `📒 ${t('common.status.completed')}`
     };
     return badges[status] || status;
   };
@@ -218,7 +220,7 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
         console.log('handleStatusChange - hasMainPurposes:', hasMainPurposes);
         
         if (!hasMainPurposes) {
-          alert('まず目的を選択してから旅を開始してください。');
+          alert(t('tripDetail.alerts.selectPurposeFirst'));
           setActiveTab('purposes');
           return;
         }
@@ -246,7 +248,7 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
       }
     } catch (error) {
       console.error('ステータス更新エラー:', error);
-      alert('ステータスの更新に失敗しました');
+      alert(t('tripDetail.alerts.statusUpdateFailed'));
     } finally {
       setIsUpdatingStatus(false);
     }
@@ -271,7 +273,7 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
       }
     } catch (error) {
       console.error('ステータス更新エラー:', error);
-      alert('ステータスの更新に失敗しました');
+      alert(t('tripDetail.alerts.statusUpdateFailed'));
     } finally {
       setIsUpdatingStatus(false);
     }
@@ -290,9 +292,9 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
   // ステータス変更ボタンのテキストを取得
   const getStatusButtonText = () => {
     const buttonTexts = {
-      planning: '旅を開始',
-      ongoing: '旅を完了',
-      completed: '再編集する'
+      planning: t('tripDetail.startTrip'),
+      ongoing: t('tripDetail.completeTrip'),
+      completed: t('tripDetail.reEdit')
     };
     return buttonTexts[trip.status];
   };
@@ -325,7 +327,7 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
       }
     } catch (error) {
       console.error('日付更新エラー:', error);
-      alert('日付の更新に失敗しました');
+      alert(t('tripDetail.alerts.dateUpdateFailed'));
     }
   };
 
@@ -479,7 +481,7 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
       onBack();
     } catch (error) {
       console.error('削除エラー:', error);
-      alert('削除に失敗しました');
+      alert(t('tripDetail.alerts.deleteFailed'));
     }
   };
 
@@ -496,26 +498,26 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
           <h2>{trip.title}</h2>
           {trip.destination && (
             <div className="trip-destination-info">
-              <span className="destination-label">📍 旅先方面:</span>
+              <span className="destination-label">📍 {t('tripForm.destination')}:</span>
               <span className="destination-value">{trip.destination}</span>
             </div>
           )}
           <div className="action-buttons">
             {trip.status === 'completed' && (
-              <button 
+              <button
                 className="btn-edit"
                 onClick={() => onEdit && onEdit(trip)}
-                title="編集"
+                title={t('common.edit')}
               >
-                ✏️ 編集
+                ✏️ {t('common.edit')}
               </button>
             )}
-            <button 
+            <button
               className="btn-delete"
               onClick={() => setShowDeleteConfirm(true)}
-              title="削除"
+              title={t('common.delete')}
             >
-              🗑️ 削除
+              🗑️ {t('common.delete')}
             </button>
           </div>
         </div>
@@ -535,37 +537,37 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
               min={dateFormData.startDate}
               className="date-input-inline"
             />
-            <button 
+            <button
               className="btn-save-date"
               onClick={handleDateSave}
             >
-              保存
+              {t('common.save')}
             </button>
-            <button 
+            <button
               className="btn-cancel-date"
               onClick={() => setShowDateEdit(false)}
             >
-              キャンセル
+              {t('common.cancel')}
             </button>
           </div>
         ) : (
-          <div 
+          <div
             className="trip-date clickable"
             onClick={handleDateClick}
-            title="クリックして日付を編集"
+            title={t('tripDetail.clickToEditDate')}
           >
             📅 {formatDate(trip.start_date, trip.end_date)}
           </div>
         )}
         <div className="status-section">
-          <div className="status-text">ステータス: {getStatusBadge(trip.status)}</div>
+          <div className="status-text">{t('tripForm.status')}: {getStatusBadge(trip.status)}</div>
           {getNextStatus() && (
-            <button 
+            <button
               className="btn-status-change"
               onClick={() => handleStatusChange(getNextStatus())}
               disabled={isUpdatingStatus}
             >
-              {isUpdatingStatus ? '更新中...' : getStatusButtonText()}
+              {isUpdatingStatus ? t('tripDetail.updating') : getStatusButtonText()}
             </button>
           )}
         </div>
@@ -607,7 +609,7 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
             position: 'relative'
           }}
         >
-          🗒️ 年間
+          🗒️ {t('yearly.label')}
         </button>
         <button 
           className={activeTab === 'purposes' ? 'active' : ''}
@@ -626,7 +628,7 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
             position: 'relative'
           }}
         >
-          📍目的
+          📍{t('tripDetail.tabs.purposes')}
           {activeTab === 'purposes' && (
             <div style={{
               position: 'absolute',
@@ -656,7 +658,7 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
             position: 'relative'
           }}
         >
-          🎒 持ち物
+          🎒 {t('tripDetail.tabs.items')}
           {activeTab === 'items' && (
             <div style={{
               position: 'absolute',
@@ -673,7 +675,7 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
           className={`${activeTab === 'review' ? 'active' : ''} ${trip.status !== 'completed' ? 'disabled' : ''}`}
           onClick={() => trip.status === 'completed' ? handleTabChange('review') : null}
           disabled={trip.status !== 'completed'}
-          title={trip.status !== 'completed' ? 'レビューは旅行完了後に利用できます' : 'レビュー'}
+          title={trip.status !== 'completed' ? t('tripDetail.tabs.reviewDisabled') : t('tripDetail.tabs.review')}
           style={{
             flex: 1,
             padding: '15px',
@@ -689,7 +691,7 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
             position: 'relative'
           }}
         >
-          ⭐ レビュー
+          ⭐ {t('tripDetail.tabs.review')}
           {activeTab === 'review' && (
             <div style={{
               position: 'absolute',
@@ -760,21 +762,21 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
       {showDeleteConfirm && (
         <div className="modal-overlay">
           <div className="modal-content delete-confirm">
-            <h3>旅行計画を削除</h3>
-            <p>「{trip.title}」を削除しますか？</p>
-            <p className="warning-text">この操作は元に戻せません。</p>
+            <h3>{t('tripDetail.deleteModal.title')}</h3>
+            <p>{t('tripDetail.deleteModal.message', { title: trip.title })}</p>
+            <p className="warning-text">{t('tripDetail.deleteModal.warning')}</p>
             <div className="modal-actions">
-              <button 
+              <button
                 className="btn-secondary"
                 onClick={() => setShowDeleteConfirm(false)}
               >
-                キャンセル
+                {t('common.cancel')}
               </button>
-              <button 
+              <button
                 className="btn-danger"
                 onClick={handleDelete}
               >
-                削除する
+                {t('common.delete')}
               </button>
             </div>
           </div>

@@ -1,0 +1,286 @@
+{
+  "app": {
+    "title": "🚐 キャンピングカー旅行手帳",
+    "loading": "データを読み込み中...",
+    "logout": "ログアウト"
+  },
+  "auth": {
+    "title": "🚐 キャンピングカー旅行手帳",
+    "subtitle": "あなたの旅の記録を大切に保存",
+    "login": "ログイン",
+    "signup": "新規登録",
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "passwordMinLength": "(6文字以上)",
+    "signin_button": "ログイン",
+    "signup_button": "アカウント作成",
+    "loading": "処理中...",
+    "error_generic": "エラーが発生しました",
+    "switch_to_login": "既にアカウントをお持ちの方はこちら",
+    "switch_to_signup": "アカウントをお持ちでない方はこちら",
+    "orDivider": "または",
+    "googleLogin": "Googleでログイン",
+    "testAccountTitle": "🧪 テスト用",
+    "testAccountButton": "テストアカウント情報を入力",
+    "forgotPassword": "パスワードを忘れた場合",
+    "backToLogin": "← ログインに戻る",
+    "resetPassword": "パスワードリセット",
+    "resetPasswordDescription": "メールアドレスを入力してください",
+    "sendResetEmail": "リセットメールを送信",
+    "agreeToTerms": "に同意します",
+    "termsOfService": "利用規約",
+    "resendConfirmation": "確認メールを再送信",
+    "emailPlaceholder": "your-email@example.com",
+    "passwordPlaceholder": "パスワード",
+    "passwordPlaceholderSignup": "6文字以上のパスワード",
+    "messages": {
+      "passwordWeak": "パスワードが弱いです",
+      "agreeToTermsRequired": "利用規約に同意してください。",
+      "invalidCredentials": "ログイン情報が正しくありません。新規アカウントを作成するか、メールアドレスとパスワードを確認してください。",
+      "confirmationEmailSent": "確認メールを送信しました！メール内のリンクをクリックして、アカウントを有効化してください。",
+      "testAccountCreated": "テストアカウントが作成されました！ログインタブに切り替えてログインしてください。",
+      "accountCreated": "アカウントが作成されました！確認メールをご確認ください。",
+      "loginSuccess": "ログインに成功しました！",
+      "accountNotFound": "ログイン情報が正しくありません。アカウントが存在しない可能性があります。新規登録を試してください。",
+      "emailNotConfirmed": "開発環境：メール確認をスキップしてログインを試行中...",
+      "emailConfirmationRequired": "メール確認が必要です。新しいアカウントを作成してください。テストアカウントボタンを使用することをお勧めします。",
+      "userAlreadyRegistered": "このメールアドレスは既に登録されています。ログインを試してください。",
+      "googleLoggingIn": "Googleアカウントでログイン中...",
+      "googleLoginError": "Googleログインエラー",
+      "enterEmail": "メールアドレスを入力してください。",
+      "confirmationResent": "確認メールを再送信しました。メールをご確認ください。",
+      "passwordResetSent": "パスワードリセット用のメールを送信しました。メールをご確認ください。"
+    }
+  },
+  "navigation": {
+    "home": "ホーム",
+    "trips": "旅行一覧",
+    "settings": "設定",
+    "admin_dashboard": "📊 管理画面"
+  },
+  "common": {
+    "language_switch": "言語切り替え",
+    "guide": "📖 使い方ガイド",
+    "report_bug": "📧 不具合の報告",
+    "copyright": "© 2025 Campingcar Travel Tips.com",
+    "back": "戻る",
+    "update": "更新する",
+    "selectPlaceholder": "選択してください",
+    "year": "年",
+    "month": "月",
+    "edit": "編集",
+    "delete": "削除",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "status": {
+      "planning": "計画中",
+      "ongoing": "進行中",
+      "completed": "完了"
+    }
+  },
+  "tripForm": {
+    "newTitle": "新しい旅行を計画",
+    "editTitle": "旅行計画を編集",
+    "tripTitle": "旅行タイトル",
+    "tripTitlePlaceholder": "例: 2025年秋 紅葉狩りツアー",
+    "destination": "旅先方面",
+    "schedule": "旅行日程",
+    "startDate": "開始日",
+    "endDate": "終了日",
+    "period": "期間",
+    "days": "{{count}}日間",
+    "status": "ステータス",
+    "note": "旅行作成後、詳細画面で目的や持ち物を設定できます",
+    "createTrip": "旅行を作成",
+    "errors": {
+      "dateOverlap": "「{{title}}」と日程が重複しています",
+      "monthlyLimit": "{{month}}は既に2件の旅行が登録されています（月間上限）"
+    }
+  },
+  "tripDetail": {
+    "dateUnknown": "日程未定",
+    "startTrip": "旅を開始",
+    "completeTrip": "旅を完了",
+    "reEdit": "再編集する",
+    "clickToEditDate": "クリックして日付を編集",
+    "updating": "更新中...",
+    "tabs": {
+      "purposes": "目的",
+      "items": "持ち物",
+      "review": "レビュー",
+      "reviewDisabled": "レビューは旅行完了後に利用できます"
+    },
+    "alerts": {
+      "selectPurposeFirst": "まず目的を選択してから旅を開始してください。",
+      "statusUpdateFailed": "ステータスの更新に失敗しました",
+      "dateUpdateFailed": "日付の更新に失敗しました",
+      "deleteFailed": "削除に失敗しました"
+    },
+    "deleteModal": {
+      "title": "旅行計画を削除",
+      "message": "「{{title}}」を削除しますか？",
+      "warning": "この操作は元に戻せません。"
+    }
+  },
+  "updateHistory": {
+    "title": "更新履歴",
+    "devVersion": "開発者版"
+  },
+  "tripList": {
+    "achievement": "達成度",
+    "achievementRate": "達成度: {{percentage}}%",
+    "createNewTrip": "新しい旅行を計画",
+    "yearlyLimitReached": "年間利用制限に達しています",
+    "noPlans": "予定なし",
+    "addPlan": "プラン追加",
+    "addPlanToMonth": "{{month}}に旅行を追加",
+    "addSecondPlan": "2つ目のプラン追加",
+    "addSecondPlanToMonth": "{{month}}に2つ目の旅行を追加"
+  },
+  "settings": {
+    "title": "アカウント設定",
+    "accountInfo": {
+      "title": "アカウント情報",
+      "email": "メールアドレス",
+      "userId": "ユーザーID"
+    },
+    "dataExport": {
+      "title": "データエクスポート",
+      "description": "あなたの旅行データをバックアップとしてダウンロードできます。",
+      "jsonFormat": "JSON形式 (完全データ・プログラム処理向け)",
+      "csvFormat": "CSV形式 (Excel・スプレッドシート向け)",
+      "exportButton": "{{format}}でエクスポート",
+      "exporting": "エクスポート中...",
+      "recommendation": {
+        "label": "推奨",
+        "text": "月1回程度の定期的なエクスポートでデータを保護しましょう"
+      }
+    },
+    "terms": {
+      "title": "利用規約",
+      "description": "Travel Journalの利用規約をご確認いただけます。",
+      "button": "利用規約を表示"
+    },
+    "appInfo": {
+      "title": "アプリ情報",
+      "description": "アプリの更新履歴や新機能をご確認いただけます。",
+      "button": "更新履歴を表示"
+    },
+    "support": {
+      "title": "サポート・フィードバック",
+      "description": "不具合の報告や機能改善のご提案がございましたら、お気軽にお知らせください。",
+      "button": "不具合を報告・改善提案",
+      "note": "報告いただいた内容は今後の改善に活用させていただきます"
+    }
+  },
+  "review": {
+    "title": "旅の振り返り",
+    "overallAchievement": "総合達成度",
+    "calculationNote": "メイン70% + サブ30%",
+    "mainPurposes": "メイン目的",
+    "subPurposes": "サブ目的",
+    "itemsUsage": "持ち物活用",
+    "referenceValue": "参考値",
+    "mainPurposesAchievement": "メイン目的の達成度",
+    "subPurposesAchievement": "サブ目的の達成度",
+    "itemsUsageNote": "（参考記録・総合達成度には含まれません）",
+    "itemsUsageRate": "持ち物の活用度",
+    "noItemsChecked": "📝 チェック済みの持ち物がありません"
+  },
+  "items": {
+    "recommended": "おすすめの持ち物",
+    "custom": "カスタム持ち物",
+    "customNote": "※ 最大3つまで登録可能（全角20文字以内）",
+    "addPlaceholder": "持ち物を追加...",
+    "addButton": "追加 ({{count}}/3)",
+    "savePlan": "💾 持ち物計画を保存"
+  },
+  "rules": {
+    "beforeTrip": "旅を開始する前に",
+    "basicRules": "基本的なルール・マナー",
+    "specificRules": "特定の活動に関する注意事項",
+    "requiredBadge": "必須",
+    "startTrip": "✅ 旅を開始する",
+    "checkRequired": "❌ 必須項目を確認してください",
+    "requiredItemsNote": "必須項目（{{count}}件未確認）をすべて確認してから旅を開始できます。",
+    "loading": "ルール・マナーを確認中...",
+    "timeout": "⚠️ 接続タイムアウト",
+    "timeoutMessage": "ルール・マナーの取得に時間がかかっています。ネットワーク接続を確認してください。",
+    "reload": "🔄 再読み込み",
+    "skipAndStart": "✅ スキップして旅を開始する",
+    "noRules": "この目的地のルール・マナーはまだ登録されていません。安全運転と周囲への配慮を心がけて旅をお楽しみください。",
+    "intro": "選択されたメイン目的に関連するルール・マナー・注意事項を確認し、チェックボックスにチェックを入れてください。"
+  },
+  "yearly": {
+    "label": "年間",
+    "limit": "年間利用制限（24件）に達しています。"
+  },
+  "guide": {
+    "title": "使い方ガイド",
+    "basicFeatures": "基本機能",
+    "tripCreation": "旅行計画作成: 月2件まで、年間24件まで作成可能",
+    "purposeSetting": "目的設定: メイン目的とサブ目的を選択",
+    "customSubPurposes": "カスタムサブ目的: 最大3つまで独自の目的を追加可能",
+    "itemsList": "持ち物リスト: カスタム持ち物も最大3つまで追加可能",
+    "limitations": "制限事項",
+    "monthlyLimit": "月間作成数: 2件まで",
+    "yearlyLimit": "年間作成数: 24件まで",
+    "usefulFeatures": "便利な機能",
+    "dateOverlapCheck": "日程の重複チェック",
+    "postTripReview": "旅行後のレビュー機能",
+    "achievementCalculation": "達成率の自動計算",
+    "percentageReview": "パーセント評価による振り返り",
+    "dataExportFeature": "データエクスポート機能（JSON・CSV形式）",
+    "notes": "注意事項",
+    "dataStorage": "データはローカルストレージに保存されます",
+    "browserDeletion": "ブラウザのキャッシュクリアでデータが消える可能性があります",
+    "regularBackup": "定期的なデータエクスポートを推奨します"
+  },
+  "bugReport": {
+    "title": "🐛 Report Bug",
+    "description": "不具合の報告や機能改善のご提案がございましたら、以下のボタンからGoogleフォームにアクセスしてください。<br/>いただいた内容は今後の改善に活用させていただきます。",
+    "openFormButton": "📝 不具合報告フォームを開く",
+    "infoTitle": "📋 報告時にお伝えいただきたい情報",
+    "problemDetail": "発生した問題の詳細",
+    "problemDetailDesc": "どのような操作でエラーが発生したか",
+    "occurredDate": "発生日時",
+    "occurredDateDesc": "いつ問題が起きたか",
+    "environment": "使用環境",
+    "environmentDesc": "端末（PC/スマホ）・ブラウザの種類",
+    "errorMessage": "エラーメッセージ",
+    "errorMessageDesc": "表示された場合はその内容",
+    "helpNote": "これらの情報をお知らせいただけると、問題解決がスムーズになります。"
+  },
+  "purposes": {
+    "subPurposes": "サブ目的（立ち寄りスポット）",
+    "mainPurposes": "メイン目的",
+    "customStops": "カスタム立ち寄りスポット",
+    "customStopsNote": "※ 最大3つまで登録可能（全角20文字以内）",
+    "addButton": "追加",
+    "selectedMainPurposes": "選択されたメイン目的:",
+    "selectedSubPurposes": "選択されたサブ目的:",
+    "savePlan": "💾 計画を保存"
+  },
+  "reviewSection": {
+    "title": "旅の振り返り",
+    "itemsUsageRate": "持ち物の活用度",
+    "saveReview": "レビューを保存",
+    "reset": "リセット"
+  },
+  "destinations": {
+    "label": "旅先方面",
+    "hokkaidoDohoku": "北海道（道北）",
+    "hokkaidoDoto": "北海道（道東）",
+    "hokkaidoDonan": "北海道（道南）",
+    "hokkaidoDoo": "北海道（道央）",
+    "tohoku": "東北方面",
+    "hokuriku": "北陸方面",
+    "kanto": "関東方面",
+    "koshinetsu": "甲信越地方",
+    "chubuTokai": "中部・東海方面",
+    "kinki": "近畿方面",
+    "chugoku": "中国方面",
+    "shikoku": "四国方面",
+    "kyushu": "九州方面"
+  }
+}

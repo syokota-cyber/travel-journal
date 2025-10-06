@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 
 const RulesConfirmation = ({ tripId, mainPurposeIds, onConfirmComplete }) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [rules, setRules] = useState([]);
   const [confirmations, setConfirmations] = useState({});
@@ -177,30 +179,29 @@ const RulesConfirmation = ({ tripId, mainPurposeIds, onConfirmComplete }) => {
   const rulesByCategory = groupRulesByCategory();
 
   if (loading && !timeoutError) {
-    return <div className="loading">ルール・マナーを確認中...</div>;
+    return <div className="loading">{t('rules.loading')}</div>;
   }
 
   // タイムアウトエラーの場合
   if (timeoutError) {
     return (
       <div className="rules-confirmation">
-        <h3>⚠️ 接続タイムアウト</h3>
+        <h3>{t('rules.timeout')}</h3>
         <p className="rules-intro">
-          ルール・マナーの取得に時間がかかっています。
-          ネットワーク接続を確認してください。
+          {t('rules.timeoutMessage')}
         </p>
         <div className="rules-actions">
           <button
             className="btn-secondary"
             onClick={() => window.location.reload()}
           >
-            🔄 再読み込み
+            {t('rules.reload')}
           </button>
           <button
             className="btn-primary"
             onClick={onConfirmComplete}
           >
-            ✅ スキップして旅を開始する
+            {t('rules.skipAndStart')}
           </button>
         </div>
       </div>
@@ -211,19 +212,16 @@ const RulesConfirmation = ({ tripId, mainPurposeIds, onConfirmComplete }) => {
   if (hasError || rules.length === 0) {
     return (
       <div className="rules-confirmation">
-        <h3>🎯 旅を開始する前に</h3>
+        <h3>🎯 {t('rules.beforeTrip')}</h3>
         <p className="rules-intro">
-          {hasError ? 
-            'ルール・マナーの取得に問題が発生しました。' : 
-            'この目的地のルール・マナーはまだ登録されていません。'}
-          安全運転と周囲への配慮を心がけて旅をお楽しみください。
+          {t('rules.noRules')}
         </p>
         <div className="rules-actions">
           <button
             className="btn-primary"
             onClick={onConfirmComplete}
           >
-            ✅ 旅を開始する
+            {t('rules.startTrip')}
           </button>
         </div>
       </div>
@@ -232,16 +230,15 @@ const RulesConfirmation = ({ tripId, mainPurposeIds, onConfirmComplete }) => {
 
   return (
     <div className="rules-confirmation">
-      <h3>🎯 旅を開始する前に</h3>
+      <h3>🎯 {t('rules.beforeTrip')}</h3>
       <p className="rules-intro">
-        選択されたメイン目的に関連するルール・マナー・注意事項を確認し、
-        チェックボックスにチェックを入れてください。
+        {t('rules.intro')}
       </p>
 
       {/* 全般的なルール */}
       {rulesByCategory.general && (
         <div className="rules-category">
-          <h4>📋 基本的なルール・マナー</h4>
+          <h4>📋 {t('rules.basicRules')}</h4>
           <div className="rules-list">
             {rulesByCategory.general.map(rule => (
               <div key={rule.id} className="rule-item">
@@ -254,7 +251,7 @@ const RulesConfirmation = ({ tripId, mainPurposeIds, onConfirmComplete }) => {
                   <div className="rule-content">
                     <div className="rule-title">
                       {rule.rule_title}
-                      {rule.is_required && <span className="required-badge">必須</span>}
+                      {rule.is_required && <span className="required-badge">{t('rules.requiredBadge')}</span>}
                     </div>
                     <div className="rule-description">
                       {rule.rule_description}
@@ -270,7 +267,7 @@ const RulesConfirmation = ({ tripId, mainPurposeIds, onConfirmComplete }) => {
       {/* 特定のルール */}
       {rulesByCategory.specific && (
         <div className="rules-category">
-          <h4>⚠️ 特定の活動に関する注意事項</h4>
+          <h4>⚠️ {t('rules.specificRules')}</h4>
           <div className="rules-list">
             {rulesByCategory.specific.map(rule => (
               <div key={rule.id} className="rule-item">
@@ -283,7 +280,7 @@ const RulesConfirmation = ({ tripId, mainPurposeIds, onConfirmComplete }) => {
                   <div className="rule-content">
                     <div className="rule-title">
                       {rule.rule_title}
-                      {rule.is_required && <span className="required-badge">必須</span>}
+                      {rule.is_required && <span className="required-badge">{t('rules.requiredBadge')}</span>}
                     </div>
                     <div className="rule-description">
                       {rule.rule_description}
@@ -303,13 +300,12 @@ const RulesConfirmation = ({ tripId, mainPurposeIds, onConfirmComplete }) => {
           onClick={() => allConfirmed && onConfirmComplete()}
           disabled={!allConfirmed}
         >
-          {allConfirmed ? '✅ 旅を開始する' : '❌ 必須項目を確認してください'}
+          {allConfirmed ? t('rules.startTrip') : t('rules.checkRequired')}
         </button>
-        
+
         {!allConfirmed && rules.filter(r => r.is_required).length > 0 && (
           <p className="confirmation-note">
-            必須項目（{rules.filter(r => r.is_required && !confirmations[r.id]).length}件未確認）
-            をすべて確認してから旅を開始できます。
+            {t('rules.requiredItemsNote', { count: rules.filter(r => r.is_required && !confirmations[r.id]).length })}
           </p>
         )}
       </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import TermsOfService from './TermsOfService';
 import DevAuth from './DevAuth';
@@ -8,6 +9,7 @@ import { handleAuthError } from '../utils/errorHandler';
 import { supabase, getRedirectURL } from '../lib/supabase';
 
 const Auth = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
@@ -236,8 +238,8 @@ const Auth = () => {
   return (
     <div className="auth-container">
       <div className="auth-form">
-        <h2>🚐 キャンピングカー旅行手帳</h2>
-        <p className="auth-subtitle">あなたの旅の記録を大切に保存</p>
+        <h2>{t('auth.title')}</h2>
+        <p className="auth-subtitle">{t('auth.subtitle')}</p>
         
         {!isForgotPassword ? (
           <>
@@ -250,7 +252,7 @@ const Auth = () => {
                   setMessage('');
                 }}
               >
-                ログイン
+                {t('auth.login')}
               </button>
               <button
                 type="button"
@@ -260,7 +262,7 @@ const Auth = () => {
                   setMessage('');
                 }}
               >
-                新規登録
+                {t('auth.signup')}
               </button>
             </div>
 
@@ -277,7 +279,7 @@ const Auth = () => {
                   padding: '0 10px',
                   position: 'relative',
                   zIndex: 1
-                }}>または</span>
+                }}>{t('auth.orDivider')}</span>
                 <div style={{
                   position: 'absolute',
                   top: '50%',
@@ -319,14 +321,14 @@ const Auth = () => {
                   <path fill="#EA4335" d="M9 3.6c1.3 0 2.5.4 3.4 1.3L15 2.3A9 9 0 0 0 1 5l3 2.4a5.4 5.4 0 0 1 5-3.7z"/>
                   <path fill="none" d="M0 0h18v18H0z"/>
                 </svg>
-                Googleでログイン
+                {t('auth.googleLogin')}
               </button>
             </div>
 
             {/* テストアカウント簡単ボタン（開発環境のみ表示） */}
             {process.env.NODE_ENV === 'development' && (
               <div style={{ margin: '1rem 0', padding: '1rem', backgroundColor: '#f0f8ff', borderRadius: '8px', border: '1px solid #e1f5fe' }}>
-                <h4 style={{ margin: '0 0 0.5rem 0', color: '#1976d2' }}>🧪 テスト用</h4>
+                <h4 style={{ margin: '0 0 0.5rem 0', color: '#1976d2' }}>{t('auth.testAccountTitle')}</h4>
                 <button
                   type="button"
                   onClick={useTestAccountData}
@@ -340,7 +342,7 @@ const Auth = () => {
                     fontSize: '0.9rem'
                   }}
                 >
-                  テストアカウント情報を入力
+                  {t('auth.testAccountButton')}
                 </button>
                 <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.8rem', color: '#666' }}>
                   test@camping-car.com / test123456
@@ -350,21 +352,21 @@ const Auth = () => {
           </>
         ) : (
           <div className="forgot-password-header">
-            <h3>パスワードリセット</h3>
-            <p>メールアドレスを入力してください</p>
+            <h3>{t('auth.resetPassword')}</h3>
+            <p>{t('auth.resetPasswordDescription')}</p>
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="email">メールアドレス</label>
+            <label htmlFor="email">{t('auth.email')}</label>
             <input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              placeholder="your-email@example.com"
+              placeholder={t('auth.emailPlaceholder')}
               disabled={loading}
             />
           </div>
@@ -372,8 +374,8 @@ const Auth = () => {
           {!isForgotPassword && (
             <div className="form-group">
               <label htmlFor="password">
-                パスワード
-                {isSignUp && <span className="required"> (6文字以上)</span>}
+                {t('auth.password')}
+                {isSignUp && <span className="required"> {t('auth.passwordMinLength')}</span>}
               </label>
               <input
                 id="password"
@@ -382,7 +384,7 @@ const Auth = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={isSignUp ? 6 : undefined}
-                placeholder={isSignUp ? "6文字以上のパスワード" : "パスワード"}
+                placeholder={isSignUp ? t('auth.passwordPlaceholderSignup') : t('auth.passwordPlaceholder')}
                 disabled={loading}
               />
             </div>
@@ -398,14 +400,15 @@ const Auth = () => {
                   required
                 />
                 <span>
+                  {t('auth.agreeToTerms') === 'I agree to the' ? t('auth.agreeToTerms') + ' ' : ''}
                   <button
                     type="button"
                     className="btn-text-link"
                     onClick={() => setShowTerms(true)}
                   >
-                    利用規約
+                    {t('auth.termsOfService')}
                   </button>
-                  に同意します
+                  {t('auth.agreeToTerms') === 'I agree to the' ? '' : t('auth.agreeToTerms')}
                 </span>
               </label>
             </div>
@@ -413,13 +416,13 @@ const Auth = () => {
 
           <button type="submit" disabled={loading} className="btn-primary">
             {loading ? (
-              <span className="loading-spinner">処理中...</span>
+              <span className="loading-spinner">{t('auth.loading')}</span>
             ) : isForgotPassword ? (
-              'リセットメールを送信'
+              t('auth.sendResetEmail')
             ) : isSignUp ? (
-              'アカウント作成'
+              t('auth.signup_button')
             ) : (
-              'ログイン'
+              t('auth.signin_button')
             )}
           </button>
         </form>
@@ -436,7 +439,7 @@ const Auth = () => {
                   className="btn-text-link"
                   style={{ fontSize: '14px' }}
                 >
-                  確認メールを再送信
+                  {t('auth.resendConfirmation')}
                 </button>
               </div>
             )}
@@ -453,7 +456,7 @@ const Auth = () => {
                 setMessage('');
               }}
             >
-              パスワードを忘れた場合
+              {t('auth.forgotPassword')}
             </button>
           </div>
         )}
@@ -468,7 +471,7 @@ const Auth = () => {
                 setMessage('');
               }}
             >
-              ← ログインに戻る
+              {t('auth.backToLogin')}
             </button>
           </div>
         )}

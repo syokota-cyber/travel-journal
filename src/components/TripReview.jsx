@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 import { Doughnut } from 'react-chartjs-2';
 import {
@@ -18,14 +19,15 @@ ChartJS.register(
   Legend
 );
 
-const TripReview = ({ 
-  tripId, 
-  tripStatus, 
-  selectedPurposes = {}, 
+const TripReview = ({
+  tripId,
+  tripStatus,
+  selectedPurposes = {},
   initialAchievedPurposes = new Set(),
   initialUsedItems = new Set(),
   onStateUpdate
 }) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [plannedPurposes, setPlannedPurposes] = useState({ main: [], sub: [] });
   const [plannedItems, setPlannedItems] = useState([]);
@@ -768,7 +770,7 @@ const TripReview = ({
   if (tripStatus === 'planning') {
     return (
       <div className="review-section">
-        <h3>🎯 旅の振り返り</h3>
+        <h3>🎯 {t('review.title')}</h3>
         <div className="review-not-available">
           <p>この旅はまだ計画中です。</p>
           <p>旅が完了したら、振り返りレビューができるようになります。</p>
@@ -779,35 +781,35 @@ const TripReview = ({
 
   return (
     <div className="review-section">
-      <h3>🎯 旅の振り返り</h3>
+      <h3>🎯 {t('reviewSection.title')}</h3>
       
       {/* 達成度サマリー */}
       <div className="achievement-summary">
         <div className="summary-card">
-          <h4>総合達成度</h4>
+          <h4>{t('review.overallAchievement')}</h4>
           <div className="percentage">
             {overallAchievementRate}%
           </div>
           <div className="achievement-formula" style={{fontSize: '0.75rem', color: '#666', marginTop: '4px'}}>
-            メイン70% + サブ30%
+            {t('review.calculationNote')}
           </div>
         </div>
         <div className="summary-card">
-          <h4>メイン目的</h4>
+          <h4>{t('review.mainPurposes')}</h4>
           <div className="percentage">{rates.mainRate}%</div>
           <div className="count">{rates.mainAchieved}/{rates.mainTotal}</div>
         </div>
         <div className="summary-card">
-          <h4>サブ目的</h4>
+          <h4>{t('review.subPurposes')}</h4>
           <div className="percentage">{rates.subRate}%</div>
           <div className="count">{rates.subAchieved}/{rates.subTotal}</div>
         </div>
         <div className="summary-card">
-          <h4>持ち物活用</h4>
+          <h4>{t('review.itemsUsage')}</h4>
           <div className="percentage">{rates.itemsRate}%</div>
           <div className="count">{rates.itemsUsed}/{rates.itemsTotal}</div>
           <div className="reference-note" style={{fontSize: '0.7rem', color: '#999', marginTop: '2px'}}>
-            （参考値）
+            ({t('review.referenceValue')})
           </div>
         </div>
       </div>
@@ -815,7 +817,7 @@ const TripReview = ({
       {/* メイン目的の達成チェック */}
       {plannedPurposes.main.length > 0 && (
         <div className="review-purposes">
-          <h4>メイン目的の達成度</h4>
+          <h4>{t('review.mainPurposesAchievement')}</h4>
           <div className="checklist">
             {plannedPurposes.main.map(purpose => {
               // IDを文字列として統一
@@ -846,7 +848,7 @@ const TripReview = ({
       {/* サブ目的の達成チェック */}
       {plannedPurposes.sub.length > 0 && (
         <div className="review-purposes">
-          <h4>サブ目的の達成度</h4>
+          <h4>{t('review.subPurposesAchievement')}</h4>
           <div className="checklist">
             {plannedPurposes.sub.map(purpose => {
               // IDを文字列として統一
@@ -916,9 +918,9 @@ const TripReview = ({
       {/* 持ち物の活用度 */}
       <div className="review-items">
         <h4>
-          持ち物の活用度 
+          {t('reviewSection.itemsUsageRate')}
           <span style={{fontSize: '0.8em', color: '#666', marginLeft: '8px'}}>
-            （参考記録・総合達成度には含まれません）
+            {t('review.itemsUsageNote')}
           </span>
         </h4>
         {plannedItems.length > 0 ? (
@@ -955,7 +957,7 @@ const TripReview = ({
             margin: '10px 0'
           }}>
             <p style={{ margin: 0, color: '#6c757d' }}>
-              📝 チェック済みの持ち物がありません<br/>
+              {t('review.noItemsChecked')}<br/>
               「持ち物」タブでおすすめの持ち物にチェックを入れるか、<br/>
               カスタム持ち物を追加してから保存してください。
             </p>
@@ -964,18 +966,18 @@ const TripReview = ({
       </div>
 
       {/* チャート表示切り替えボタン */}
-      <button 
+      <button
         className="btn-primary"
         onClick={() => setShowCharts(!showCharts)}
       >
-        🎯 旅の振り返り
+        🎯 {t('reviewSection.title')}
       </button>
 
       {/* チャート表示 */}
       {showCharts && (
         <div className="charts-container">
           <div className="chart-wrapper">
-            <h4>総合達成度</h4>
+            <h4>{t('review.overallAchievement')}</h4>
             <div style={{ height: '250px' }}>
               <Doughnut data={overallDoughnutData} options={chartOptions} />
             </div>
@@ -1004,17 +1006,17 @@ const TripReview = ({
       {/* 保存ボタン */}
       <div className="review-actions">
         <button className="btn-primary" onClick={saveReviewData}>
-          💾 レビューを保存
+          {t('reviewSection.saveReview')}
         </button>
         <button className="btn-secondary" onClick={async () => {
-          if (window.confirm('レビューデータをリセットしますか？')) {
+          if (window.confirm(t('reviewSection.reset') + '?')) {
             await supabase.from('trip_reviews').delete().eq('trip_id', tripId);
             setAchievedPurposes(new Set());
             setUsedItems(new Set());
-            alert('リセットしました');
+            alert(t('reviewSection.reset'));
           }
         }}>
-          🔄 リセット
+          {t('reviewSection.reset')}
         </button>
       </div>
     </div>

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import TermsOfService from './TermsOfService';
 import UpdateHistory from './UpdateHistory';
 
 const AccountSettings = ({ onClose }) => {
+  const { t } = useTranslation();
   const { user, signOut } = useAuth();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
@@ -249,18 +251,18 @@ const AccountSettings = ({ onClose }) => {
           ×
         </button>
         
-        <h2>アカウント設定</h2>
-        
+        <h2>{t('settings.title')}</h2>
+
         <div className="settings-section">
-          <h3>アカウント情報</h3>
-          <p>メールアドレス: {user?.email}</p>
-          <p>ユーザーID: {user?.id}</p>
+          <h3>{t('settings.accountInfo.title')}</h3>
+          <p>{t('settings.accountInfo.email')}: {user?.email}</p>
+          <p>{t('settings.accountInfo.userId')}: {user?.id}</p>
         </div>
 
         <div className="settings-section">
-          <h3>データエクスポート</h3>
-          <p>あなたの旅行データをバックアップとしてダウンロードできます。</p>
-          
+          <h3>{t('settings.dataExport.title')}</h3>
+          <p>{t('settings.dataExport.description')}</p>
+
           <div className="export-format-selection">
             <label>
               <input
@@ -271,7 +273,7 @@ const AccountSettings = ({ onClose }) => {
                 onChange={(e) => setExportFormat(e.target.value)}
                 disabled={exporting}
               />
-              <span>JSON形式 (完全データ・プログラム処理向け)</span>
+              <span>{t('settings.dataExport.jsonFormat')}</span>
             </label>
             <label>
               <input
@@ -282,56 +284,56 @@ const AccountSettings = ({ onClose }) => {
                 onChange={(e) => setExportFormat(e.target.value)}
                 disabled={exporting}
               />
-              <span>CSV形式 (Excel・スプレッドシート向け)</span>
+              <span>{t('settings.dataExport.csvFormat')}</span>
             </label>
           </div>
 
-          <button 
+          <button
             className="btn-primary export-btn"
             onClick={handleExportData}
             disabled={exporting}
           >
-            {exporting ? 'エクスポート中...' : `${exportFormat.toUpperCase()}でエクスポート`}
+            {exporting ? t('settings.dataExport.exporting') : t('settings.dataExport.exportButton', { format: exportFormat.toUpperCase() })}
           </button>
-          
+
           <p className="export-note">
-            💡 <strong>推奨:</strong> 月1回程度の定期的なエクスポートでデータを保護しましょう
+            💡 <strong>{t('settings.dataExport.recommendation.label')}:</strong> {t('settings.dataExport.recommendation.text')}
           </p>
         </div>
 
         <div className="settings-section">
-          <h3>利用規約</h3>
-          <p>Travel Journalの利用規約をご確認いただけます。</p>
-          <button 
+          <h3>{t('settings.terms.title')}</h3>
+          <p>{t('settings.terms.description')}</p>
+          <button
             className="btn-secondary"
             onClick={() => setShowTerms(true)}
           >
-            利用規約を表示
+            {t('settings.terms.button')}
           </button>
         </div>
 
         <div className="settings-section">
-          <h3>アプリ情報</h3>
-          <p>アプリの更新履歴や新機能をご確認いただけます。</p>
-          <button 
+          <h3>{t('settings.appInfo.title')}</h3>
+          <p>{t('settings.appInfo.description')}</p>
+          <button
             className="btn-secondary"
             onClick={() => setShowUpdateHistory(true)}
           >
-            📋 更新履歴を表示
+            📋 {t('settings.appInfo.button')}
           </button>
         </div>
 
         <div className="settings-section">
-          <h3>サポート・フィードバック</h3>
-          <p>不具合の報告や機能改善のご提案がございましたら、お気軽にお知らせください。</p>
-          <button 
+          <h3>{t('settings.support.title')}</h3>
+          <p>{t('settings.support.description')}</p>
+          <button
             className="btn-secondary"
             onClick={() => setShowBugReport(true)}
           >
-            🐛 不具合を報告・改善提案
+            🐛 {t('settings.support.button')}
           </button>
           <p className="support-note">
-            💡 報告いただいた内容は今後の改善に活用させていただきます
+            💡 {t('settings.support.note')}
           </p>
         </div>
         

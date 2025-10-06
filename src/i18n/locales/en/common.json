@@ -1,0 +1,286 @@
+{
+  "app": {
+    "title": "🚐 Camping Car Travel Journal",
+    "loading": "Loading data...",
+    "logout": "Logout"
+  },
+  "auth": {
+    "title": "🚐 Camping Car Travel Journal",
+    "subtitle": "Preserve your travel memories",
+    "login": "Login",
+    "signup": "Sign Up",
+    "email": "Email Address",
+    "password": "Password",
+    "passwordMinLength": "(min. 6 characters)",
+    "signin_button": "Sign In",
+    "signup_button": "Create Account",
+    "loading": "Processing...",
+    "error_generic": "An error occurred",
+    "switch_to_login": "Already have an account? Click here",
+    "switch_to_signup": "Don't have an account? Click here",
+    "orDivider": "or",
+    "googleLogin": "Sign in with Google",
+    "testAccountTitle": "🧪 For Testing",
+    "testAccountButton": "Fill Test Account Info",
+    "forgotPassword": "Forgot password?",
+    "backToLogin": "← Back to Login",
+    "resetPassword": "Reset Password",
+    "resetPasswordDescription": "Enter your email address",
+    "sendResetEmail": "Send Reset Email",
+    "agreeToTerms": "I agree to the",
+    "termsOfService": "Terms of Service",
+    "resendConfirmation": "Resend confirmation email",
+    "emailPlaceholder": "your-email@example.com",
+    "passwordPlaceholder": "Password",
+    "passwordPlaceholderSignup": "Password (min. 6 characters)",
+    "messages": {
+      "passwordWeak": "Password is too weak",
+      "agreeToTermsRequired": "Please agree to the terms of service.",
+      "invalidCredentials": "Invalid login credentials. Please create a new account or check your email and password.",
+      "confirmationEmailSent": "Confirmation email sent! Please click the link in the email to activate your account.",
+      "testAccountCreated": "Test account created! Switch to the login tab to sign in.",
+      "accountCreated": "Account created! Please check your confirmation email.",
+      "loginSuccess": "Login successful!",
+      "accountNotFound": "Invalid login credentials. Account may not exist. Please try signing up.",
+      "emailNotConfirmed": "Dev environment: Attempting login without email confirmation...",
+      "emailConfirmationRequired": "Email confirmation required. Please create a new account. We recommend using the test account button.",
+      "userAlreadyRegistered": "This email is already registered. Please try logging in.",
+      "googleLoggingIn": "Signing in with Google...",
+      "googleLoginError": "Google login error",
+      "enterEmail": "Please enter your email address.",
+      "confirmationResent": "Confirmation email resent. Please check your email.",
+      "passwordResetSent": "Password reset email sent. Please check your email."
+    }
+  },
+  "navigation": {
+    "home": "Home",
+    "trips": "Trips",
+    "settings": "Settings",
+    "admin_dashboard": "📊 Admin Panel"
+  },
+  "common": {
+    "language_switch": "Language",
+    "guide": "📖 User Guide",
+    "report_bug": "📧 Report Bug",
+    "copyright": "© 2025 Campingcar Travel Tips.com",
+    "back": "Back",
+    "update": "Update",
+    "selectPlaceholder": "Please select",
+    "year": "/",
+    "month": "",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "status": {
+      "planning": "Planning",
+      "ongoing": "Ongoing",
+      "completed": "Completed"
+    }
+  },
+  "tripForm": {
+    "newTitle": "Plan a New Trip",
+    "editTitle": "Edit Trip Plan",
+    "tripTitle": "Trip Title",
+    "tripTitlePlaceholder": "e.g., Autumn Foliage Tour 2025",
+    "destination": "Destination",
+    "schedule": "Travel Schedule",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "period": "Period",
+    "days": "{{count}} days",
+    "status": "Status",
+    "note": "You can set purposes and items in the detail screen after creating a trip",
+    "createTrip": "Create Trip",
+    "errors": {
+      "dateOverlap": "Overlaps with \"{{title}}\"",
+      "monthlyLimit": "{{month}} already has 2 trips registered (monthly limit)"
+    }
+  },
+  "tripDetail": {
+    "dateUnknown": "Date not set",
+    "startTrip": "Start Trip",
+    "completeTrip": "Complete Trip",
+    "reEdit": "Re-edit",
+    "clickToEditDate": "Click to edit date",
+    "updating": "Updating...",
+    "tabs": {
+      "purposes": "Purposes",
+      "items": "Items",
+      "review": "Review",
+      "reviewDisabled": "Review is available after trip completion"
+    },
+    "alerts": {
+      "selectPurposeFirst": "Please select a purpose before starting the trip.",
+      "statusUpdateFailed": "Failed to update status",
+      "dateUpdateFailed": "Failed to update date",
+      "deleteFailed": "Failed to delete"
+    },
+    "deleteModal": {
+      "title": "Delete Trip Plan",
+      "message": "Delete \"{{title}}\"?",
+      "warning": "This action cannot be undone."
+    }
+  },
+  "updateHistory": {
+    "title": "Update History",
+    "devVersion": "Developer Version"
+  },
+  "tripList": {
+    "achievement": "Achievement",
+    "achievementRate": "Achievement: {{percentage}}%",
+    "createNewTrip": "Plan a New Trip",
+    "yearlyLimitReached": "Annual usage limit reached",
+    "noPlans": "No plans",
+    "addPlan": "Add Plan",
+    "addPlanToMonth": "Add trip to {{month}}",
+    "addSecondPlan": "Add 2nd Plan",
+    "addSecondPlanToMonth": "Add 2nd trip to {{month}}"
+  },
+  "settings": {
+    "title": "Account Settings",
+    "accountInfo": {
+      "title": "Account Information",
+      "email": "Email Address",
+      "userId": "User ID"
+    },
+    "dataExport": {
+      "title": "Data Export",
+      "description": "You can download your travel data as a backup.",
+      "jsonFormat": "JSON format (complete data, for program processing)",
+      "csvFormat": "CSV format (for Excel/Spreadsheet)",
+      "exportButton": "Export as {{format}}",
+      "exporting": "Exporting...",
+      "recommendation": {
+        "label": "Recommended",
+        "text": "Protect your data with regular exports about once a month"
+      }
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "description": "You can review the Terms of Service for Travel Journal.",
+      "button": "View Terms of Service"
+    },
+    "appInfo": {
+      "title": "App Information",
+      "description": "You can check the app's update history and new features.",
+      "button": "View Update History"
+    },
+    "support": {
+      "title": "Support & Feedback",
+      "description": "If you have any bug reports or feature improvement suggestions, please feel free to let us know.",
+      "button": "Report Bug / Suggest Improvement",
+      "note": "Your feedback will be used for future improvements"
+    }
+  },
+  "review": {
+    "title": "Trip Review",
+    "overallAchievement": "Overall Achievement",
+    "calculationNote": "Main 70% + Sub 30%",
+    "mainPurposes": "Main Purposes",
+    "subPurposes": "Sub Purposes",
+    "itemsUsage": "Items Usage",
+    "referenceValue": "Reference",
+    "mainPurposesAchievement": "Main Purposes Achievement",
+    "subPurposesAchievement": "Sub Purposes Achievement",
+    "itemsUsageNote": "(Reference only, not included in overall achievement)",
+    "itemsUsageRate": "Items Usage Rate",
+    "noItemsChecked": "📝 No items checked"
+  },
+  "items": {
+    "recommended": "Recommended Items",
+    "custom": "Custom Items",
+    "customNote": "※ Up to 3 items (max 20 characters)",
+    "addPlaceholder": "Add item...",
+    "addButton": "Add ({{count}}/3)",
+    "savePlan": "💾 Save Items Plan"
+  },
+  "rules": {
+    "beforeTrip": "Before Starting Your Trip",
+    "basicRules": "Basic Rules & Manners",
+    "specificRules": "Activity-Specific Notes",
+    "requiredBadge": "Required",
+    "startTrip": "✅ Start Trip",
+    "checkRequired": "❌ Please check required items",
+    "requiredItemsNote": "Please confirm all required items ({{count}} unconfirmed) before starting your trip.",
+    "loading": "Loading rules & manners...",
+    "timeout": "⚠️ Connection Timeout",
+    "timeoutMessage": "Taking longer than expected to load rules & manners. Please check your network connection.",
+    "reload": "🔄 Reload",
+    "skipAndStart": "✅ Skip and Start Trip",
+    "noRules": "No rules & manners registered for this destination yet. Please enjoy your trip with safe driving and consideration for others.",
+    "intro": "Please review the rules, manners, and important notes related to your selected main purposes and check the boxes."
+  },
+  "yearly": {
+    "label": "Yearly",
+    "limit": "Annual usage limit (24 trips) has been reached."
+  },
+  "guide": {
+    "title": "User Guide",
+    "basicFeatures": "Basic Features",
+    "tripCreation": "Trip Planning: Up to 2 per month, 24 per year",
+    "purposeSetting": "Purpose Setting: Select main and sub purposes",
+    "customSubPurposes": "Custom Sub Purposes: Add up to 3 custom purposes",
+    "itemsList": "Items List: Add up to 3 custom items",
+    "limitations": "Limitations",
+    "monthlyLimit": "Monthly creation: Up to 2 trips",
+    "yearlyLimit": "Yearly creation: Up to 24 trips",
+    "usefulFeatures": "Useful Features",
+    "dateOverlapCheck": "Date overlap detection",
+    "postTripReview": "Post-trip review function",
+    "achievementCalculation": "Automatic achievement calculation",
+    "percentageReview": "Percentage-based reflection",
+    "dataExportFeature": "Data export (JSON/CSV formats)",
+    "notes": "Important Notes",
+    "dataStorage": "Data is stored in browser local storage",
+    "browserDeletion": "Clearing browser cache may delete your data",
+    "regularBackup": "Regular data export is recommended"
+  },
+  "bugReport": {
+    "title": "🐛 Report Bug",
+    "description": "If you have any bug reports or feature improvement suggestions, please access the Google Form below.<br/>Your feedback will be used for future improvements.",
+    "openFormButton": "📝 Open Bug Report Form",
+    "infoTitle": "📋 Information to Include in Your Report",
+    "problemDetail": "Problem Details",
+    "problemDetailDesc": "What operation caused the error",
+    "occurredDate": "Date Occurred",
+    "occurredDateDesc": "When the problem happened",
+    "environment": "Environment",
+    "environmentDesc": "Device (PC/Mobile) and browser type",
+    "errorMessage": "Error Message",
+    "errorMessageDesc": "Content if displayed",
+    "helpNote": "Providing this information will help us resolve issues more smoothly."
+  },
+  "purposes": {
+    "subPurposes": "Sub Purposes (Stops)",
+    "mainPurposes": "Main Purposes",
+    "customStops": "Custom Stops",
+    "customStopsNote": "※ Up to 3 stops (max 20 characters)",
+    "addButton": "Add",
+    "selectedMainPurposes": "Selected Main Purposes:",
+    "selectedSubPurposes": "Selected Sub Purposes:",
+    "savePlan": "💾 Save Plan"
+  },
+  "reviewSection": {
+    "title": "Trip Review",
+    "itemsUsageRate": "Items Usage Rate",
+    "saveReview": "Save Review",
+    "reset": "Reset"
+  },
+  "destinations": {
+    "label": "Destination",
+    "hokkaidoDohoku": "Hokkaido (Dohoku)",
+    "hokkaidoDoto": "Hokkaido (Doto)",
+    "hokkaidoDonan": "Hokkaido (Donan)",
+    "hokkaidoDoo": "Hokkaido (Doo)",
+    "tohoku": "Tohoku Region",
+    "hokuriku": "Hokuriku Region",
+    "kanto": "Kanto Region",
+    "koshinetsu": "Koshinetsu Region",
+    "chubuTokai": "Chubu/Tokai Region",
+    "kinki": "Kinki Region",
+    "chugoku": "Chugoku Region",
+    "shikoku": "Shikoku Region",
+    "kyushu": "Kyushu Region"
+  }
+}

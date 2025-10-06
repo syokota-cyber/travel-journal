@@ -1,0 +1,123 @@
+{
+  "modal_title": "Travel Journal Terms of Service",
+  "close_button": "Close",
+  "effective_date": "Effective Date: August 22, 2025",
+  "operator": "Operator: Travel Journal Development Team",
+  "notice": {
+    "title": "⚠️ Important Notice",
+    "intro": "This service is experimental and intended for learning purposes only",
+    "items": [
+      "✅ Recommended: Organizing personal travel memories",
+      "❌ Avoid: Using this as your only backup source",
+      "💾 Recommended: Export your data about once a month"
+    ]
+  },
+  "sections": {
+    "nature": {
+      "title": "Article 1 (Nature and Purpose)",
+      "items": [
+        "1. Travel Journal is a non-profit experimental service developed for study and research purposes.",
+        "2. The goal is to support personal travel logging and planning; commercial use is not assumed.",
+        "3. The service is provided free of charge with no plan for monetization."
+      ]
+    },
+    "personal_data": {
+      "title": "Article 2 (Personal Data Collected)",
+      "items": [
+        "1. The personal data we collect is limited to:",
+        "• Email address (for account authentication)",
+        "• Travel records and plans entered by the user",
+        "2. We do not collect full names, addresses, phone numbers, or other detailed personal data."
+      ]
+    },
+    "data_handling": {
+      "title": "Article 3 (Data Handling and Limitations)",
+      "items": [
+        "1. We do not guarantee the permanence or availability of user data.",
+        "2. Third-party service outages or restrictions (e.g., Supabase) may cause data loss or unavailability without notice.",
+        "3. Please back up important data yourself by using the export feature in the settings screen on a regular basis."
+      ]
+    },
+    "export": {
+      "title": "Article 4 (Export Feature)",
+      "items": [
+        "1. To improve convenience, an export feature is provided from the settings screen.",
+        "2. Available export formats: JSON and CSV",
+        "3. Data that can be exported:",
+        "• Travel plans you created",
+        "• Checklists",
+        "• Reviews and ratings",
+        "(Authentication data such as email addresses is excluded.)"
+      ]
+    },
+    "recommended_use": {
+      "title": "Article 5 (Recommended Use)",
+      "items": [
+        "1. Use for learning, hobbies, and personal record keeping",
+        "2. Perform data exports on a regular schedule",
+        "3. Combine with other methods for very important travel records"
+      ]
+    },
+    "prohibited_use": {
+      "title": "Article 6 (Uses to Avoid)",
+      "items": [
+        "1. Commercial or for-profit usage",
+        "2. Managing critical work-related data",
+        "3. Storing personal or confidential information",
+        "4. Recording content that infringes on others' rights"
+      ]
+    },
+    "service_level": {
+      "title": "Article 7 (Service Level)",
+      "items": [
+        "This service is provided under the following conditions:",
+        "• Availability guarantee: None (best effort)",
+        "• Data backups: Not performed by the provider",
+        "• Incident response: Weekdays during daytime hours when possible",
+        "• Support: Basic usage guidance only"
+      ]
+    },
+    "disclaimer": {
+      "title": "Article 8 (Disclaimer)",
+      "items": [
+        "1. We are not liable for damages arising from:",
+        "• Data deletion, corruption, or inaccessibility",
+        "• Suspension, interruption, or termination of the service",
+        "• Failures, restrictions, or policy changes of third-party services",
+        "• Network outages or device malfunctions",
+        "• Other causes beyond our reasonable control"
+      ]
+    },
+    "liability": {
+      "title": "Article 9 (Limitation of Liability)",
+      "items": [
+        "As the service is provided free of charge, we do not accept liability for damages under any circumstances."
+      ]
+    },
+    "service_changes": {
+      "title": "Article 10 (Service Changes and Termination)",
+      "items": [
+        "1. We may change, suspend, or terminate the service without prior notice to users.",
+        "2. If the service is terminated, we will endeavor to provide advance notice and a period for data export."
+      ]
+    },
+    "terms_changes": {
+      "title": "Article 11 (Changes to These Terms)",
+      "items": [
+        "We may amend these terms with prior notice. Continued use after changes constitutes acceptance of the revised terms."
+      ]
+    },
+    "cookies": {
+      "title": "Article 12 (Use of Cookies)",
+      "items": [
+        "We use only essential cookies to deliver the service. You may disable cookies in your browser, but some features may be limited."
+      ]
+    },
+    "consent": {
+      "title": "Article 13 (Consent)",
+      "items": [
+        "By using the service, you are considered to have agreed to these terms, the use of cookies, and our handling of personal data."
+      ]
+    }
+  }
+}

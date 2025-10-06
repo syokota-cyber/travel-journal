@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 
 const ItemsManager = ({ selectedPurposes, tripId, onCustomItemsUpdate }) => {
+  const { t } = useTranslation();
   const [recommendedItems, setRecommendedItems] = useState([]);
   const [customItems, setCustomItems] = useState([]);
   const [newItemName, setNewItemName] = useState('');
@@ -210,7 +212,7 @@ const ItemsManager = ({ selectedPurposes, tripId, onCustomItemsUpdate }) => {
 
   return (
     <div className="items-manager">
-      <h3>🎒 おすすめの持ち物</h3>
+      <h3>🎒 {t('items.recommended')}</h3>
       
       {recommendedItems.length > 0 && (
         <div className="items-group">
@@ -231,26 +233,26 @@ const ItemsManager = ({ selectedPurposes, tripId, onCustomItemsUpdate }) => {
 
       {/* カスタム持ち物追加 */}
       <div className="custom-items">
-        <h4>カスタム持ち物</h4>
+        <h4>{t('items.custom')}</h4>
         <p className="custom-items-note">
-          ※ 最大3つまで登録可能（全角20文字以内）
+          {t('items.customNote')}
         </p>
         <div className="add-custom-item">
           <input
             type="text"
-            placeholder="持ち物を追加..."
+            placeholder={t('items.addPlaceholder')}
             value={newItemName}
             onChange={(e) => setNewItemName(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleAddCustomItem()}
             maxLength={50}
             disabled={customItems.length >= 3}
           />
-          <button 
+          <button
             className="btn-secondary"
             onClick={handleAddCustomItem}
             disabled={customItems.length >= 3}
           >
-            追加 ({customItems.length}/3)
+            {t('items.addButton', { count: customItems.length })}
           </button>
         </div>
         
@@ -289,19 +291,19 @@ const ItemsManager = ({ selectedPurposes, tripId, onCustomItemsUpdate }) => {
         borderRadius: '8px',
         textAlign: 'center'
       }}>
-        <button 
+        <button
           className="btn-primary"
           onClick={async () => {
             try {
               console.log('持ち物保存開始:', { customItems, checkedItems, tripId });
-              
+
               // localStorageに保存（既に個別に保存されているが、確認のために再保存）
               localStorage.setItem(`trip_${tripId}_custom_items`, JSON.stringify(customItems));
               localStorage.setItem(`trip_${tripId}_checked_items`, JSON.stringify(Array.from(checkedItems)));
-              
+
               console.log('持ち物計画をlocalStorageに保存しました');
               alert('持ち物計画が保存されました');
-              
+
             } catch (error) {
               console.error('保存エラーの詳細:', error);
               alert('保存に失敗しました: ' + (error.message || '不明なエラー'));
@@ -309,7 +311,7 @@ const ItemsManager = ({ selectedPurposes, tripId, onCustomItemsUpdate }) => {
           }}
           style={{ padding: '0.75rem 2rem' }}
         >
-          💾 持ち物計画を保存
+          {t('items.savePlan')}
         </button>
       </div>
 

@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 import { sanitizeInput } from '../utils/security';
+import { localizeMainPurposes, localizeSubPurposes } from '../utils/i18nDataHelper';
 
 const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [mainPurposes, setMainPurposes] = useState([]);
   const [subPurposes, setSubPurposes] = useState([]);
   const [selectedMainIds, setSelectedMainIds] = useState([]);
@@ -36,7 +37,7 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
 
         setSelectedMainIds(mainIds);
         setSelectedSubIds(subIds);
-        
+
         // カスタム立ち寄りスポットを取得
         const { data: customData, error: customError } = await supabase
           .from('trip_purposes')
@@ -44,7 +45,7 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
           .eq('trip_id', tripId)
           .eq('purpose_type', 'custom')
           .not('custom_purpose', 'is', null);
-          
+
         if (!customError && customData) {
           const customSpots = customData.map((item, index) => ({
             id: `custom_name_${item.custom_purpose}`,
@@ -52,7 +53,7 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
             isCustom: true,
             type: 'sub'
           }));
-          
+
           setCustomSubPurposes(customSpots);
           console.log('PurposeManager - loaded custom spots:', customSpots);
         }
@@ -65,7 +66,7 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
     if (tripId) {
       loadSavedPurposes();
     }
-  }, [tripId]);
+  }, [tripId, i18n.language]); // 言語変更時も再取得
 
   useEffect(() => {
     // 既存の選択を復元（初回のみ）
@@ -85,8 +86,12 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
       if (mainData.error) throw mainData.error;
       if (subData.error) throw subData.error;
 
-      setMainPurposes(mainData.data || []);
-      setSubPurposes(subData.data || []);
+      // i18n対応: 言語に応じたフィールド名を追加
+      const localizedMainPurposes = localizeMainPurposes(mainData.data || [], i18n.language);
+      const localizedSubPurposes = localizeSubPurposes(subData.data || [], i18n.language);
+
+      setMainPurposes(localizedMainPurposes);
+      setSubPurposes(localizedSubPurposes);
     } catch (error) {
       console.error('目的データ取得エラー:', error);
     } finally {
@@ -273,7 +278,7 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
                 checked={selectedMainIds.includes(purpose.id)}
                 onChange={() => handleMainPurposeToggle(purpose.id)}
               />
-              <span>{purpose.name}</span>
+              <span>{purpose.displayName || purpose.name}</span>
             </label>
           ))}
         </div>
@@ -290,7 +295,7 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
                 checked={selectedSubIds.includes(purpose.id)}
                 onChange={() => handleSubPurposeToggle(purpose.id)}
               />
-              <span>{purpose.name}</span>
+              <span>{purpose.displayName || purpose.name}</span>
             </label>
           ))}
         </div>
@@ -354,7 +359,7 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
               const purpose = mainPurposes.find(p => p.id === id);
               return purpose ? (
                 <span key={id} className="selected-badge">
-                  {purpose.name}
+                  {purpose.displayName || purpose.name}
                 </span>
               ) : null;
             })}
@@ -372,7 +377,7 @@ const PurposeManager = ({ tripId, selectedPurposes, onPurposesUpdate }) => {
               const purpose = subPurposes.find(p => p.id === id);
               return purpose ? (
                 <span key={id} className="selected-badge">
-                  {purpose.name}
+                  {purpose.displayName || purpose.name}
                 </span>
               ) : null;
             })}

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
+import { localizeTravelRules } from '../utils/i18nDataHelper';
 
 const RulesConfirmation = ({ tripId, mainPurposeIds, onConfirmComplete }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [rules, setRules] = useState([]);
   const [confirmations, setConfirmations] = useState({});
@@ -28,7 +29,7 @@ const RulesConfirmation = ({ tripId, mainPurposeIds, onConfirmComplete }) => {
       setLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tripId, mainPurposeIds]);
+  }, [tripId, mainPurposeIds, i18n.language]);
 
   useEffect(() => {
     checkAllConfirmed();
@@ -63,13 +64,18 @@ const RulesConfirmation = ({ tripId, mainPurposeIds, onConfirmComplete }) => {
         console.log('RulesConfirmation - fetched rules:', data);
       }
 
+      // 言語対応: ヘルパー関数を使用してdisplayTitle, displayDescriptionを追加
+      const localizedRules = localizeTravelRules(data || [], i18n.language);
+
       // 重複を排除（rule_titleとrule_descriptionが同じものを除外）
       // ただし、最初に見つかったルールのIDを保持する
       const uniqueRules = [];
       const seen = new Map();
-      
-      data?.forEach(rule => {
-        const key = `${rule.rule_title}_${rule.rule_description}`;
+
+      localizedRules.forEach(rule => {
+        const displayTitle = rule.displayTitle || rule.rule_title;
+        const displayDescription = rule.displayDescription || rule.rule_description;
+        const key = `${displayTitle}_${displayDescription}`;
         if (!seen.has(key)) {
           seen.set(key, rule.id);
           uniqueRules.push(rule);
@@ -250,11 +256,11 @@ const RulesConfirmation = ({ tripId, mainPurposeIds, onConfirmComplete }) => {
                   />
                   <div className="rule-content">
                     <div className="rule-title">
-                      {rule.rule_title}
+                      {rule.displayTitle || rule.rule_title}
                       {rule.is_required && <span className="required-badge">{t('rules.requiredBadge')}</span>}
                     </div>
                     <div className="rule-description">
-                      {rule.rule_description}
+                      {rule.displayDescription || rule.rule_description}
                     </div>
                   </div>
                 </label>
@@ -279,11 +285,11 @@ const RulesConfirmation = ({ tripId, mainPurposeIds, onConfirmComplete }) => {
                   />
                   <div className="rule-content">
                     <div className="rule-title">
-                      {rule.rule_title}
+                      {rule.displayTitle || rule.rule_title}
                       {rule.is_required && <span className="required-badge">{t('rules.requiredBadge')}</span>}
                     </div>
                     <div className="rule-description">
-                      {rule.rule_description}
+                      {rule.displayDescription || rule.rule_description}
                     </div>
                   </div>
                 </label>

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
+import { localizeDefaultItems } from '../utils/i18nDataHelper';
 
 const ItemsManager = ({ selectedPurposes, tripId, onCustomItemsUpdate }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [recommendedItems, setRecommendedItems] = useState([]);
   const [customItems, setCustomItems] = useState([]);
   const [newItemName, setNewItemName] = useState('');
@@ -31,20 +32,24 @@ const ItemsManager = ({ selectedPurposes, tripId, onCustomItemsUpdate }) => {
           .order('display_order');
 
         if (error) throw error;
-        
+
         console.log('ItemsManager - fetched items:', data);
-        
+
+        // 言語対応: ヘルパー関数を使用してdisplayNameを追加
+        const localizedItems = localizeDefaultItems(data || [], i18n.language);
+
         // 重複を除去（同じ名前のアイテムは1つだけにする）
         const uniqueItems = [];
         const itemNames = new Set();
-        
-        (data || []).forEach(item => {
-          if (!itemNames.has(item.name)) {
-            itemNames.add(item.name);
+
+        localizedItems.forEach(item => {
+          const displayName = item.displayName || item.name;
+          if (!itemNames.has(displayName)) {
+            itemNames.add(displayName);
             uniqueItems.push(item);
           }
         });
-        
+
         console.log('ItemsManager - unique items:', uniqueItems);
         setRecommendedItems(uniqueItems);
         
@@ -87,7 +92,7 @@ const ItemsManager = ({ selectedPurposes, tripId, onCustomItemsUpdate }) => {
     if (selectedPurposes?.main) {
       fetchData();
     }
-  }, [selectedPurposes?.main, tripId]);
+  }, [selectedPurposes?.main, tripId, i18n.language]);
 
   const handleItemToggle = (itemId, itemName, checked) => {
     const newCheckedItems = new Set(checkedItems);
@@ -222,9 +227,9 @@ const ItemsManager = ({ selectedPurposes, tripId, onCustomItemsUpdate }) => {
                 <input
                   type="checkbox"
                   checked={checkedItems.has(`item_${item.id}`)}
-                  onChange={(e) => handleItemToggle(item.id, item.name, e.target.checked)}
+                  onChange={(e) => handleItemToggle(item.id, item.displayName || item.name, e.target.checked)}
                 />
-                <span>{item.name}</span>
+                <span>{item.displayName || item.name}</span>
               </label>
             ))}
           </div>

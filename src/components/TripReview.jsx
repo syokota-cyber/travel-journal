@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
+import { localizeMainPurposes, localizeSubPurposes, localizeDefaultItems } from '../utils/i18nDataHelper';
 import { Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -27,7 +28,7 @@ const TripReview = ({
   initialUsedItems = new Set(),
   onStateUpdate
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [plannedPurposes, setPlannedPurposes] = useState({ main: [], sub: [] });
   const [plannedItems, setPlannedItems] = useState([]);
@@ -100,16 +101,19 @@ const TripReview = ({
       if (mainIds.length > 0) {
         const { data: mainData } = await supabase
           .from('main_purposes')
-          .select('id, name')
+          .select('id, name, name_en')
           .in('id', mainIds);
-        
+
         console.log('🔍 Main data from main_purposes table:', mainData);
-        
-        mainData?.forEach(item => {
-          console.log('🔍 Adding main purpose:', item.id, item.name, typeof item.id);
+
+        // i18n対応: ヘルパー関数を使用してdisplayNameを追加
+        const localizedMainData = localizeMainPurposes(mainData || [], i18n.language);
+
+        localizedMainData?.forEach(item => {
+          console.log('🔍 Adding main purpose:', item.id, item.displayName || item.name, typeof item.id);
           mainPurposes.push({
             id: item.id,
-            name: item.name
+            name: item.displayName || item.name
           });
         });
       }
@@ -123,16 +127,19 @@ const TripReview = ({
       if (subIds.length > 0) {
         const { data: subData } = await supabase
           .from('sub_purposes')
-          .select('id, name')
+          .select('id, name, name_en')
           .in('id', subIds);
-        
+
         console.log('🔍 Sub data from sub_purposes table:', subData);
-        
-        subData?.forEach(item => {
-          console.log('🔍 Adding sub purpose:', item.id, item.name, typeof item.id);
+
+        // i18n対応: ヘルパー関数を使用してdisplayNameを追加
+        const localizedSubData = localizeSubPurposes(subData || [], i18n.language);
+
+        localizedSubData?.forEach(item => {
+          console.log('🔍 Adding sub purpose:', item.id, item.displayName || item.name, typeof item.id);
           subPurposes.push({
             id: item.id,
-            name: item.name
+            name: item.displayName || item.name
           });
         });
       }
@@ -206,16 +213,20 @@ const TripReview = ({
 
         if (itemsError) throw itemsError;
 
+        // i18n対応: ヘルパー関数を使用してdisplayNameを追加
+        const localizedItemsData = localizeDefaultItems(itemsData || [], i18n.language);
+
         // 重複を排除（名前ベースで重複チェック）
         const uniqueItems = new Map();
         const itemNameSet = new Set();
-        
-        itemsData?.forEach(item => {
-          if (!itemNameSet.has(item.name)) {
-            itemNameSet.add(item.name);
-            uniqueItems.set(item.name, {
+
+        localizedItemsData?.forEach(item => {
+          const displayName = item.displayName || item.name;
+          if (!itemNameSet.has(displayName)) {
+            itemNameSet.add(displayName);
+            uniqueItems.set(displayName, {
               id: item.id,
-              name: item.name,
+              name: displayName,
               type: 'default',
               main_purpose_id: item.main_purpose_id
             });
@@ -907,7 +918,7 @@ const TripReview = ({
                     onChange={() => togglePurposeAchievement(purposeIdStr, 'sub')}
                   />
                   <span>{purpose.name}</span>
-                  {purpose.isCustom && <span className="custom-badge">カスタム</span>}
+                  {purpose.isCustom && <span className="custom-badge">{t('common.custom')}</span>}
                 </label>
               );
             })}
@@ -942,7 +953,7 @@ const TripReview = ({
                       onChange={() => toggleItemUsage(itemIdStr, item.name)}
                     />
                     <span>{item.name}</span>
-                    {item.type === 'custom' && <span className="custom-badge">カスタム</span>}
+                    {item.type === 'custom' && <span className="custom-badge">{t('common.custom')}</span>}
                   </label>
                 );
               })}

@@ -1,13 +1,13 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { CURRENT_VERSION, DISPLAY_VERSION_HISTORY, isDevelopment } from '../config/version';
+import { CURRENT_VERSION, getVersionHistory, isDevelopment } from '../config/version';
 
 const UpdateHistory = ({ onClose }) => {
-  const { t } = useTranslation();
-  // 環境に応じて適切な履歴を表示
+  const { t, i18n } = useTranslation();
+  // 環境と言語に応じて適切な履歴を表示
   // 開発環境: 詳細な技術情報を含む履歴
-  // 本番環境: エンドユーザー向けの分かりやすい履歴
-  const updates = DISPLAY_VERSION_HISTORY;
+  // 本番環境: 言語に応じたエンドユーザー向け履歴
+  const updates = getVersionHistory(i18n.language);
 
   return (
     <div className="modal-overlay" onClick={onClose}>

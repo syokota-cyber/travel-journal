@@ -8,13 +8,24 @@
 // 次回更新予定: Phase 2 (Git タグ運用) - 2025年8月29日
 // ============================================
 
-export const CURRENT_VERSION = "2.6.0";
-export const RELEASE_DATE = "2025-08-31";
+export const CURRENT_VERSION = "2.7.0";
+export const RELEASE_DATE = "2025-10-08";
 
 // ============================================
 // 開発者向け詳細履歴（技術的詳細を含む）
 // ============================================
 export const VERSION_HISTORY_DETAILED = [
+  {
+    version: "2.7.0",
+    date: "2025年10月8日",
+    features: [
+      "🌐 マスターデータの多言語対応（日本語/英語）",
+      "🎯 メイン目的・サブ目的の英語表示",
+      "🎒 推奨持ち物の英語表示",
+      "📋 ルール・マナーの英語表示",
+      "🔄 言語切り替え時のリアルタイム反映"
+    ]
+  },
   {
     version: "2.6.0",
     date: "2025年8月31日",
@@ -92,6 +103,16 @@ export const VERSION_HISTORY_DETAILED = [
 // エンドユーザー向け履歴（分かりやすい表現）
 // ============================================
 export const VERSION_HISTORY = [
+  {
+    version: "2.7.0",
+    date: "2025年10月8日",
+    features: [
+      "🌐 英語表示に対応しました",
+      "🎯 メイン目的・サブ目的が英語で表示されます",
+      "🎒 持ち物リストも英語表示に対応",
+      "📋 ルール・マナーを英語で確認できます"
+    ]
+  },
   {
     version: "2.6.0",
     date: "2025年8月31日",
@@ -172,7 +193,95 @@ export const VERSION_RULES = {
 // 本番環境: エンドユーザー向け履歴を表示
 export const isDevelopment = process.env.NODE_ENV === 'development';
 
+// ============================================
+// English version history
+// ============================================
+export const VERSION_HISTORY_EN = [
+  {
+    version: "2.7.0",
+    date: "October 8, 2025",
+    features: [
+      "🌐 Multi-language support for master data (Japanese/English)",
+      "🎯 English display for main and sub purposes",
+      "🎒 English display for recommended items",
+      "📋 English display for rules and manners"
+    ]
+  },
+  {
+    version: "2.6.0",
+    date: "August 31, 2025",
+    features: [
+      "🔑 Easy login with Google account",
+      "✉️ Email verification for new registrations",
+      "📧 Japanese confirmation emails",
+      "🔒 Safer and more convenient login experience"
+    ]
+  },
+  {
+    version: "2.5.0",
+    date: "August 29, 2025",
+    features: [
+      "🔒 System-wide security enhancements",
+      "⚡ Improved app performance",
+      "🐛 Various bug fixes"
+    ]
+  },
+  {
+    version: "2.4.0",
+    date: "August 22, 2025",
+    features: [
+      "📜 Updated Terms of Service",
+      "🍪 Clarified Privacy Policy",
+      "⚖️ More transparent service operation"
+    ]
+  },
+  {
+    version: "2.3.0",
+    date: "August 20, 2025",
+    features: [
+      "🔒 Enhanced security",
+      "📅 More convenient date input",
+      "📋 Update history now available"
+    ]
+  },
+  {
+    version: "2.2.0",
+    date: "August 19, 2025",
+    features: [
+      "🗺️ Select destinations by region",
+      "📍 Display destination info on calendar",
+      "🐛 Fixed display issues"
+    ]
+  },
+  {
+    version: "2.1.0",
+    date: "August 15, 2025",
+    features: [
+      "📊 More accurate trip achievement rate",
+      "🎯 Clearer progress by purpose",
+      "📋 More convenient item checklist"
+    ]
+  },
+  {
+    version: "2.0.0",
+    date: "August 13, 2025",
+    features: [
+      "🔐 Secure protection of your travel data",
+      "📧 Improved email notifications",
+      "🛡️ Enhanced privacy protection"
+    ]
+  }
+];
+
 // UpdateHistory.jsxで使用する履歴を選択
-export const DISPLAY_VERSION_HISTORY = isDevelopment 
+export const DISPLAY_VERSION_HISTORY = isDevelopment
   ? VERSION_HISTORY_DETAILED  // 開発者向け
   : VERSION_HISTORY;          // エンドユーザー向け
+
+// 言語に応じて適切な履歴を返す関数
+export const getVersionHistory = (language) => {
+  if (isDevelopment) {
+    return VERSION_HISTORY_DETAILED;
+  }
+  return language === 'en' ? VERSION_HISTORY_EN : VERSION_HISTORY;
+};

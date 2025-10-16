@@ -5,6 +5,7 @@ import PurposeManager from './PurposeManager';
 import ItemsManager from './ItemsManager';
 import TripReview from './TripReview';
 import RulesConfirmation from './RulesConfirmation';
+import ArticleSuggestions from './ArticleSuggestions';
 
 function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
   const { t } = useTranslation();
@@ -707,11 +708,14 @@ function TripDetail({ trip, onBack, onUpdate, onDelete, onEdit }) {
       </div>
 
       {activeTab === 'purposes' && (
-        <PurposeManager
-          tripId={trip.id}
-          selectedPurposes={selectedPurposes}
-          onPurposesUpdate={setSelectedPurposes}
-        />
+        <>
+          <PurposeManager
+            tripId={trip.id}
+            selectedPurposes={selectedPurposes}
+            onPurposesUpdate={setSelectedPurposes}
+          />
+          <ArticleSuggestions trip={trip} />
+        </>
       )}
 
       {activeTab === 'items' && (

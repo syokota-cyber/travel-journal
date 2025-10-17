@@ -282,5 +282,14 @@
     "chugoku": "Chugoku Region",
     "shikoku": "Shikoku Region",
     "kyushu": "Kyushu Region"
+  },
+  "articleSuggestions": {
+    "title": "Recommended Articles",
+    "loading": "Loading recommended articles...",
+    "loadError": "Failed to load articles",
+    "noMatch": "Searching for {{destination}} - {{season}} articles... (No results)",
+    "noData": "Set destination and dates to see recommended articles",
+    "subtitle": "Recommendations for {{destination}} - {{season}}",
+    "openInNewTab": "Articles open in new tab"
   }
 }

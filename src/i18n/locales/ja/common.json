@@ -282,5 +282,14 @@
     "chugoku": "中国方面",
     "shikoku": "四国方面",
     "kyushu": "九州方面"
+  },
+  "articleSuggestions": {
+    "title": "おすすめ記事",
+    "loading": "おすすめ記事を読み込み中...",
+    "loadError": "記事の読み込みに失敗しました",
+    "noMatch": "{{destination}}・{{season}}の記事を検索中...（該当なし）",
+    "noData": "方面と日程を設定すると、おすすめ記事が表示されます",
+    "subtitle": "{{destination}}・{{season}}の時期に適したおすすめ情報",
+    "openInNewTab": "記事は新しいタブで開きます"
   }
 }

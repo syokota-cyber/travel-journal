@@ -8,13 +8,24 @@
 // 次回更新予定: Phase 2 (Git タグ運用) - 2025年8月29日
 // ============================================
 
-export const CURRENT_VERSION = "2.7.0";
-export const RELEASE_DATE = "2025-10-08";
+export const CURRENT_VERSION = "2.8.0";
+export const RELEASE_DATE = "2025-10-16";
 
 // ============================================
 // 開発者向け詳細履歴（技術的詳細を含む）
 // ============================================
 export const VERSION_HISTORY_DETAILED = [
+  {
+    version: "2.8.0",
+    date: "2025年10月16日",
+    features: [
+      "📰 記事レコメンデーション機能実装（Phase 1）",
+      "🗺️ 旅行の方面・季節に基づく記事推薦",
+      "🎯 スコアリングアルゴリズムによる関連度順ソート",
+      "📊 1590件の記事データベース統合",
+      "🔄 ArticleSuggestionsコンポーネント追加"
+    ]
+  },
   {
     version: "2.7.0",
     date: "2025年10月8日",
@@ -103,6 +114,16 @@ export const VERSION_HISTORY_DETAILED = [
 // エンドユーザー向け履歴（分かりやすい表現）
 // ============================================
 export const VERSION_HISTORY = [
+  {
+    version: "2.8.0",
+    date: "2025年10月16日",
+    features: [
+      "📰 おすすめ記事機能を追加しました",
+      "🗺️ 旅先に合わせた記事を自動表示",
+      "🌸 季節に合った記事が見つかります",
+      "📊 1500件以上の記事から最適な提案"
+    ]
+  },
   {
     version: "2.7.0",
     date: "2025年10月8日",
@@ -197,6 +218,16 @@ export const isDevelopment = process.env.NODE_ENV === 'development';
 // English version history
 // ============================================
 export const VERSION_HISTORY_EN = [
+  {
+    version: "2.8.0",
+    date: "October 16, 2025",
+    features: [
+      "📰 Article recommendation feature added",
+      "🗺️ Automatic article suggestions based on destination",
+      "🌸 Seasonal article recommendations",
+      "📊 Smart suggestions from 1500+ articles"
+    ]
+  },
   {
     version: "2.7.0",
     date: "October 8, 2025",

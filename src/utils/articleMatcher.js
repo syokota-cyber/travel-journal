@@ -34,11 +34,12 @@ export const getSeason = (dateString, language = 'ja') => {
 export const matchRegion = (destination, regions, language = 'ja') => {
   if (!destination || !regions || regions.length === 0) return false;
 
-  // 括弧内の地域名と「方面」、英語の「Region」を除去
-  // 例: "北海道（道東）" → "北海道", "九州方面" → "九州", "Shikoku Region" → "Shikoku"
+  // 括弧内の地域名と「方面」「地方」、英語の「Region」を除去
+  // 例: "北海道（道東）" → "北海道", "九州方面" → "九州", "甲信越地方" → "甲信越", "Shikoku Region" → "Shikoku"
   const cleanDestination = destination
     .replace(/[（(].*?[）)]/g, '')  // 括弧を除去
     .replace(/方面/g, '')           // 「方面」を除去
+    .replace(/地方/g, '')           // 「地方」を除去
     .replace(/\s+Region$/i, '')     // 英語の「Region」を除去
     .trim();
 

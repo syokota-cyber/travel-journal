@@ -7,3 +7,5 @@ build/
 .env.supabase
 .vercel/
 *.log
+# Phase 2 implementation (not yet ready)
+src/utils/articleAnalytics.js

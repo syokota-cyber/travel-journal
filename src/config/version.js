@@ -22,7 +22,7 @@ export const VERSION_HISTORY_DETAILED = [
       "📰 記事レコメンデーション機能実装（Phase 1）",
       "🗺️ 旅行の方面・季節に基づく記事推薦",
       "🎯 スコアリングアルゴリズムによる関連度順ソート",
-      "📊 1590件の記事データベース統合",
+      "📊 150件以上の記事データベース統合",
       "🔄 ArticleSuggestionsコンポーネント追加"
     ]
   },
@@ -121,7 +121,7 @@ export const VERSION_HISTORY = [
       "📰 おすすめ記事機能を追加しました",
       "🗺️ 旅先に合わせた記事を自動表示",
       "🌸 季節に合った記事が見つかります",
-      "📊 1500件以上の記事から最適な提案"
+      "📊 150件以上の記事から最適な提案"
     ]
   },
   {
@@ -225,7 +225,7 @@ export const VERSION_HISTORY_EN = [
       "📰 Article recommendation feature added",
       "🗺️ Automatic article suggestions based on destination",
       "🌸 Seasonal article recommendations",
-      "📊 Smart suggestions from 1500+ articles"
+      "📊 Smart suggestions from 150+ articles"
     ]
   },
   {

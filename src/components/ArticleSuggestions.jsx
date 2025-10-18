@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { filterArticles, getSeason, logMatchingInfo } from '../utils/articleMatcher';
+import { trackArticleClick } from '../utils/articleAnalytics';
 
 /**
  * 記事おすすめコンポーネント
@@ -13,6 +14,22 @@ const ArticleSuggestions = ({ trip }) => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  /**
+   * 記事クリック時のハンドラー
+   * クリック数をDBに記録し、新しいタブで記事を開く
+   */
+  const handleArticleClick = async (url, e) => {
+    e.preventDefault();
+
+    // クリック数を非同期で記録（失敗しても記事は開く）
+    trackArticleClick(url).catch(error => {
+      console.warn('⚠️ Failed to track article click, but opening article anyway:', error);
+    });
+
+    // 記事を新しいタブで開く
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
 
   useEffect(() => {
     const loadArticles = async () => {
@@ -137,6 +154,7 @@ const ArticleSuggestions = ({ trip }) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="article-link"
+                onClick={(e) => handleArticleClick(article.URL, e)}
               >
                 <div className="article-content">
                   <span className="article-icon">🔗</span>

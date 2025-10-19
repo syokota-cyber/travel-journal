@@ -180,6 +180,7 @@
   color: #3498db;
   text-decoration: none;
   transition: color 0.2s ease;
+  word-break: break-all;
 }
 
 .article-url:hover {
@@ -187,17 +188,17 @@
   text-decoration: underline;
 }
 
-.domain {
+.url-text {
   flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: 0.85rem;
+  line-height: 1.4;
 }
 
 .url-icon {
   margin-left: 0.5rem;
   font-size: 0.9rem;
   opacity: 0.6;
+  flex-shrink: 0;
 }
 
 /* クリック数 */

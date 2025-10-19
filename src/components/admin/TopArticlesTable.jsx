@@ -18,6 +18,7 @@ const TopArticlesTable = () => {
     const fetchTopArticles = async () => {
       setLoading(true);
       const data = await getTopArticles(10);
+      console.log('📊 Top Articles Data:', data);
       setArticles(data);
       setLoading(false);
     };
@@ -31,10 +32,13 @@ const TopArticlesTable = () => {
     return date.toLocaleString();
   };
 
-  const extractDomain = (url) => {
+  const formatUrl = (url) => {
     try {
-      const urlObj = new URL(url);
-      return urlObj.hostname.replace('www.', '');
+      // URLを短縮表示（最大80文字）
+      if (url.length > 80) {
+        return url.substring(0, 77) + '...';
+      }
+      return url;
     } catch {
       return url;
     }
@@ -82,8 +86,9 @@ const TopArticlesTable = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="article-url"
+                      title={article.url}
                     >
-                      <span className="domain">{extractDomain(article.url)}</span>
+                      <span className="url-text">{formatUrl(article.url)}</span>
                       <span className="url-icon">↗</span>
                     </a>
                   </td>

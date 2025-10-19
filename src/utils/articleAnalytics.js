@@ -14,6 +14,16 @@ import { supabase } from '../lib/supabase';
  */
 export const trackArticleClick = async (url) => {
   try {
+    // Rate Limiting: 同一記事への1分以内の連続クリックを防止
+    const lastClickKey = `article_click_${url}`;
+    const lastClickTime = localStorage.getItem(lastClickKey);
+    const now = Date.now();
+
+    if (lastClickTime && now - parseInt(lastClickTime) < 60000) {
+      console.log('⏱️ Click rate limited (1 minute cooldown)');
+      return false;
+    }
+
     // 既存レコード確認
     const { data: existing } = await supabase
       .from('article_clicks')
@@ -44,6 +54,9 @@ export const trackArticleClick = async (url) => {
 
       if (error) throw error;
     }
+
+    // クリック記録成功後、localStorageに最終クリック時刻を保存
+    localStorage.setItem(lastClickKey, now.toString());
 
     console.log(`✅ Article click tracked: ${url}`);
     return true;

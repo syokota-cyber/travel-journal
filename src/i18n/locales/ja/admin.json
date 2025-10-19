@@ -1,0 +1,18 @@
+{
+  "admin": {
+    "title": "記事分析ダッシュボード",
+    "subtitle": "記事のクリック数と人気コンテンツを追跡",
+    "loading": "読み込み中...",
+    "statistics": "統計情報",
+    "totalClicks": "総クリック数",
+    "totalArticles": "総記事数",
+    "averageClicks": "平均クリック数",
+    "topArticles": "人気記事トップ10",
+    "noArticles": "まだ記事データがありません。",
+    "rank": "順位",
+    "article": "記事",
+    "clicks": "クリック数",
+    "lastClicked": "最終クリック",
+    "backToHome": "ホームに戻る"
+  }
+}

@@ -114,3 +114,34 @@ export const getTopArticles = async (limit = 10) => {
     return [];
   }
 };
+
+/**
+ * 記事クリック統計情報を取得
+ * @returns {Promise<Object>} - 統計情報（総クリック数、総記事数、平均クリック数）
+ */
+export const getAnalyticsStats = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('article_clicks')
+      .select('click_count');
+
+    if (error) throw error;
+
+    const totalArticles = data.length;
+    const totalClicks = data.reduce((sum, item) => sum + item.click_count, 0);
+    const averageClicks = totalArticles > 0 ? Math.round(totalClicks / totalArticles) : 0;
+
+    return {
+      totalClicks,
+      totalArticles,
+      averageClicks
+    };
+  } catch (error) {
+    console.error('❌ Failed to get analytics stats:', error);
+    return {
+      totalClicks: 0,
+      totalArticles: 0,
+      averageClicks: 0
+    };
+  }
+};

@@ -13,6 +13,7 @@ import Footer from './components/Footer';
 import AccountSettings from './components/AccountSettings';
 import AdminDashboard from './components/AdminDashboard';
 import AdminRoute from './components/AdminRoute';
+import ArticleAnalyticsDashboard from './components/admin/ArticleAnalyticsDashboard';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { enforceHTTPS, validateEnvironment, checkSecurityHeaders } from './utils/security';
 
@@ -27,6 +28,7 @@ function AppContent() {
   const [loading, setLoading] = useState(true);
   const [showAccountSettings, setShowAccountSettings] = useState(false);
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
+  const [showArticleAnalytics, setShowArticleAnalytics] = useState(false);
 
   // データ取得
   useEffect(() => {
@@ -174,12 +176,20 @@ function AppContent() {
           <LanguageSwitcher className="header-language-switcher" />
           {/* 管理者のみ表示 */}
           {user?.email === 'shin1yokota@gmail.com' && (
-            <button 
-              onClick={() => setShowAdminDashboard(true)} 
-              className="btn-text"
-            >
-              {t('navigation.admin_dashboard')}
-            </button>
+            <>
+              <button
+                onClick={() => setShowAdminDashboard(true)}
+                className="btn-text"
+              >
+                {t('navigation.admin_dashboard')}
+              </button>
+              <button
+                onClick={() => setShowArticleAnalytics(true)}
+                className="btn-text"
+              >
+                📊 {t('navigation.article_analytics', 'Article Analytics')}
+              </button>
+            </>
           )}
           <button 
             onClick={() => setShowAccountSettings(true)} 
@@ -196,9 +206,20 @@ function AppContent() {
       <main className="App-main">
         {loading ? (
           <div>{t('app.loading')}</div>
+        ) : showArticleAnalytics ? (
+          <>
+            <button
+              onClick={() => setShowArticleAnalytics(false)}
+              className="btn-secondary"
+              style={{ marginBottom: '20px' }}
+            >
+              ← {t('navigation.back_to_trips', '旅行記録に戻る')}
+            </button>
+            <ArticleAnalyticsDashboard />
+          </>
         ) : showAdminDashboard ? (
           <>
-            <button 
+            <button
               onClick={() => setShowAdminDashboard(false)}
               className="btn-secondary"
               style={{ marginBottom: '20px' }}

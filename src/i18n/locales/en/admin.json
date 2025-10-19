@@ -1,0 +1,18 @@
+{
+  "admin": {
+    "title": "Article Analytics Dashboard",
+    "subtitle": "Track article clicks and popular content",
+    "loading": "Loading...",
+    "statistics": "Statistics",
+    "totalClicks": "Total Clicks",
+    "totalArticles": "Total Articles",
+    "averageClicks": "Average Clicks",
+    "topArticles": "Top 10 Popular Articles",
+    "noArticles": "No article data available yet.",
+    "rank": "Rank",
+    "article": "Article",
+    "clicks": "Clicks",
+    "lastClicked": "Last Clicked",
+    "backToHome": "Back to Home"
+  }
+}

@@ -4,8 +4,10 @@ import { initReactI18next } from 'react-i18next';
 
 import enCommon from './locales/en/common.json';
 import enTerms from './locales/en/terms.json';
+import enAdmin from './locales/en/admin.json';
 import jaCommon from './locales/ja/common.json';
 import jaTerms from './locales/ja/terms.json';
+import jaAdmin from './locales/ja/admin.json';
 
 export const defaultNS = 'common';
 
@@ -14,16 +16,18 @@ export const supportedLanguages = [
   { code: 'en', label: 'English' }
 ];
 
-export const namespaces = [defaultNS, 'terms'];
+export const namespaces = [defaultNS, 'terms', 'admin'];
 
 const resources = {
   en: {
     [defaultNS]: enCommon,
-    terms: enTerms
+    terms: enTerms,
+    admin: enAdmin
   },
   ja: {
     [defaultNS]: jaCommon,
-    terms: jaTerms
+    terms: jaTerms,
+    admin: jaAdmin
   }
 };
 

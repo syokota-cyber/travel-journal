@@ -1586,5 +1586,91 @@
     ],
     "テーマ": "ペット連れ",
     "URL": "https://campingcartraveltips.com/campingcar-withdogs-kanto/"
+  },
+  {
+    "地域": [
+      "北海道",
+      "東北"
+    ],
+    "季節": [
+      "冬"
+    ],
+    "テーマ": "スキー、スノーボード",
+    "URL": "https://campingcartraveltips.com/campingcar-skiing-hokkaido/"
+  },
+  {
+    "地域": [
+      "関東"
+    ],
+    "季節": [
+      "春",
+      "夏"
+    ],
+    "テーマ": "桜・花見",
+    "URL": "https://campingcartraveltips.com/campingcar-sakura-kanto/"
+  },
+  {
+    "地域": [
+      "九州"
+    ],
+    "季節": [
+      "all"
+    ],
+    "テーマ": "温泉巡り",
+    "URL": "https://campingcartraveltips.com/campingcar-onsen-kyushu/"
+  },
+  {
+    "地域": [
+      "関東"
+    ],
+    "季節": [
+      "冬"
+    ],
+    "テーマ": "イルミネーション",
+    "URL": "https://campingcartraveltips.com/campingcar-illumination-guide-kanto/"
+  },
+  {
+    "地域": [
+      "東海"
+    ],
+    "季節": [
+      "冬"
+    ],
+    "テーマ": "イルミネーション",
+    "URL": "https://campingcartraveltips.com/campingcar-illumination-guide-tokai/"
+  },
+  {
+    "地域": [
+      "近畿",
+      "北陸"
+    ],
+    "季節": [
+      "冬"
+    ],
+    "テーマ": "イルミネーション",
+    "URL": "https://campingcartraveltips.com/campingcar-illumiation-guide-kinki-hokuriku/"
+  },
+  {
+    "地域": [
+      "中国",
+      "四国",
+      "九州"
+    ],
+    "季節": [
+      "冬"
+    ],
+    "テーマ": "イルミネーション",
+    "URL": "https://campingcartraveltips.com/campingcar-illumination-guide-kyushu-shikoku-chugoku/"
+  },
+  {
+    "地域": [
+      "北海道",
+      "東北"
+    ],
+    "季節": [
+      "冬"
+    ],
+    "テーマ": "イルミネーション",
+    "URL": "https://campingcartraveltips.com/campingcar-illumination-guide-tohoku-hokkaido/"
   }
 ]

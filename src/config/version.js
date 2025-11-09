@@ -8,13 +8,27 @@
 // 次回更新予定: Phase 2 (Git タグ運用) - 2025年8月29日
 // ============================================
 
-export const CURRENT_VERSION = "2.8.0";
-export const RELEASE_DATE = "2025-10-16";
+export const CURRENT_VERSION = "2.9.0";
+export const RELEASE_DATE = "2025-11-09";
 
 // ============================================
 // 開発者向け詳細履歴（技術的詳細を含む）
 // ============================================
 export const VERSION_HISTORY_DETAILED = [
+  {
+    version: "2.9.0",
+    date: "2025年11月9日",
+    features: [
+      "🎄 イルミネーション機能の完全実装",
+      "🎯 メイン目的「イルミネーション」追加（17件目）",
+      "🎒 推奨持ち物8件追加（カメラ・三脚、防寒着など）",
+      "📋 ルール・マナー7件追加（撮影マナー、混雑時の配慮など）",
+      "📰 イルミネーション記事10件追加（日本語5件、英語5件）",
+      "🔧 CI環境でのESLint警告エラー修正",
+      "📊 記事データ: 151件 → 159件（日本語版）",
+      "🌐 記事データ: 107件 → 117件（英語版）"
+    ]
+  },
   {
     version: "2.8.0",
     date: "2025年10月16日",
@@ -114,6 +128,17 @@ export const VERSION_HISTORY_DETAILED = [
 // エンドユーザー向け履歴（分かりやすい表現）
 // ============================================
 export const VERSION_HISTORY = [
+  {
+    version: "2.9.0",
+    date: "2025年11月9日",
+    features: [
+      "🎄 イルミネーション観光に対応しました",
+      "🎯 メイン目的に「イルミネーション」を追加",
+      "🎒 イルミネーション向けの持ち物を自動提案",
+      "📋 撮影マナーなどのルールも確認できます",
+      "📰 全国5地域のイルミネーション記事を追加"
+    ]
+  },
   {
     version: "2.8.0",
     date: "2025年10月16日",
@@ -218,6 +243,17 @@ export const isDevelopment = process.env.NODE_ENV === 'development';
 // English version history
 // ============================================
 export const VERSION_HISTORY_EN = [
+  {
+    version: "2.9.0",
+    date: "November 9, 2025",
+    features: [
+      "🎄 Illumination tour support added",
+      "🎯 New main purpose: 'Illumination'",
+      "🎒 Auto-suggested items for illumination viewing",
+      "📋 Photography etiquette and rules included",
+      "📰 10 new illumination articles across 5 regions"
+    ]
+  },
   {
     version: "2.8.0",
     date: "October 16, 2025",
